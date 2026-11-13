@@ -1,0 +1,234 @@
+[
+  {
+    "id": "india-loan-apps-harassment",
+    "title": "Instant-loan apps used borrowers' contact lists for harassment",
+    "hook": "Borrow a few thousand rupees, and your friends and family may get messages about you.",
+    "categories": [
+      "contacts",
+      "finance",
+      "harassment"
+    ],
+    "countries": [
+      "India"
+    ],
+    "date": "2020-2022",
+    "collected": "Borrowers' contact lists, photos and other phone data, through app permissions.",
+    "howObtained": "Users granted permissions during sign-up, often as a condition of the loan.",
+    "inferred": "Who in a borrower's life could be used to apply social pressure.",
+    "done": "Police and press reported recovery agents messaging borrowers’ relatives and contacts, including with morphed (edited) photos, to shame them into repaying. Suicides were linked to this harassment in police investigations, and Hyderabad-area police received dozens of complaints and made arrests.",
+    "affected": "Borrowers and the people in their contact lists.",
+    "label": "REPORTED",
+    "labelNote": "Police actions and press investigations. The resulting rules (RBI 2022, Google Play policy) are DOCUMENTED separately.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "RBI rules and app-store bans followed (see related cases).",
+      "date": "2022"
+    },
+    "sources": [
+      {
+        "url": "https://theprint.in/india/hyderabad-police-find-chinese-link-in-instant-loan-apps-cases-that-drove-3-to-suicide/572729/",
+        "title": "Hyderabad police find Chinese link in instant loan apps cases that drove 3 to suicide",
+        "publisher": "ThePrint",
+        "type": "secondary",
+        "accessed": "snippet"
+      },
+      {
+        "url": "https://www.thenewsminute.com/article/loan-app-torture-pics-hyderabad-woman-who-borrowed-money-morphed-agent-held-164469",
+        "title": "Loan app torture: Pics of Hyderabad woman who borrowed money morphed, agent held",
+        "publisher": "The News Minute",
+        "type": "secondary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "Many apps were unregistered or offshore and are hard to trace. Specific apps are not named here.",
+    "whyItMatters": "Here, collecting your contacts caused direct harm to other people as well as you.",
+    "stops": [
+      "loans"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "rbi-digital-lending-2022",
+    "title": "RBI barred lending apps from reading contacts and call logs",
+    "hook": "After the harassment cases, India's central bank wrote access to your contacts out of lending.",
+    "categories": [
+      "contacts",
+      "finance",
+      "law"
+    ],
+    "countries": [
+      "India"
+    ],
+    "date": "2022-08-10",
+    "collected": "Not applicable (a rule).",
+    "howObtained": "Not applicable.",
+    "inferred": "Not applicable.",
+    "done": "An RBI working group (November 2021) said about 600 of some 1,100 lending apps it examined were illegal. RBI's digital-lending framework (announced 10 August 2022) bars lenders' apps from accessing phone resources such as contacts, media files and call logs.",
+    "affected": "Indian borrowers.",
+    "label": "DOCUMENTED",
+    "labelNote": "Central-bank regulation.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "In force.",
+      "date": "2022-08-10"
+    },
+    "sources": [
+      {
+        "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=54187",
+        "title": "RBI releases Recommendations of the Working Group on Digital Lending",
+        "publisher": "Reserve Bank of India",
+        "type": "primary",
+        "accessed": "snippet",
+        "date": "2022-08-10"
+      },
+      {
+        "url": "https://inc42.com/buzz/rbi-spots-600-illegal-lending-apps-out-of-1100-available",
+        "title": "RBI spots 600 illegal lending apps out of 1,100 available",
+        "publisher": "Inc42",
+        "type": "secondary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "Rules apply to regulated entities; illegal apps ignore them.",
+    "whyItMatters": "A permission that seemed harmless was banned once its use as a weapon was clear.",
+    "stops": [
+      "loans"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "play-personal-loan-policy",
+    "title": "Google Play: personal-loan apps can't read your contacts or photos",
+    "hook": "App-store rules now block the permissions that powered the harassment.",
+    "categories": [
+      "contacts",
+      "finance",
+      "platform-policy"
+    ],
+    "countries": [
+      "India",
+      "Global"
+    ],
+    "date": "2023-05-31",
+    "collected": "Not applicable (a policy).",
+    "howObtained": "Not applicable.",
+    "inferred": "Not applicable.",
+    "done": "Google Play's financial-services policy bars personal-loan apps from requesting access to contacts, photos and media, precise location and the full list of installed apps. In India, loan apps must appear on the RBI-reported list of digital lending apps.",
+    "affected": "Android users.",
+    "label": "DOCUMENTED",
+    "labelNote": "Published platform policy. Reports say more than 2,000 loan apps were removed in India (REPORTED).",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "In force.",
+      "date": "2023"
+    },
+    "sources": [
+      {
+        "url": "https://support.google.com/googleplay/android-developer/answer/9876821",
+        "title": "Financial Services policy",
+        "publisher": "Google Play Console Help",
+        "type": "primary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "Apps outside the Play Store are not covered.",
+    "whyItMatters": "Platform rules can protect users when apps won't.",
+    "stops": [
+      "loans"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "truecaller-non-users",
+    "title": "Truecaller and people who never signed up",
+    "hook": "Your name can be in a caller-ID database because someone else uploaded their contacts.",
+    "categories": [
+      "contacts",
+      "shadow-profiles"
+    ],
+    "countries": [
+      "India",
+      "Global"
+    ],
+    "date": "2019",
+    "collected": "Names and numbers of non-users, from users' uploaded contact books and tags.",
+    "howObtained": "Contact uploads by other people.",
+    "inferred": "Who a number belongs to, and labels such as workplace or 'spam'.",
+    "done": "Privacy International documented how non-users' details enter Truecaller's directory without their consent. A 2021 public-interest petition in the Bombay High Court raised the same concern.",
+    "affected": "People whose numbers are in other users' phones.",
+    "label": "REPORTED",
+    "labelNote": "NGO case study. The court petition is ALLEGED; no Indian privacy regulator has ruled.",
+    "companyResponse": {
+      "text": "Truecaller points to its 'unlist' option, which lets non-users remove their number.",
+      "source": "Truecaller, via Privacy International"
+    },
+    "outcome": {
+      "text": "In 2024 India's competition regulator dismissed a separate complaint about Google giving Truecaller contact access (no prima facie case).",
+      "date": "2024"
+    },
+    "sources": [
+      {
+        "url": "https://privacyinternational.org/node/2997",
+        "title": "Truecaller case study",
+        "publisher": "Privacy International",
+        "type": "primary",
+        "accessed": "opened"
+      },
+      {
+        "url": "https://inc42.com/buzz/cci-turns-down-plea-alleging-google-of-sharing-contact-data-with-truecaller",
+        "title": "CCI turns down plea alleging Google shared contact data with Truecaller",
+        "publisher": "Inc42",
+        "type": "secondary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "Opting out requires knowing you are in the database.",
+    "whyItMatters": "Consent from one person does not cover the people in their address book.",
+    "stops": [
+      "loans",
+      "cafe"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "paytm-rbi-2024",
+    "title": "RBI restricts Paytm Payments Bank",
+    "hook": "India's central bank stopped new deposits citing 'persistent non-compliance'.",
+    "categories": [
+      "finance",
+      "governance"
+    ],
+    "countries": [
+      "India"
+    ],
+    "date": "2024-01-31",
+    "collected": "Not the core issue.",
+    "howObtained": "Not applicable.",
+    "inferred": "Not applicable.",
+    "done": "The RBI barred Paytm Payments Bank from taking new deposits or wallet top-ups (deadline extended to 15 March 2024), citing persistent non-compliance and material supervisory concerns.",
+    "affected": "Paytm Payments Bank customers.",
+    "label": "DOCUMENTED",
+    "labelNote": "Central-bank order. This is a governance case, NOT a confirmed data breach; reports of data flowing abroad were not confirmed by the RBI.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "Restrictions took effect in March 2024.",
+      "date": "2024-03-15"
+    },
+    "sources": [
+      {
+        "url": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=57224",
+        "title": "Action against Paytm Payments Bank Ltd",
+        "publisher": "Reserve Bank of India",
+        "type": "primary",
+        "accessed": "snippet",
+        "date": "2024-01-31"
+      }
+    ],
+    "limits": "Included to correct a common misunderstanding, not as a data-misuse case.",
+    "whyItMatters": "Not every app scandal is a data scandal, and labels help keep them apart.",
+    "stops": [
+      "loans"
+    ],
+    "asOf": "2026-11-13"
+  }
+]

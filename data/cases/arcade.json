@@ -1,0 +1,317 @@
+[
+  {
+    "id": "block-blast-analysis-2026",
+    "title": "Reverse-engineering a block puzzle: are your pieces dealt by ad value?",
+    "hook": "An independent analysis claims a hit puzzle game deals unplayable pieces right after you beat your best, when an ad is worth the most.",
+    "categories": [
+      "games",
+      "attention",
+      "advertising"
+    ],
+    "countries": [
+      "Global"
+    ],
+    "date": "2026-10-15",
+    "collected": "Your score, personal best, history of watched rewarded ads, and the value of the ad currently loaded, according to the analysis.",
+    "howObtained": "The game app, plus rule files downloaded from its servers.",
+    "inferred": "Per the analysis: each player's ad value, and the moment a 'revive' ad would earn the most.",
+    "done": "Ayo Omolewa's breakdown says encrypted, server-downloaded rules can request a 'lethal puzzle' (three pieces that cannot be placed) when a player is 1,000 points past their high score, has finished three rewarded ads, and the loaded ad is worth at least 3.5 times the last one.",
+    "affected": "Players of Block Blast (published by Hungry Studio).",
+    "label": "REPORTED",
+    "labelNote": "Independent reverse-engineering by one author: decompiled apps, decrypted rule files run on 28 test cases, live observation. Only partly reproducible because the decryption key is withheld; the author also used an AI model to port some code. No independent replication or developer response found.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "No regulator action. The author offers to publish corrections.",
+      "date": "2026-10-15"
+    },
+    "sources": [
+      {
+        "url": "https://ayoships.com/breakdowns/block-blast",
+        "title": "Block Blast breakdown",
+        "publisher": "Ayo Omolewa (ayoships.com)",
+        "type": "primary",
+        "accessed": "opened",
+        "date": "2026-10-15"
+      }
+    ],
+    "limits": "Single source. Server-side models cannot be inspected. The author does not use the term 'loss aversion'; that framing is ours. Our 'Stack Shift' game is an original, simplified WHAT-IF, not a copy of this game.",
+    "whyItMatters": "If accurate, it is a rare look inside the code of game 'difficulty' tied to ad revenue.",
+    "stops": [
+      "arcade"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "robinhood-ma-2024",
+    "title": "Massachusetts v. Robinhood: 'gamified' investing",
+    "hook": "Confetti, digital scratch-off tickets and push notifications for new investors.",
+    "categories": [
+      "gamification",
+      "attention",
+      "finance"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2024-01-18",
+    "collected": "Trading behaviour and app engagement.",
+    "howObtained": "The Robinhood app.",
+    "inferred": "Who could be prompted to trade more.",
+    "done": "Massachusetts securities regulators alleged Robinhood used game-like features (confetti, scratch-off rewards, frequent notifications and top-mover lists) to encourage inexperienced investors to trade.",
+    "affected": "Massachusetts Robinhood customers.",
+    "label": "DOCUMENTED",
+    "labelNote": "State consent order. Robinhood neither admitted nor denied the gamification allegations.",
+    "companyResponse": {
+      "text": "\"We reject the premise that any part of our app, past or present, is 'gamified.'\"",
+      "source": "Robinhood statement via InvestmentNews"
+    },
+    "outcome": {
+      "text": "$7.5 million settlement (also covering a 2021 data breach affecting about 117,000 Massachusetts customers).",
+      "date": "2024-01-18"
+    },
+    "sources": [
+      {
+        "url": "https://www.investmentnews.com/regulation-and-legislation/news/robinhood-to-pay-7-5m-to-settle-massachusetts-charges-248214",
+        "title": "Robinhood to pay $7.5M to settle Massachusetts charges",
+        "publisher": "InvestmentNews",
+        "type": "secondary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "Settled.",
+    "whyItMatters": "Reward animations are designed on purpose.",
+    "stops": [
+      "arcade"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "youtube-coppa-2019",
+    "title": "YouTube collected data from children watching kids' channels ($170 million)",
+    "hook": "Cartoon channels were tracked like any other video, to sell ads.",
+    "categories": [
+      "children",
+      "advertising"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2019-09-04",
+    "collected": "Persistent identifiers (cookies and device IDs) from viewers of child-directed channels.",
+    "howObtained": "YouTube's normal tracking.",
+    "inferred": "Viewing interests for ad targeting.",
+    "done": "The FTC and New York alleged Google/YouTube collected children's identifiers without parental consent and used them for targeted ads.",
+    "affected": "Children watching YouTube.",
+    "label": "DOCUMENTED",
+    "labelNote": "FTC and New York settlement. No admission of wrongdoing.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "$170 million ($136 million to the FTC, $34 million to New York), then a record under the children's privacy law.",
+      "date": "2019-09-04"
+    },
+    "sources": [
+      {
+        "url": "https://www.ftc.gov/news-events/news/press-releases/2019/09/google-youtube-will-pay-record-170-million-alleged-violations-childrens-privacy-law",
+        "title": "Google and YouTube Will Pay Record $170 Million",
+        "publisher": "US Federal Trade Commission",
+        "type": "primary",
+        "accessed": "opened",
+        "date": "2019-09-04"
+      }
+    ],
+    "limits": "Settled.",
+    "whyItMatters": "Children's attention is valuable, and protected by law in many countries (including under India's DPDP Act).",
+    "stops": [
+      "arcade"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "musically-2019",
+    "title": "Musical.ly (now TikTok) and children's data ($5.7 million)",
+    "hook": "A lip-sync app collected children's names, emails and photos without parental consent.",
+    "categories": [
+      "children"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2019-02-27",
+    "collected": "Children's personal information.",
+    "howObtained": "App sign-up.",
+    "inferred": "Not the core issue.",
+    "done": "The FTC alleged Musical.ly collected personal information from children under 13 without parental consent.",
+    "affected": "Child users.",
+    "label": "DOCUMENTED",
+    "labelNote": "FTC settlement. No admission of wrongdoing.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "$5.7 million, then the largest children's privacy penalty.",
+      "date": "2019-02-27"
+    },
+    "sources": [
+      {
+        "url": "https://www.ftc.gov/news-events/news/press-releases/2019/02/video-social-networking-app-musically-agrees-settle-ftc-allegations-it-violated-childrens-privacy",
+        "title": "Video Social Networking App Musical.ly Agrees to Settle FTC Allegations",
+        "publisher": "US Federal Trade Commission",
+        "type": "primary",
+        "accessed": "snippet",
+        "date": "2019-02-27"
+      }
+    ],
+    "limits": "Settled.",
+    "whyItMatters": "Background to the 2024-2026 TikTok case.",
+    "stops": [
+      "arcade"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "tiktok-doj-2026",
+    "title": "US v. TikTok: children's privacy, settled for $400 million",
+    "hook": "The government alleged TikTok let millions of under-13s on and kept their data.",
+    "categories": [
+      "children"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2026-08-21",
+    "collected": "Children's personal data.",
+    "howObtained": "Account creation and use.",
+    "inferred": "Not the core issue.",
+    "done": "The Justice Department's 2024 complaint alleged TikTok knowingly allowed children under 13 to create accounts, collected their data without parental consent, and obstructed parents' deletion requests.",
+    "affected": "Children in the US.",
+    "label": "DOCUMENTED",
+    "labelNote": "DOJ settlement. TikTok/ByteDance did not admit liability; the claims remain allegations.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "$400 million: $300 million now and $100 million once the 2019 Musical.ly order is vacated.",
+      "date": "2026-08-21"
+    },
+    "sources": [
+      {
+        "url": "https://www.aljazeera.com/news/2026/8/21/tiktok-settles-with-us-justice-department-for-400m-over-child-privacy-laws",
+        "title": "TikTok settles with US Justice Department for $400m",
+        "publisher": "Al Jazeera",
+        "type": "secondary",
+        "accessed": "opened"
+      },
+      {
+        "url": "https://www.engadget.com/2241964/tiktok-will-pay-400-million-to-settle-doj-lawsuit-over-child-privacy/",
+        "title": "TikTok will pay $400 million to settle DOJ lawsuit",
+        "publisher": "Engadget",
+        "type": "secondary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "We could not open the DOJ's own release. Court approval not confirmed.",
+    "whyItMatters": "One of the largest children's privacy recoveries.",
+    "stops": [
+      "arcade"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "meta-teen-research-2021",
+    "title": "Instagram's internal research on teen girls",
+    "hook": "Leaked slides said Instagram made body image worse for some teen girls. Meta says that was misread.",
+    "categories": [
+      "children",
+      "attention",
+      "mental-health"
+    ],
+    "countries": [
+      "US",
+      "UK"
+    ],
+    "date": "2021-09",
+    "collected": "Internal survey and focus-group research by Facebook (now Meta).",
+    "howObtained": "Leaked to the Wall Street Journal ('The Facebook Files').",
+    "inferred": "Effects of Instagram on teens' wellbeing.",
+    "done": "The WSJ reported an internal slide: \"32% of teen girls said that when they felt bad about their bodies, Instagram made them feel worse.\"",
+    "affected": "Teen Instagram users.",
+    "label": "CONTESTED",
+    "labelNote": "Leaked documents REPORTED by the WSJ; Meta disputes the interpretation. The 32% applies only to girls who already felt bad about their bodies, from non-causal research.",
+    "companyResponse": {
+      "text": "Meta said the figure applied only to girls already struggling with body image, that teens reported Instagram helped on 11 of 12 wellbeing issues, and that some findings came from small focus groups.",
+      "source": "Meta newsroom, 26 September 2021"
+    },
+    "outcome": {
+      "text": "Congressional hearings; later state lawsuits (see New Mexico v. Meta).",
+      "date": "2021"
+    },
+    "sources": [
+      {
+        "url": "https://about.fb.com/news/2021/09/research-teen-well-being-and-instagram/",
+        "title": "What Our Research Really Says About Teen Well-Being and Instagram",
+        "publisher": "Meta",
+        "type": "primary",
+        "accessed": "opened",
+        "date": "2021-09-26"
+      }
+    ],
+    "limits": "We could not open the WSJ original (paywalled).",
+    "whyItMatters": "The same document can be read in different ways, so it helps to read it closely.",
+    "stops": [
+      "arcade",
+      "cafe"
+    ],
+    "myths": [
+      "one-in-three"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "nm-v-meta-2026",
+    "title": "New Mexico jury orders Meta to pay $375 million",
+    "hook": "A state jury found against Meta in a case about harms to young users.",
+    "categories": [
+      "children",
+      "attention",
+      "litigation"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2026-03-24",
+    "collected": "Not the core issue.",
+    "howObtained": "Not applicable.",
+    "inferred": "Not applicable.",
+    "done": "After a six-week trial in Santa Fe, a jury found Meta violated New Mexico consumer-protection law by misleading users about teen safety and designing its platforms in ways that put young users at risk, and imposed $375 million in civil penalties ($5,000 per violation, the state maximum).",
+    "affected": "Young users in New Mexico.",
+    "label": "DOCUMENTED",
+    "labelNote": "Jury verdict. Meta is appealing.",
+    "companyResponse": {
+      "text": "\"We respectfully disagree with the verdict and will appeal.\"",
+      "source": "Meta statement via NPR/KUNC"
+    },
+    "outcome": {
+      "text": "$375 million in civil penalties; Meta says it will appeal. A separate remedies phase before the judge was scheduled. Dozens of other states sued Meta in 2023 (ALLEGED).",
+      "date": "2026-03-24"
+    },
+    "sources": [
+      {
+        "url": "https://www.kunc.org/npr-news/2026-03-24/new-mexico-jury-says-meta-harms-childrens-mental-health-and-safety-violating-state-law",
+        "title": "New Mexico jury says Meta harms children’s mental health and safety, violating state law",
+        "publisher": "NPR (via KUNC)",
+        "type": "secondary",
+        "accessed": "snippet",
+        "date": "2026-03-24"
+      },
+      {
+        "url": "https://www.mlex.com/mlex/articles/2456595/meta-faces-375m-penalty-as-jury-finds-liability-in-new-mexico-social-media-trial",
+        "title": "Meta faces $375M penalty as jury finds liability",
+        "publisher": "MLex",
+        "type": "secondary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "Under appeal; we relied on secondary coverage for the details.",
+    "whyItMatters": "Courts are starting to treat design choices as harms.",
+    "stops": [
+      "arcade"
+    ],
+    "asOf": "2026-11-13"
+  }
+]

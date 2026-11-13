@@ -1,0 +1,442 @@
+[
+  {
+    "id": "cr-uber-lyft-2026",
+    "title": "Consumer Reports: same ride, different prices on Uber and Lyft",
+    "hook": "174 volunteers requested 'identical' rides and saw a median gap of 42%.",
+    "categories": [
+      "price-variation",
+      "ride-hail",
+      "fake-discounts"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2026-06-16",
+    "collected": "Trip requests; the companies acknowledge using personal data for promotions.",
+    "howObtained": "Normal ride requests.",
+    "inferred": "Prices and which promotions to show.",
+    "done": "Consumer Reports had 174 volunteers in March-April 2026 compare fares for matching trips. It reported a 42.4% median gap between lowest and highest quotes and found 12.4% of displayed discounts were illusory.",
+    "affected": "Ride-hail users.",
+    "label": "CONTESTED",
+    "labelNote": "Investigation REPORTED by Consumer Reports; both companies dispute the method. Press coverage often cites different figures (such as 50% or 11%). These are CR's own.",
+    "companyResponse": {
+      "text": "Uber: the findings are \"based on a flawed methodology\" and it \"does not personalize prices, period\". Lyft: \"We do not engage in surveillance pricing.\"",
+      "source": "Uber newsroom; Lyft statement via CR"
+    },
+    "outcome": {
+      "text": "Consumer Reports wrote to the FTC asking for an investigation; no FTC action found.",
+      "date": "2026-07"
+    },
+    "sources": [
+      {
+        "url": "https://www.consumerreports.org/media-room/press-releases/2026/06/consumer-reports-investigation-reveals-uber-and-lyft-ai-driven-pricing-tactics-lead-to-significantly-different-prices/",
+        "title": "Consumer Reports investigation reveals Uber and Lyft AI-driven pricing tactics",
+        "publisher": "Consumer Reports",
+        "type": "primary",
+        "accessed": "opened",
+        "date": "2026-06-16"
+      },
+      {
+        "url": "https://www.uber.com/us/en/newsroom/uber-comment-consumer-reports/",
+        "title": "Uber comment on Consumer Reports",
+        "publisher": "Uber",
+        "type": "primary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "Two requests a few seconds or metres apart are not perfectly identical. Prices change with supply and demand.",
+    "whyItMatters": "A fake 'discount' is a pricing lever you can actually check.",
+    "stops": [
+      "taxi",
+      "lab"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "pandey-caliskan-2021",
+    "title": "Chicago ride-hail fares and neighbourhood demographics",
+    "hook": "100 million trips showed fares linked to who lives in a neighbourhood.",
+    "categories": [
+      "price-variation",
+      "ride-hail",
+      "discrimination",
+      "measurement"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2021",
+    "collected": "City of Chicago public trip data (about 100 million trips) joined with census demographics.",
+    "howObtained": "Public records.",
+    "inferred": "Associations between fares and neighbourhood characteristics.",
+    "done": "Pandey and Caliskan (AAAI/ACM AIES 2021) found fares were associated with neighbourhood share of non-white residents, poverty, age and education (effect sizes from small to medium).",
+    "affected": "Chicago ride-hail users.",
+    "label": "DOCUMENTED",
+    "labelNote": "Peer-reviewed analysis. It measured NEIGHBOURHOODS, not individuals, and is correlational.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "Academic finding.",
+      "date": "2021"
+    },
+    "sources": [
+      {
+        "url": "https://arxiv.org/abs/2006.04599",
+        "title": "Disparate Impact of Artificial Intelligence Bias in Ridehailing Economy's Price Discrimination Algorithms",
+        "publisher": "arXiv / AIES 2021",
+        "type": "primary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "Cannot separate demand and surge effects from bias; not evidence of personal profiling.",
+    "whyItMatters": "An algorithm can have unequal effects even without anyone's personal data. Correlation is not intent.",
+    "stops": [
+      "taxi",
+      "lab"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "ola-uber-ccpa-2025",
+    "title": "India's CCPA notices to Ola and Uber over iPhone vs Android fares",
+    "hook": "A viral post showed ₹290.79 on Android and ₹342.47 on iPhone for the same trip.",
+    "categories": [
+      "price-variation",
+      "device",
+      "ride-hail",
+      "claims"
+    ],
+    "countries": [
+      "India"
+    ],
+    "date": "2025-01-23",
+    "collected": "Phone type.",
+    "howObtained": "Any app knows what phone it runs on.",
+    "inferred": "Claimed: willingness to pay.",
+    "done": "After viral comparisons, the Central Consumer Protection Authority issued notices to Ola and Uber about alleged differential pricing based on phone model. The minister called it a 'prima facie unfair trade practice'.",
+    "affected": "Indian ride-hail users.",
+    "label": "ALLEGED",
+    "labelNote": "Regulator notice, not a finding. In March 2025 the minister told Parliament both firms denied it. We found no published CCPA finding as of November 2026.",
+    "companyResponse": {
+      "text": "Uber: \"We do not set prices based on a rider's phone manufacturer.\" It said pickup point, ETA and drop-off differed. Ola said it follows a homogeneous pricing structure and does not differentiate by phone for identical rides.",
+      "source": "Company statements via Storyboard18 and Business Today"
+    },
+    "outcome": {
+      "text": "No published finding.",
+      "date": "2025-03"
+    },
+    "sources": [
+      {
+        "url": "https://www.storyboard18.com/brand-marketing/uber-denies-differential-pricing-based-on-phone-models-amid-ccpa-investigation-54545.htm",
+        "title": "Uber denies differential pricing based on phone models",
+        "publisher": "Storyboard18",
+        "type": "secondary",
+        "accessed": "snippet"
+      },
+      {
+        "url": "https://inc42.com/buzz/govt-orders-detailed-probe-into-ola-uber-over-differential-pricing",
+        "title": "Govt orders detailed probe into Ola, Uber over differential pricing",
+        "publisher": "Inc42",
+        "type": "secondary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "Two phones in one moment can still differ in exact location, account history and offers.",
+    "whyItMatters": "A good real example for learning how to test a claim fairly.",
+    "stops": [
+      "taxi",
+      "lab"
+    ],
+    "myths": [
+      "device-pricing"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "uber-battery-2016",
+    "title": "Uber said low-battery riders accept surge pricing more",
+    "hook": "Uber's economist said people with a dying phone are more willing to pay surge, and that Uber doesn't use it.",
+    "categories": [
+      "ride-hail",
+      "device",
+      "claims"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2016-05",
+    "collected": "Battery level, which the Uber app reads for its own power-saving mode.",
+    "howObtained": "The app.",
+    "inferred": "Urgency.",
+    "done": "Keith Chen, then Uber's head of economic research, said on NPR's Hidden Brain that riders with low batteries are more likely to accept surge prices. He said Uber does not use battery level to set prices.",
+    "affected": "Not applicable.",
+    "label": "STATEMENT",
+    "labelNote": "What an Uber insider said. There is NO evidence battery level is used in pricing.",
+    "companyResponse": {
+      "text": "Uber said it does not use battery level to set prices.",
+      "source": "Keith Chen, NPR (2016)"
+    },
+    "outcome": {
+      "text": "None.",
+      "date": "2016-05"
+    },
+    "sources": [
+      {
+        "url": "https://www.npr.org/2016/05/17/478266839/this-is-your-brain-on-uber",
+        "title": "This Is Your Brain on Uber",
+        "publisher": "NPR Hidden Brain",
+        "type": "primary",
+        "accessed": "snippet"
+      },
+      {
+        "url": "https://www.engadget.com/2016-05-20-uber-surge-pricing-battery-life.html",
+        "title": "Uber knows you'll pay more for surge pricing when your battery is low",
+        "publisher": "Engadget",
+        "type": "secondary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "The claim that battery drives prices is a myth built on this interview.",
+    "whyItMatters": "Knowing something about you is not the same as using it.",
+    "stops": [
+      "taxi"
+    ],
+    "myths": [
+      "battery-pricing"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "ccpa-advance-tip-2025",
+    "title": "India's CCPA flags 'advance tip' prompts in ride-hail apps",
+    "hook": "Tip before the ride to be matched faster, which the regulator called exploitative.",
+    "categories": [
+      "dark-patterns",
+      "ride-hail"
+    ],
+    "countries": [
+      "India"
+    ],
+    "date": "2025-05",
+    "collected": "Tipping behaviour.",
+    "howObtained": "The booking flow.",
+    "inferred": "Who will pay extra for speed.",
+    "done": "The CCPA issued a notice to Uber (and reportedly scrutinised Ola and Rapido) over prompts nudging riders to tip in advance for faster service.",
+    "affected": "Indian ride-hail users.",
+    "label": "ALLEGED",
+    "labelNote": "Regulator notice; no final order found.",
+    "companyResponse": {
+      "text": "Uber said it continues to engage with authorities and had made app changes.",
+      "source": "Press coverage"
+    },
+    "outcome": {
+      "text": "Minister Pralhad Joshi: 'Forcing or nudging users to pay a tip in advance for faster service is unethical and exploitative.' No final order found.",
+      "date": "2025-05"
+    },
+    "sources": [
+      {
+        "url": "https://www.storyboard18.com/brand-marketing/ccpa-flags-ubers-advance-tip-feature-as-unfair-trade-practice-66889.htm",
+        "title": "CCPA flags Uber's advance tip feature as unfair trade practice",
+        "publisher": "Storyboard18",
+        "type": "secondary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "Notice only.",
+    "whyItMatters": "India's dark-pattern rules applied to an everyday app.",
+    "stops": [
+      "taxi"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "dubal-wage-discrimination-2023",
+    "title": "'Algorithmic wage discrimination': how app workers describe their pay",
+    "hook": "Two drivers doing the same work can be offered different pay, and neither can see why.",
+    "categories": [
+      "workers",
+      "algorithmic-management"
+    ],
+    "countries": [
+      "US"
+    ],
+    "date": "2023",
+    "collected": "Drivers' acceptance history, hours, locations and behaviour.",
+    "howObtained": "The driver app.",
+    "inferred": "The lowest pay each driver is likely to accept, as drivers and the author describe it.",
+    "done": "Law professor Veena Dubal, drawing on about nine years of fieldwork with ride-hail drivers, argues platforms use granular data to set personalised, variable and opaque pay. She calls for a ban.",
+    "affected": "App-based workers.",
+    "label": "REPORTED",
+    "labelNote": "Legal scholarship based on ethnography (interviews and observation). It is qualitative, not a pay audit.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "Influential in policy debates.",
+      "date": "2023"
+    },
+    "sources": [
+      {
+        "url": "https://columbialawreview.org/content/on-algorithmic-wage-discrimination/",
+        "title": "On Algorithmic Wage Discrimination, 123 Colum. L. Rev. 1929",
+        "publisher": "Columbia Law Review",
+        "type": "primary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "Describes experiences and logic; does not measure pay differences statistically.",
+    "whyItMatters": "Pricing machinery can point at workers as well as customers.",
+    "stops": [
+      "taxi"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "oxford-wie-uber-pay-2025",
+    "title": "Drivers' own data shows Uber's take rising under dynamic pay",
+    "hook": "258 UK drivers used data-access rights to audit 1.5 million of their own trips.",
+    "categories": [
+      "workers",
+      "algorithmic-management",
+      "measurement",
+      "data-rights"
+    ],
+    "countries": [
+      "UK"
+    ],
+    "date": "2025-06",
+    "collected": "Trip and pay records, obtained by drivers under GDPR data-access rights.",
+    "howObtained": "Subject access requests via Worker Info Exchange.",
+    "inferred": "Changes in hourly pay and the platform's cut.",
+    "done": "Researchers (FAccT 2025) reported drivers' hourly pay fell from £22.20 to £19.06 after dynamic pay was introduced, and Uber's cut rose from about 25% to as high as 50% on some trips.",
+    "affected": "UK Uber drivers.",
+    "label": "CONTESTED",
+    "labelNote": "Peer-reviewed study, but the sample is self-selected, and Uber disputes the figures.",
+    "companyResponse": {
+      "text": "Uber: \"We do not recognise the figures in this report.\"",
+      "source": "Uber statement via TaxiPoint"
+    },
+    "outcome": {
+      "text": "Academic finding.",
+      "date": "2025-06"
+    },
+    "sources": [
+      {
+        "url": "https://arxiv.org/abs/2506.15278",
+        "title": "Algorithmic pay audit of Uber drivers (FAccT 2025)",
+        "publisher": "arXiv / ACM FAccT",
+        "type": "primary",
+        "accessed": "snippet"
+      },
+      {
+        "url": "https://www.taxi-point.co.uk/post/uber-rejects-university-of-oxford-study-that-finds-drivers-see-drop-in-pay-under-dynamic-pricing",
+        "title": "Uber rejects University of Oxford study",
+        "publisher": "TaxiPoint",
+        "type": "secondary",
+        "accessed": "opened"
+      }
+    ],
+    "limits": "258 volunteers may not represent all drivers.",
+    "whyItMatters": "Data-access rights let outsiders audit a black box. India's DPDP Act is due to give similar rights from about May 2027.",
+    "stops": [
+      "taxi"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "fairwork-india-2024",
+    "title": "Fairwork India ratings of gig platforms",
+    "hook": "Ola, Uber and Porter scored 0 out of 10 on fair-work principles.",
+    "categories": [
+      "workers",
+      "algorithmic-management"
+    ],
+    "countries": [
+      "India"
+    ],
+    "date": "2024-10",
+    "collected": "Not applicable (ratings).",
+    "howObtained": "Researchers assess evidence on pay, conditions, contracts, management and representation.",
+    "inferred": "Not applicable.",
+    "done": "Fairwork India 2024 rated 11 platforms using desk research, platform evidence and interviews with 440 workers. BigBasket, Swiggy, Urban Company and Zomato scored highest at 6/10; Ola, Porter and Uber scored 0. No platform showed that all its workers earn a local living wage after costs.",
+    "affected": "Indian gig workers.",
+    "label": "REPORTED",
+    "labelNote": "Academic-led ratings project with a published method.",
+    "companyResponse": "none found",
+    "outcome": {
+      "text": "Ratings published. Rajasthan (2023) and Karnataka (2025) have since passed gig-worker welfare laws.",
+      "date": "2024-10"
+    },
+    "sources": [
+      {
+        "url": "https://citapp.iiitb.ac.in/wp-content/uploads/2024/10/Fairwork-India-2024-Report.pdf",
+        "title": "Fairwork India Ratings 2024 report (PDF)",
+        "publisher": "Fairwork India / IIIT Bangalore",
+        "type": "primary",
+        "accessed": "snippet"
+      },
+      {
+        "url": "https://fairwork.oii.ox.ac.uk/en/fw/blog/fairwork-indias-sixth-report-examines-the-changing-nature-of-platform/",
+        "title": "Fairwork India’s sixth report examines the changing nature of platform work",
+        "publisher": "Fairwork (Oxford Internet Institute)",
+        "type": "secondary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "A score reflects evidence the platform provided or researchers found; low scores can mean no evidence offered.",
+    "whyItMatters": "Algorithmic management is a labour issue as well as a technology issue.",
+    "stops": [
+      "taxi"
+    ],
+    "asOf": "2026-11-13"
+  },
+  {
+    "id": "uber-greyball-2017",
+    "title": "Uber's 'Greyball' tool evaded regulators",
+    "hook": "Uber used data about users to spot city officials and show them a fake version of the app.",
+    "categories": [
+      "ride-hail",
+      "state-use",
+      "profiling"
+    ],
+    "countries": [
+      "US",
+      "Global"
+    ],
+    "date": "2017-03-03",
+    "collected": "User data such as location, payment details and app behaviour.",
+    "howObtained": "The Uber app.",
+    "inferred": "Whether a user was likely to be a regulator or enforcement officer.",
+    "done": "The New York Times reported Uber used 'Greyball' to identify suspected officials and show them phantom cars or deny them rides. A Portland audit found 17 blocked accounts, 16 of them officials.",
+    "affected": "City officials and enforcement staff.",
+    "label": "DOCUMENTED",
+    "labelNote": "Reported by the NYT; Uber acknowledged the tool and said it would stop using it against regulators (company admission).",
+    "companyResponse": {
+      "text": "Uber's chief security officer said the company was \"expressly prohibiting\" its use to target regulators.",
+      "source": "Uber statement, March 2017"
+    },
+    "outcome": {
+      "text": "A federal grand-jury subpoena was reported in 2017; no public outcome found.",
+      "date": "2017"
+    },
+    "sources": [
+      {
+        "url": "https://www.nytimes.com/2017/03/03/technology/uber-greyball-program-evade-authorities.html",
+        "title": "How Uber Deceives the Authorities Worldwide",
+        "publisher": "The New York Times",
+        "type": "primary",
+        "accessed": "snippet"
+      },
+      {
+        "url": "https://fortune.com/2017/09/15/uber-portland-greyball/",
+        "title": "Uber used Greyball in Portland",
+        "publisher": "Fortune",
+        "type": "secondary",
+        "accessed": "snippet"
+      }
+    ],
+    "limits": "No public legal resolution of Greyball.",
+    "whyItMatters": "Profiling can be pointed at anyone, including regulators.",
+    "stops": [
+      "taxi"
+    ],
+    "asOf": "2026-11-13"
+  }
+]
