@@ -26,7 +26,7 @@ npm run dev        # development
 npm run build      # validate + generate SOURCES.md + type-check + build to dist/
 npm run preview    # serve the production build
 ```
-The site is static (`dist/`). `.github/workflows/pages.yml` deploys it to GitHub Pages on every push to `main` (Settings → Pages → Source: GitHub Actions).
+The site is static: `npm run build` produces a `dist/` folder that any static host (for example Netlify or Vercel) can serve as-is. It is not deployed anywhere at the moment.
 
 ## Credits
 The Stack Shift rigged dealer is a simplified, original illustration of rules reported by Ayo Omolewa (https://ayoships.com/breakdowns/block-blast). All 3D geometry is procedural. Facts are as of 13 November 2026.
