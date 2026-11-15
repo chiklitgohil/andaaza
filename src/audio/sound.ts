@@ -370,5 +370,14 @@ export function setSound(on: boolean) {
   else { target(master.gain, 0, 0.1); sfx.adStop(); clearInterval(buzzTimer); setTimeout(() => { if (!enabled) void ctx?.suspend(); }, 600); }
 }
 
+// Sound is on by default, but browsers only let a page play sound after the visitor's first click, tap or key press.
+// Building the audio graph waits for that moment (scrolling alone does not count).
+const GESTURES = ['pointerdown', 'keydown', 'touchend'] as const;
+function firstGesture() {
+  GESTURES.forEach((e) => removeEventListener(e, firstGesture, true));
+  if (useStory.getState().sound && !enabled) setSound(true);
+}
+GESTURES.forEach((e) => addEventListener(e, firstGesture, true));
+
 // dev only: lets the test harness read levels (stripped from the production build)
 if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__snd = { get ctx() { return ctx; }, get master() { return master; }, layer, story: useStory };

@@ -21,9 +21,28 @@ export function Epilogue() {
   const guess = journal['ride-guess'];
   const waitChoice = journal['wait-choice'];
   const GUESS: Record<string, string> = { same: 'Same price', stranger: 'He pays more', arun: 'Arun pays more', cant: 'Can’t tell from two screens' };
+  const [stage, setStage] = useState<'quote' | 'day'>('quote');
+
+  if (stage === 'quote') {
+    return (
+      <div className="epilogue twist" role="region" aria-label="A closing thought">
+        <figure className="twist-q">
+          <blockquote>Individuals have become &ldquo;dividuals,&rdquo; and masses, samples, data, markets, or &ldquo;banks.&rdquo;</blockquote>
+          <figcaption>Gilles Deleuze, philosopher · &ldquo;Postscript on the Societies of Control&rdquo;, 1990</figcaption>
+        </figure>
+        <p className="twist-gloss">He wrote this in 1990, years before smartphones.</p>
+        <p className="twist-gloss">Today you met three apps, and each kept its own piece of Arun: a face-match score, an acceptance rate, a battery level, minutes of play. Each made its <i>andaaza</i> from its piece. None of them was looking at the whole person.</p>
+        <button className="btn" autoFocus onClick={() => setStage('day')}>See Arun&rsquo;s day, the way the apps saw it →</button>
+      </div>
+    );
+  }
 
   return (
     <div className="epilogue" role="region" aria-label="Your day">
+      <figure className="twist-q small">
+        <blockquote>Individuals have become &ldquo;dividuals,&rdquo; and masses, samples, data, markets, or &ldquo;banks.&rdquo;</blockquote>
+        <figcaption>Gilles Deleuze, &ldquo;Postscript on the Societies of Control&rdquo; (1990). English translation in <i>October</i> 59, 1992. <i>Dividual</i>: something that can be divided, split into data points, scores and segments.</figcaption>
+      </figure>
       <p className="kicker">00:10 · end of the day</p>
       <h2>One person. Three apps. Three different things he was.</h2>
 
@@ -122,6 +141,7 @@ export function Epilogue() {
                 <ul className="small">
                   <li>3D models: Kenney (kenney.nl), released under CC0.</li>
                   <li>Sound: synthesised live in your browser. There are no audio files and no recordings.</li>
+                  <li>Closing quote: Gilles Deleuze, &ldquo;Postscript on the Societies of Control&rdquo;, first published in <i>L&rsquo;Autre journal</i> (May 1990); English translation in <i>October</i>, vol. 59 (Winter 1992), pp. 3&ndash;7.</li>
                   <li>The hidden rules in Stack re-create, in simplified form, what Ayo Omolewa reported finding in a popular puzzle game (<a href="https://ayoships.com/breakdowns/block-blast" target="_blank" rel="noreferrer noopener">ayoships.com/breakdowns/block-blast</a>). Credit for that analysis is his.</li>
                   <li>Research and code were developed with the help of an AI assistant (Claude) and checked against sources. Mistakes are possible; the sources are listed so you can check.</li>
                 </ul>

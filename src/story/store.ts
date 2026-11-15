@@ -12,7 +12,7 @@ interface State {
   actId: string | null;      // the act currently buzzing / open
   done: Record<string, boolean>;
   reducedMotion: boolean;
-  sound: boolean;            // off until the visitor turns it on
+  sound: boolean;            // on by default; it starts at the visitor's first click (a browser rule)
   journal: Record<string, unknown>;   // choices, guesses and results for the "Your day" recap
   setProgress: (p: number) => void;
   buzz: (id: string) => void;
@@ -32,7 +32,7 @@ export const useStory = create<State>((set, get) => ({
   actId: null,
   done: {},
   reducedMotion: reduced(),
-  sound: false,
+  sound: true,
   journal: {},
   setProgress: (p) => set({ progress: p }),
   buzz: (id) => set({ phase: 'buzz', actId: id }),

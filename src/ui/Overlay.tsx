@@ -8,8 +8,8 @@ import { getRequests, subscribe } from './requestWatch';
 import { Epilogue } from './Epilogue';
 import { setSound } from '../audio/sound';
 
-function toggleSound(on?: boolean) {
-  const next = on ?? !useStory.getState().sound;
+function toggleSound() {
+  const next = !useStory.getState().sound;
   setSound(next);
   useStory.setState({ sound: next });
 }
@@ -86,20 +86,8 @@ function Narration() {
           <span className="muted"> · this chapter is being built. Keep scrolling.</span>
         </div>
       )}
-      {progress < 0.01 && <SoundInvite />}
       {progress < 0.01 && <div className="scroll-hint" aria-hidden="true">scroll ↓</div>}
     </>
-  );
-}
-
-function SoundInvite() {
-  const sound = useStory((s) => s.sound);
-  if (sound) return null;
-  return (
-    <div className="sound-invite">
-      <span>🎧 Best with sound</span>
-      <button className="btn small" onClick={() => toggleSound(true)}>Turn sound on</button>
-    </div>
   );
 }
 

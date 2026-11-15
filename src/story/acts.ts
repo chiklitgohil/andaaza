@@ -50,6 +50,7 @@ export const BEATS: Beat[] = [
   { at: atTime('21:20'), time: '21:20', lines: ['You push the scooter. It is heavier with a flat.'] },
   { at: atTime('21:30'), time: '21:30', lines: ['The puncture shop is pulling its shutter down.', 'Home is 6 kilometres away. Your phone: 6%.'] },
   { at: atTime('22:00'), time: '22:00', lines: ['The scooter stays chained outside the shop.', 'In the back seat, the wipers keep time.'] },
+  { at: atTime('22:22'), time: '22:22', lines: ['Mahesh’s phone pings on the dashboard.', 'His next request arrives before you have even got out.'] },
   { at: atTime('22:52'), time: '22:52', lines: ['Your room. Shoes off. The fan clicks.', 'Your legs are still riding. One game, then sleep.'] },
   { at: atTime('00:10'), time: '00:10', lines: ['The city keeps ordering.', 'Tomorrow, you go online again at 06:50.'] },
 ];
