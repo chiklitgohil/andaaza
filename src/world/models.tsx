@@ -26,7 +26,7 @@ export const PEOPLE = ['male-a', 'male-b', 'male-c', 'male-d', 'male-e', 'male-f
 export const ARUN = M('characters', 'character-male-f');
 
 export function useModel(url: string) {
-  return useGLTF(url, false) as unknown as { scene: THREE.Group; animations: THREE.AnimationClip[] };
+  return useGLTF(url, false, false) as unknown as { scene: THREE.Group; animations: THREE.AnimationClip[] };
 }
 
 /** Materials that should glow warm at night (lit windows and shop fronts). */
@@ -76,4 +76,4 @@ export const mat4 = (x: number, y: number, z: number, rotY: number, s: number) =
   new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotY), new THREE.Vector3(s, s, s));
 
 /** Preload everything we use (from this site's own files). */
-[...COMMERCIAL, ...BACKGROUND, ...SKYSCRAPERS, ...HOUSES, ...CARS, ARUN].forEach((u) => useGLTF.preload(u, false));
+[...COMMERCIAL, ...BACKGROUND, ...SKYSCRAPERS, ...HOUSES, ...CARS, ARUN].forEach((u) => useGLTF.preload(u, false, false));

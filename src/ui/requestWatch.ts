@@ -61,6 +61,6 @@ export async function tryForbiddenRequest(): Promise<string> {
     await fetch('https://example.com/should-be-blocked', { mode: 'no-cors' });
     return 'The request was NOT blocked. (You are probably running the development server, which has no security policy.)';
   } catch {
-    return 'Blocked. The page’s security policy (connect-src ‘none’) refused to send it.';
+    return 'Blocked. The page’s security policy (connect-src ‘self’: this site only) refused to send it.';
   }
 }

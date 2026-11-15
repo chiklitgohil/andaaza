@@ -12,7 +12,7 @@ An interactive 3D story about what apps **collect**, what they **infer**, and ho
 Arun, his city, every person and price, and the apps (Flopcart, Gaadi, Stack) are invented. Flopcart is a joke name, not Flipkart. The mechanisms they show are drawn from real, sourced cases.
 
 ## Privacy
-No analytics, trackers, cookies or third-party requests. The production build injects a Content-Security-Policy with `connect-src 'none'`, and an on-page counter shows every network request. The site never uses the camera, microphone or location. Sound is on by default (it starts at the first click; the button at the top right turns it off) and is synthesised in the browser.
+No analytics, trackers, cookies or third-party requests. The production build injects a Content-Security-Policy with `connect-src 'self'` (the page can load only its own files; nothing can be sent to any other site), and an on-page counter shows every network request. The site never uses the camera, microphone or location. Sound is on by default (it starts at the first click; the button at the top right turns it off) and is synthesised in the browser.
 
 ## Run
 ```

@@ -2,7 +2,8 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // Content-Security-Policy injected ONLY into the production build.
-// connect-src 'none' means the page cannot fetch, XHR, WebSocket or beacon anywhere.
+// connect-src 'self' means the page can fetch only its own files (the 3D models); no fetch, XHR,
+// WebSocket or beacon can reach any other site.
 // (The dev server needs a WebSocket for hot reload, so dev is exempt.)
 const CSP = [
   "default-src 'self'",
@@ -10,7 +11,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'none'",
+  "connect-src 'self'",
   "media-src 'none'",
   "object-src 'none'",
   "frame-src 'none'",
