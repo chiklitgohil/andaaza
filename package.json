@@ -1,15 +1,11 @@
 {
-  "name": "glass-city",
+  "name": "the-last-mile",
   "version": "1.0.0",
-  "description": "The Glass City: an interactive 3D look at the hidden machinery of everyday apps (STS project)",
+  "description": "The Last Mile: an interactive 3D story. You are Arun, a delivery rider in Ahmedabad (STS project)",
   "scripts": {
     "dev": "vite",
-    "validate": "tsx scripts/validate-data.ts",
-    "sources": "tsx scripts/gen-sources.ts",
-    "prebuild": "npm run validate && npm run sources",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "check-links": "tsx scripts/check-links.ts"
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",

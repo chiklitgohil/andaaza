@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Both Sides of the Screen — play, then see the black box</title>
+<style>
+:root{--bg:#101114;--ink:#eee9df;--mute:#9d988d;--amber:#f0a23c;--red:#e0604a;--grn:#7fd1a0;--pan:#181a1f;--line:#ffffff26;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+header{padding:14px 18px;border-bottom:1px solid var(--line)}h1{font:400 26px Georgia,serif;margin:0}header p{margin:4px 0 0;color:var(--mute);font-size:13px}
+.wrap{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:18px;padding:16px;max-width:1200px;margin:auto}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}}
+h2{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;margin:0 0 10px;color:var(--amber)}
+.side{background:var(--pan);border:1px solid var(--line);border-radius:8px;padding:14px}
+.score{display:flex;justify-content:space-between;font:600 18px ui-monospace,Menlo,monospace;margin-bottom:8px}
+#board{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;background:#0a0b0d;padding:6px;border-radius:6px;touch-action:none;aspect-ratio:1;width:100%}
+.c{background:#23262d;border-radius:3px;aspect-ratio:1}.c.pv{background:#7fd1a066}.c.bad{background:#e0604a55}
+#tray{display:flex;justify-content:space-around;align-items:center;min-height:120px;margin-top:10px;touch-action:none}
+.pc{padding:8px;border-radius:6px;border:2px solid transparent;cursor:grab;background:none;color:inherit;touch-action:none}.pc[aria-pressed=true]{border-color:var(--amber)}.pc:disabled{opacity:.15;cursor:default}
+.pg{display:grid;gap:2px}.pg i{display:block;width:22px;height:22px;border-radius:3px}.pg i.e{background:none}
+#ghost{position:fixed;pointer-events:none;z-index:50;opacity:.85}
+.msg{min-height:22px;color:var(--mute);font-size:13px;margin-top:6px}
+.btn{font:inherit;color:var(--ink);background:#ffffff10;border:1px solid var(--line);border-radius:5px;padding:8px 12px;cursor:pointer}.btn:hover:not(:disabled){border-color:var(--amber)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.over{display:none;border:1px solid var(--red);border-radius:6px;padding:12px;margin-top:10px;background:#e0604a14}.over.on{display:block}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.tag{display:inline-block;font:600 10px ui-monospace,Menlo,monospace;letter-spacing:.1em;padding:1px 6px;border:1px solid;border-radius:3px;margin-right:5px}.r{color:var(--grn)}.s{color:var(--amber)}
+.box h3{font:600 13px system-ui;margin:16px 0 6px}.box{font-size:14px}
+.rule{border:1px solid var(--line);border-radius:6px;padding:10px;margin:8px 0}.rule b{font:600 12.5px ui-monospace,Menlo,monospace}
+.ck{display:flex;gap:8px;align-items:center;font-size:13px;margin:3px 0}.ck span{display:inline-block;min-width:22px;height:22px;line-height:20px;text-align:center;border:1px solid;border-radius:50%}.ok{color:var(--grn)}.no{color:var(--mute)}
+.bar{height:8px;background:#0008;border-radius:4px;overflow:hidden;margin:4px 0}.bar i{display:block;height:100%;background:var(--amber)}
+#log{font:12px/1.45 ui-monospace,Menlo,monospace;background:#0a0b0d;border-radius:6px;padding:8px;max-height:200px;overflow:auto}#log div{padding:2px 0;border-bottom:1px solid #ffffff10}.L{color:var(--red)}.E{color:var(--grn)}.H{color:var(--amber)}
+label{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0;font-size:13px}select,input[type=number]{font:inherit;background:#0a0b0d;color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 6px}input[type=number]{width:80px}
+.note{font-size:12.5px;color:var(--mute);border-left:2px solid var(--line);padding-left:10px;margin-top:10px}a{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.stats b{display:block;font:400 24px Georgia,serif;color:var(--amber)}
+</style></head><body>
+<header><h1>Both sides of the screen</h1><p>Play on the left as an ordinary player. On the right, watch the rules a player is never shown. An educational simulation, not the real app.</p></header>
+<div class="wrap">
+<section class="side" aria-label="The game">
+<h2>What you see</h2>
+<div class="score"><span>Score <b id="sc">0</b></span><span>Best <b id="bs">0</b></span></div>
+<div id="board" role="grid" aria-label="8 by 8 board"></div>
+<div id="tray" role="group" aria-label="Your three pieces"></div>
+<div class="msg" id="msg">Drag a piece onto the board, or tap a piece and then tap the board. Fill a row or column to clear it.</div>
+<div class="over" id="over" role="alert"><b>No room for your pieces.</b><div class="row"><button class="btn" id="rev">▶ Watch an ad to revive (simulated)</button><button class="btn" id="again">New game</button></div><div id="revNote" class="msg"></div></div>
+<div class="row"><button class="btn" id="newg">New game</button></div>
+</section>
+<section class="side box" aria-label="The black box" aria-live="off">
+<h2>What you don’t see · the black box</h2>
+<p><span class="tag s">SIMULATION</span>These rules re-create what researcher Ayo Omolewa reported finding inside the Block Blast app (Oct 2026). The code here is original and simplified; numbers marked <span class="tag r">REPORTED</span> come from his write-up. Nothing here proves how the real app behaves for you.</p>
+<div class="stats"><div><b id="sH">0</b>hands dealt</div><div><b id="sL">0</b>lethal hands</div><div><b id="sP">–</b>last result</div></div>
+
+<h3>Rule 1 · “High-value ad” trap</h3><div class="rule" id="r1"></div>
+<h3>Rule 2 · Past your record</h3><div class="rule" id="r2"></div>
+<h3>Rule 3 · Fast hands &amp; losing streaks</h3><div class="rule" id="r3"></div>
+<h3>Your price tag</h3>
+<div class="rule"><label>Country <select id="cty"><option value="25.48">United States</option><option value="8.08">Brazil</option><option value="5.59">India</option></select></label>
+<div id="price"></div><p class="note"><span class="tag r">REPORTED</span>Ad value for a made-up new iPhone 15 player with a first score of 1,000: US 25.48, Brazil 8.08, India 5.59 (per 1,000 ads). The ad prices the demo rolls around that value are invented.</p></div>
+
+<h3>Deal log: every hand, and who asked for it</h3><div id="log" tabindex="0" aria-label="Deal log"></div>
+
+<h3>Controls (try them)</h3>
+<div class="rule">
+<label><input type="checkbox" id="rules" checked> Hidden rules ON (untick for a plain random-but-fair game)</label>
+<label><input type="checkbox" id="net" checked> Ad network connected (untick to simulate offline or a phone-wide ad blocker)</label>
+<label>Your best score before today <input type="number" id="pb" value="300" min="0" step="50"></label>
+<label>Rule-1 score step <input type="number" id="stp" value="500" min="100" step="100"> <span class="mute">reported arms: 500, 750, 1000</span></label>
+<label>Rewarded ads you finished out of your last 3 <select id="hist"><option>3</option><option>2</option><option>1</option><option>0</option></select></label>
+<div class="row"><button class="btn" id="hv">Load a high-value ad for the next deal</button></div></div>
+
+<div class="note"><b>How to read this.</b> <span class="tag r">REPORTED</span> by Omolewa: a rule that waits until your last three rewarded ads were finished, a loaded ad is worth at least 3.5× your last, and you are past your record by a set step, then asks for a “lethal” hand. Another rule rolls 20% per deal once you are 10% past your record. Others ask for hard pieces when you play fast near your record, or easy pieces after losses. <span class="tag s">SIMULATION</span> Thresholds, timings, ad prices and the game itself are my re-creation. Source, with code and evidence bundles: <a href="https://ayoships.com/breakdowns/block-blast" target="_blank" rel="noopener">ayoships.com/breakdowns/block-blast</a> (credit: Ayo Omolewa). These are one researcher’s findings, not an independent audit, and the company’s response is not included here.</div>
+</section></div>
+<div id="ghost" aria-hidden="true"></div>
+<script>
+const $=s=>document.querySelector(s);
+const SH=["1","11","1/1","111","1/1/1","1111","1/1/1/1","11111","1/1/1/1/1","11/11","111/111/111","10/11","01/11","11/10","11/01","111/111","11/11/11","011/110","110/011","111/010","100/100/111","111/100/100"].map(s=>{const rows=s.split("/"),c=[];rows.forEach((r,i)=>[...r].forEach((ch,j)=>ch==="1"&&c.push([i,j])));return{rows,c,h:rows.length,w:rows[0].length,n:c.length}});
+const EASY=[0,1,2,3,4,9,11,12,13,14],HARD=[7,8,10,15,16,20,21,17,18,19],ALL=SH.map((_,i)=>i);
+const hue=i=>`hsl(${(i*47)%360} 60% 55%)`,rnd=a=>a[Math.floor(Math.random()*a.length)];
+const fits=(b,s,r,c)=>s.c.every(([i,j])=>{const y=r+i,x=c+j;return y>=0&&y<8&&x>=0&&x<8&&!b[y*8+x]});
+const any=(b,s)=>{for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(fits(b,s,r,c))return true;return false};
+function put(b,s,r,c,v){const n=b.slice();s.c.forEach(([i,j])=>n[(r+i)*8+c+j]=v);const rm=new Set();let lines=0;for(let k=0;k<8;k++){let row=1,col=1;for(let m=0;m<8;m++){if(!n[k*8+m])row=0;if(!n[m*8+k])col=0}if(row){lines++;for(let m=0;m<8;m++)rm.add(k*8+m)}if(col){lines++;for(let m=0;m<8;m++)rm.add(m*8+k)}}rm.forEach(i=>n[i]=0);return{b:n,lines}}
+const PM=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+function solve(b0,ids,budget){let nodes=0,found=false,over=false;const rec=(b,o,k)=>{if(found||over)return;if(k===3){found=true;return}const s=SH[ids[o[k]]];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(fits(b,s,r,c)){if(++nodes>budget){over=true;return}rec(put(b,s,r,c,1).b,o,k+1);if(found||over)return}};for(const o of PM){rec(b0,o,0);if(found||over)break}return{ok:found,nodes,over}}
+const trip=p=>[rnd(p),rnd(p),rnd(p)];
+function genSolvable(b,p){for(let t=0;t<80;t++){const h=trip(p),r=solve(b,h,40000);if(r.ok||r.over)return h}return trip(p)}
+function genLethal(b){for(let t=0;t<250;t++){const h=trip(ALL),f=h.filter(i=>any(b,SH[i])).length;if(f!==2)continue;const r=solve(b,h,9000);if(!r.ok&&!r.over)return{h,nodes:r.nodes}}return null}
+/* state */
+let G,log=[],stats={H:0,L:0,last:"–"},sel=null,drag=null;
+const val=id=>+$("#"+id).value;
+function newGame(){const prev=G;const lossStreak=prev?(prev.score<prev.bestStart?prev.lossStreak+1:0):0;
+G={b:Array(64).fill(0),hand:[],cols:[],score:0,bestStart:val("pb"),revives:0,fired:false,times:[],lossStreak,lastDeal:null,over:false,loaded:null,lastEcpm:+$("#cty").value,recent:[]};
+setHist();G.hist=null;$("#over").classList.remove("on");log=[];stats={H:0,L:0,last:"–"};deal(false,true);render()}
+const setHist=()=>{const n=+$("#hist").value;G.recent=[0,1,2].map(i=>i<n)};
+const best=()=>Math.max(G.bestStart,G.score);
+const thr=()=>G.bestStart+val("stp")*(1+G.revives);
+const randn=()=>Math.sqrt(-2*Math.log(1-Math.random()))*Math.cos(2*Math.PI*Math.random());
+function add(cls,t){log.unshift(`<div class="${cls}">${t}</div>`);log=log.slice(0,40)}
+function deal(isRevive,first){const base=+$("#cty").value,on=$("#rules").checked;
+if(!G.forced)G.loaded=$("#net").checked?base*Math.exp(randn()*.9):null;G.forced=false;
+let h,kind="normal",why="no rule asked for anything special",nodes=0;const n=stats.H+1;
+const sc=G.score,bst=best(),avg=G.times.length>=3?G.times.slice(-6).reduce((a,x)=>a+x,0)/Math.min(6,G.times.length):null;
+let want=null;
+if(on&&!isRevive&&!first){
+const c1=G.recent.every(Boolean),c2=G.loaded!=null&&G.loaded>=3.5*G.lastEcpm,c3=sc>=thr();
+if(c1&&c2&&c3&&!G.fired){want="lethal";why=`Rule 1: last 3 ads finished, loaded ad ${(G.loaded/G.lastEcpm).toFixed(1)}× your last, score ${sc} ≥ ${thr()}`;G.fired=true}
+else if(sc>=G.bestStart*1.1&&G.bestStart>0){const roll=Math.random()*100;if(roll<20){want="lethal";why=`Rule 2: past record +10%, rolled ${roll.toFixed(0)} < 20`}else why=`Rule 2 rolled ${roll.toFixed(0)} ≥ 20, passed`}
+if(!want&&avg!==null&&avg<4.2&&sc>=.93*bst){want="hard";why=`Rule 3: fast hands (avg ${avg.toFixed(1)}s < 4.2s) near record`}
+if(!want&&G.lossStreak>=2){want="easy";why=`Rule 3: ${G.lossStreak} games in a row below record, easier pieces`}}
+if(want==="lethal"){const L=genLethal(G.b);if(L){h=L.h;kind="LETHAL";nodes=L.nodes}else{kind="normal";why+=" → engine found no lethal set, fell back to a normal hand"}}
+else if(want==="hard"){h=genSolvable(G.b,HARD);kind="hard"}else if(want==="easy"){h=genSolvable(G.b,EASY);kind="easy"}
+if(!h)h=genSolvable(G.b,ALL);
+G.hand=h.slice();G.cols=h.slice();G.t0=performance.now();G.lastDeal={kind,why,nodes};stats.H=n;if(kind==="LETHAL")stats.L++;stats.last=kind;
+add(kind==="LETHAL"?"L":kind==="normal"?"E":"H",`#${n} → ${kind.toUpperCase()}${kind==="LETHAL"?` (0 of ${nodes} placements finish it)`:""} · ${why}`)}
+function render(){
+const bd=$("#board");bd.innerHTML="";for(let i=0;i<64;i++){const d=document.createElement("div");d.className="c";d.dataset.i=i;if(G.b[i])d.style.background=hue(G.b[i]);d.setAttribute("role","gridcell");bd.appendChild(d)}
+const tr=$("#tray");tr.innerHTML="";G.hand.forEach((id,k)=>{const b=document.createElement("button");b.className="pc";b.dataset.k=k;b.disabled=id==null;b.setAttribute("aria-label","Piece "+(k+1));b.setAttribute("aria-pressed",sel===k);if(id!=null)b.appendChild(grid(id,22));tr.appendChild(b)});
+$("#sc").textContent=G.score;$("#bs").textContent=best();bb()}
+function grid(id,sz){const s=SH[id],g=document.createElement("div");g.className="pg";g.style.gridTemplateColumns=`repeat(${s.w},${sz}px)`;s.rows.forEach(r=>[...r].forEach(ch=>{const i=document.createElement("i");i.style.width=i.style.height=sz+"px";if(ch==="1")i.style.background=hue(id+1);else i.className="e";g.appendChild(i)}));return g}
+function bb(){const c1=G.recent.every(Boolean),ratio=G.loaded!=null?G.loaded/G.lastEcpm:0,c2=G.loaded!=null&&ratio>=3.5,c3=G.score>=thr(),on=$("#rules").checked;
+const ck=(ok,t)=>`<div class="ck"><span class="${ok?"ok":"no"}" aria-hidden="true">${ok?"✓":"–"}</span>${t} <em class="mute">${ok?"(met)":"(not met)"}</em></div>`;
+$("#r1").innerHTML=`<b>RewardHighValueAdHarvest-style rule</b> ${on?"":'<em class="mute">(switched off)</em>'}${ck(c1,"Last 3 rewarded ads finished")}${ck(c2,G.loaded==null?"A rewarded ad is loaded: none (offline / blocked)":`Loaded ad ≥ 3.5× your last: ${ratio.toFixed(1)}×`)}${ck(c3,`Score ${G.score} ≥ record + step = ${thr()}`)}<div class="bar"><i style="width:${Math.min(100,G.score/thr()*100)}%"></i></div><span class="mute">All three at the next deal → a hand chosen because no placement can finish it.</span>`;
+const line=Math.ceil(G.bestStart*1.1);$("#r2").innerHTML=`<b>PersonalMarginBreak-style rule</b>${ck(G.score>=line,`Score ${G.score} ≥ record +10% = ${line}`)}<span class="mute">Past that line, every deal has a 20% chance of a lethal hand.</span>`;
+const avg=G.times.length>=3?(G.times.slice(-6).reduce((a,x)=>a+x,0)/Math.min(6,G.times.length)):null;
+$("#r3").innerHTML=`${ck(avg!==null&&avg<4.2&&G.score>=.93*best(),`Fast hands: avg ${avg===null?"–":avg.toFixed(1)+"s"} per set (< 4.2s) and ≥ 93% of record → hard pieces`)}${ck(G.lossStreak>=2,`Losing streak ${G.lossStreak} (≥ 2 → easier pieces)`)}`;
+$("#price").innerHTML=`Your ad value ≈ <b>${(+$("#cty").value).toFixed(2)}</b> · loaded ad now: <b>${G.loaded==null?"none":G.loaded.toFixed(2)}</b> · your last ad: <b>${G.lastEcpm.toFixed(2)}</b>`;
+$("#log").innerHTML=log.join("");$("#sH").textContent=stats.H;$("#sL").textContent=stats.L;$("#sP").textContent=stats.last}
+/* play */
+function target(e,id){const r=$("#board").getBoundingClientRect(),cs=r.width/8,s=SH[id],lift=e.pointerType==="touch"?cs*1.4:0;return{r:Math.round((e.clientY-r.top-lift)/cs-s.h/2),c:Math.round((e.clientX-r.left)/cs-s.w/2)}}
+function preview(t,id){document.querySelectorAll(".c.pv,.c.bad").forEach(x=>x.classList.remove("pv","bad"));if(!t)return;const s=SH[id],ok=fits(G.b,s,t.r,t.c);s.c.forEach(([i,j])=>{const y=t.r+i,x=t.c+j;if(y>=0&&y<8&&x>=0&&x<8)$("#board").children[y*8+x].classList.add(ok?"pv":"bad")})}
+function place(k,t){const id=G.hand[k],s=SH[id];if(!t||!fits(G.b,s,t.r,t.c)){return false}const o=put(G.b,s,t.r,t.c,id+1);G.b=o.b;G.score+=s.n+(o.lines?10*o.lines*o.lines:0);G.hand[k]=null;sel=null;
+if(G.hand.every(x=>x==null)){G.times.push((performance.now()-G.t0)/1000);deal(false)}
+render();$("#msg").textContent=o.lines?`Cleared ${o.lines} line${o.lines>1?"s":""}!`:"";check();return true}
+function check(){if(G.over)return;const alive=G.hand.some(id=>id!=null&&any(G.b,SH[id]));if(alive)return;G.over=true;
+const ld=G.lastDeal;$("#over").classList.add("on");$("#sP").textContent=ld.kind;
+$("#revNote").innerHTML=ld.kind==="LETHAL"?`<b>Behind the screen:</b> this hand was requested as a <b>lethal</b> set (${ld.why}). The engine searched ${ld.nodes} placements across all orders and found no way to place all three.`:`<b>Behind the screen:</b> the hand dealt was ${ld.kind}; the engine could place all three when it dealt them (${ld.why}). Your placements after that used up the room.`;
+add("L",`GAME OVER at ${G.score}. Last hand: ${ld.kind}`);$("#rev").disabled=!$("#net").checked||G.loaded==null;if($("#rev").disabled)$("#revNote").innerHTML+=" <br>Revive unavailable: no rewarded ad is loaded.";bb()}
+$("#tray").addEventListener("pointerdown",e=>{const p=e.target.closest(".pc");if(!p||p.disabled||G.over)return;const k=+p.dataset.k;sel=sel===k&&!drag?null:k;drag={k,moved:false};const id=G.hand[k],gh=$("#ghost");gh.innerHTML="";gh.appendChild(grid(id,($("#board").getBoundingClientRect().width/8)-5));gh.style.display="none";try{p.setPointerCapture(e.pointerId)}catch(_){}
+p.onpointermove=ev=>{drag.moved=true;gh.style.display="block";const w=gh.offsetWidth,h=gh.offsetHeight,lift=ev.pointerType==="touch"?60:0;gh.style.left=ev.clientX-w/2+"px";gh.style.top=ev.clientY-h/2-lift+"px";preview(target(ev,id),id)};
+p.onpointerup=ev=>{p.onpointermove=p.onpointerup=null;gh.style.display="none";const was=drag;drag=null;preview(null);if(was.moved){const ok=place(k,target(ev,id));if(!ok){sel=null;render();$("#msg").textContent="That piece doesn’t fit there."}}else render()};render()});
+$("#board").addEventListener("click",e=>{if(sel==null||G.over)return;const i=e.target.dataset.i;if(i==null)return;const s=SH[G.hand[sel]];const r=Math.floor(i/8)-Math.floor(s.h/2),c=i%8-Math.floor(s.w/2);if(!place(sel,{r,c}))$("#msg").textContent="That piece doesn’t fit there."});
+$("#rev").onclick=()=>{G.recent=[true,...G.recent].slice(0,3);G.lastEcpm=G.loaded;G.revives++;G.fired=false;for(let i=32;i<64;i++)G.b[i]=0;G.over=false;$("#over").classList.remove("on");add("H",`REVIVE: simulated ad watched (your last ad is now ${G.lastEcpm.toFixed(1)}); Rule-1 bar moves up to ${thr()}`);deal(true);render()};
+$("#again").onclick=$("#newg").onclick=newGame;
+$("#hv").onclick=()=>{G.loaded=G.lastEcpm*4;G.forced=true;$("#net").checked=true;bb()};
+["cty","hist","pb","stp","net","rules"].forEach(i=>$("#"+i).addEventListener("change",()=>{if(i==="hist"){setHist()}if(i==="cty"){G.lastEcpm=+$("#cty").value}if(i==="pb"&&G){G.bestStart=val("pb")}bb();$("#bs").textContent=best()}));
+newGame();
+</script></body></html>

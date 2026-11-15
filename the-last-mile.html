@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>THE LAST MILE — an interactive documentary</title>
+<style>
+:root{--ink:#f1ece2;--mute:#a9a49a;--amber:#f0a23c;--red:#d9553f;--panel:rgba(9,11,15,.84);--line:rgba(241,236,226,.18);--serif:Georgia,"Times New Roman",serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:56px}
+body{margin:0;background:#07090d;color:var(--ink);font:17px/1.6 var(--sans)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+#stage{position:fixed;inset:0;z-index:0}#stage svg{width:100%;height:100%;display:block}
+header.bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:flex;align-items:center;gap:12px;padding:8px 14px;background:linear-gradient(#07090dcc,#07090d00)}
+.bar b{font:600 12px var(--mono);letter-spacing:.18em;white-space:nowrap}
+#prog{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--amber)}
+nav#dots{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+nav button{font:12px var(--mono);color:var(--mute);background:#0009;border:1px solid var(--line);border-radius:4px;min-width:30px;height:30px;cursor:pointer}
+nav button[aria-current=true]{color:#000;background:var(--amber);border-color:var(--amber)}
+main{position:relative;z-index:5}
+section.ch{min-height:100vh;display:flex;align-items:center;padding:84px 5vw 60px}
+section.ch.r{justify-content:flex-end}
+.card{width:min(680px,100%);background:var(--panel);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:6px;padding:26px 28px}
+.lab{font:600 11px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin:0 0 8px}
+h1{font:400 clamp(48px,11vw,128px)/.92 var(--serif);margin:0 0 14px;letter-spacing:-.02em}
+h2{font:400 clamp(28px,4.4vw,46px)/1.1 var(--serif);margin:0 0 14px}
+p{margin:0 0 12px}.mute{color:var(--mute)}.sm{font-size:14px}
+.tag{display:inline-block;font:600 10px var(--mono);letter-spacing:.12em;padding:2px 7px;border:1px solid;border-radius:3px;margin-right:6px;vertical-align:1px}
+.t-f{color:#7fd1a0}.t-i{color:var(--amber)}.t-n{color:#b9a8ff}.t-u{color:#ff9a86}
+.note{font-size:13px;color:var(--mute);border-left:2px solid var(--line);padding-left:10px;margin-top:12px}
+button.b,.opt{font:inherit;font-size:15px;color:var(--ink);background:#ffffff0d;border:1px solid var(--line);border-radius:5px;padding:9px 13px;cursor:pointer;text-align:left}
+button.b:hover,.opt:hover{border-color:var(--amber)}button.b[aria-pressed=true],.opt[aria-pressed=true]{border-color:var(--amber);background:#f0a23c22}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.out{background:#000a;border:1px solid var(--line);border-radius:5px;padding:12px 14px;margin-top:10px;min-height:76px}
+.big{font:400 36px var(--serif);color:var(--amber)}
+label{display:block;font-size:14px;margin-top:10px}input[type=range]{width:100%;accent-color:var(--amber)}
+.seg{display:flex;height:34px;border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:10px 0 6px}.seg i{display:block;height:100%;transition:width .25s;border-right:1px solid #0008}
+.leg{display:flex;flex-wrap:wrap;gap:4px 14px;font:12px var(--mono);color:var(--mute)}.leg span::before{content:"";display:inline-block;width:10px;height:10px;margin-right:5px;background:var(--c);vertical-align:-1px}
+svg text{font-family:var(--mono)}
+.phone{width:210px;margin:6px auto;border:2px solid #555;border-radius:22px;padding:14px;background:#0b0d12}
+.phone .opt{display:block;width:100%;margin:6px 0;font-size:13px}
+.cmp{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;min-height:250px}
+.cmp>div{padding:16px;min-height:250px;font-size:14px}.cmp .cu{position:absolute;inset:0;background:#1a2230;clip-path:inset(0 50% 0 0)}.cmp .ri{background:#2b1c14}
+.cmp h3{margin:0 0 8px;font:600 12px var(--mono);letter-spacing:.15em;color:var(--amber)}.cmp li{margin:5px 0;font-family:var(--mono);font-size:12.5px}.cmp ul{padding-left:16px;margin:0}
+details{margin-top:10px;font-size:14px}summary{cursor:pointer;color:var(--amber)}
+ul.q{padding-left:18px}ul.q li{margin:8px 0}
+a{color:var(--amber)}
+.src li{margin:12px 0;font-size:14px}
+footer{position:relative;z-index:5;text-align:center;padding:40px 20px 70px}
+@media(max-width:700px){.card{padding:20px 18px}nav#dots button{min-width:26px;height:28px}.bar b{display:none}section.ch{padding-top:76px}}
+</style></head><body>
+<header class="bar"><b>THE LAST MILE</b><nav id="dots" aria-label="Chapters"></nav><div id="prog" role="progressbar" aria-label="Journey progress" aria-valuemin="0" aria-valuemax="100"></div></header>
+
+<div id="stage" aria-hidden="true"><svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop id="s1" offset="0" stop-color="#1a2230"/><stop id="s2" offset="1" stop-color="#3a4658"/></linearGradient><radialGradient id="glow"><stop offset="0" stop-color="#f0a23c" stop-opacity=".9"/><stop offset="1" stop-color="#f0a23c" stop-opacity="0"/></radialGradient></defs>
+<rect width="1200" height="600" fill="url(#sky)"/>
+<circle id="sun" cx="200" cy="140" r="34" fill="#f6d9a0" opacity=".7"/>
+<g id="cam"><g id="far" fill="#0d1118" opacity=".8"></g><g id="mid" fill="#080b10"></g>
+<g id="lamps"></g>
+<rect y="470" width="1200" height="130" fill="#0b0d11"/><rect y="466" width="1200" height="6" fill="#1b1f27"/>
+<g stroke="#5a5a52" stroke-width="3" stroke-dasharray="40 40" id="lane"><line x1="0" y1="540" x2="1200" y2="540"/></g>
+<g id="traffic" fill="#14171d"><rect x="80" y="500" width="120" height="30" rx="6"/><rect x="900" y="552" width="150" height="34" rx="6"/></g>
+<g id="rider"><circle cx="0" cy="0" r="1" fill="none"/>
+<circle cx="-32" cy="494" r="18" fill="none" stroke="#c9c4b8" stroke-width="5"/><circle cx="34" cy="494" r="18" fill="none" stroke="#c9c4b8" stroke-width="5"/>
+<path d="M-32 494 L-8 466 L22 466 L34 494 M-8 466 L-18 450 L-4 450" fill="none" stroke="#c9c4b8" stroke-width="5" stroke-linejoin="round"/>
+<rect x="-34" y="436" width="30" height="28" rx="3" fill="#f0a23c"/>
+<path d="M4 466 L10 430 L22 430" fill="none" stroke="#e8e2d6" stroke-width="9" stroke-linecap="round"/>
+<circle cx="14" cy="414" r="11" fill="#d7b99a"/><path d="M3 414 A11 11 0 0 1 25 414 Z" fill="#d9553f"/>
+<circle id="phoneglow" cx="30" cy="440" r="26" fill="url(#glow)"/><rect x="26" y="436" width="8" height="12" rx="1.5" fill="#f6e3b8"/></g></g>
+<rect id="shade" width="1200" height="600" fill="#000" opacity="0"/></svg></div>
+
+<main>
+<section class="ch" id="c0" aria-labelledby="h0"><div class="card" style="background:none;border:0;backdrop-filter:none">
+<p class="lab">A day in the life · fictional</p><h1 id="h0">THE LAST MILE</h1>
+<p style="font:italic 24px var(--serif)">One city. One rider. A system you cannot see.</p>
+<p>The order is only the beginning.</p><p class="mute sm" style="font-family:var(--mono)">↓ SCROLL · or use the chapter buttons above</p>
+<p class="note"><span class="tag t-n">FICTIONAL NARRATIVE</span>Arun is an invented composite. Nothing about him is a verified account of a real worker.</p></div></section>
+
+<section class="ch r" id="c1" aria-labelledby="h1a"><div class="card">
+<p class="lab">Chapter 1 · 06:40 · Going online</p><h2 id="h1a">Going online</h2>
+<p><span class="tag t-n">FICTIONAL NARRATIVE</span>Arun wipes the screen, straps the bag, taps “Go online”. A city of strangers is now one list of orders.</p>
+<p>Work on a platform is coordinated by software. Tap each item on the phone to see what is shown, and what may not be.</p>
+<div class="phone" role="group" aria-label="Fictional order screen"><div class="mono" style="font:11px var(--mono);color:var(--mute)">ILLUSTRATIVE SCREEN</div>
+<button class="opt" data-k="0">₹ Order payout</button><button class="opt" data-k="1">⌖ Pickup &amp; drop</button><button class="opt" data-k="2">⏱ Arrive-by time</button><button class="opt" data-k="3">★ Rating</button></div>
+<div class="out" id="phoneOut" aria-live="polite">Select an item on the phone.</div>
+<p class="note"><span class="tag t-f">RESEARCH FINDING</span>ILO (2021): digital labour platforms rely on algorithmic management to allocate and evaluate work using metrics and ratings, and to monitor it with digital tools. Rules differ between companies. <a href="#src">Sources</a></p></div></section>
+
+<section class="ch" id="c2" aria-labelledby="h2a"><div class="card">
+<p class="lab">Chapter 2 · 12:10 · The city becomes a route</p><h2 id="h2a">A line on a screen is not a road</h2>
+<p><span class="tag t-i">ILLUSTRATIVE MODEL</span>This is a stylised sketch, not real GPS, traffic or platform routing. Select the points.</p>
+<svg viewBox="0 0 600 230" role="group" aria-label="Illustrative route map" style="width:100%;background:#0a0d12;border:1px solid var(--line);border-radius:5px">
+<path id="route" d="M50 170 C120 170 130 90 210 100 S330 170 400 120 S500 60 550 70" fill="none" stroke="#f0a23c" stroke-width="3" stroke-dasharray="7 6"/>
+<g id="pts"></g></svg>
+<div class="row"><button class="b" id="mapClear">Clear selection</button></div>
+<div class="out" id="mapOut" aria-live="polite">Circles are route points; diamonds are friction points.</div></div></section>
+
+<section class="ch r" id="c3" aria-labelledby="h3a"><div class="card">
+<p class="lab">Chapter 3 · 13:05 · Waiting is still work</p><h2 id="h3a">The food is not ready</h2>
+<p><span class="tag t-n">FICTIONAL NARRATIVE</span>The counter is crowded. Arun stands by the bike. Outside the app, nothing about this minute is a delivery. Inside his day, it is time spent working.</p>
+<p><span class="tag t-i">ILLUSTRATIVE MODEL</span>Proportions below are invented to show a relationship, not measured.</p>
+<label>Waiting at pickup: <b id="wv"></b> min<input type="range" id="wait" min="0" max="40" value="12"></label>
+<label>Time between orders: <b id="iv"></b> min<input type="range" id="idle" min="0" max="40" value="10"></label>
+<div class="row" role="radiogroup" aria-label="Pay structure"><button class="opt" role="radio" aria-pressed="true" data-p="0">Per-order pay only</button><button class="opt" role="radio" aria-pressed="false" data-p="1">Pay + ₹1/min waiting supplement</button></div>
+<div class="seg" id="seg" role="img" aria-label="Shift time breakdown"></div><div class="leg" id="leg"></div>
+<div class="out" id="wOut" aria-live="polite"></div>
+<p class="note">Some platforms pay for waiting and some do not; the supplement is a hypothetical toggle, not any company’s rule.</p></div></section>
+
+<section class="ch" id="c4" aria-labelledby="h4a"><div class="card">
+<p class="lab">Chapter 4 · 15:30 · The algorithm is in the background</p><h2 id="h4a">A loop, not a switch</h2>
+<p>A new order chimes. Behind it sits a cycle. Select a node (keyboard works too).</p>
+<svg viewBox="0 0 400 250" role="group" aria-label="Feedback loop diagram" style="width:100%"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#a9a49a"/></marker></defs>
+<g stroke="#a9a49a" stroke-width="2" fill="none" marker-end="url(#ar)"><path d="M150 38 L250 38"/><path d="M335 62 L335 110"/><path d="M250 205 L150 205"/><path d="M65 150 L65 100"/></g><g id="nodes"></g></svg>
+<div class="out" id="lOut" aria-live="polite">Select a node.</div></div></section>
+
+<section class="ch r" id="c5" aria-labelledby="h5a"><div class="card">
+<p class="lab">Chapter 5 · 18:45 · The countdown</p><h2 id="h5a">Eight minutes left</h2>
+<p><span class="tag t-n">FICTIONAL NARRATIVE</span>The arrive-by clock reads 8:00. A signal turns amber ahead. Customers are hungry; roads are what they are. What should Arun prioritise?</p>
+<div class="row"><button class="b" data-d="0" aria-pressed="false">Prioritise the faster arrival</button><button class="b" data-d="1" aria-pressed="false">Prioritise the safer journey</button></div>
+<div class="out" id="dOut" aria-live="polite">Choose a priority to see the trade-offs. Neither choice is a prediction of a real outcome.</div></div></section>
+
+<section class="ch" id="c6" aria-labelledby="h6a"><div class="card">
+<p class="lab">Chapter 6 · 20:20 · What does a delivery earn?</p><h2 id="h6a">The number on the screen, and the hours behind it</h2>
+<p><span class="tag t-i">ILLUSTRATIVE MODEL</span>A toy calculation. Values are not averages and do not represent any platform.</p>
+<label>Order payout: ₹<b id="e1v"></b><input type="range" id="e1" min="10" max="150" value="50"></label>
+<label>Ride time: <b id="e2v"></b> min<input type="range" id="e2" min="5" max="60" value="25"></label>
+<label>Waiting at pickup: <b id="e3v"></b> min<input type="range" id="e3" min="0" max="40" value="10"></label>
+<label>Time between orders: <b id="e4v"></b> min<input type="range" id="e4" min="0" max="40" value="10"></label>
+<label>Distance: <b id="e5v"></b> km<input type="range" id="e5" min="1" max="15" value="5"></label>
+<label>Vehicle cost: ₹<b id="e6v"></b> per km<input type="range" id="e6" min="0" max="10" step=".5" value="3"></label>
+<div class="row"><button class="b" id="eReset">Reset to example</button></div>
+<div class="seg" id="eseg" role="img" aria-label="Payout split into costs and remaining"></div>
+<div class="out" id="eOut" aria-live="polite"></div>
+<p class="note">Formula: remaining = payout − (distance × cost per km). Hourly = remaining ÷ (ride + wait + between orders) × 60. Excludes incentives, tips, fuel price changes, maintenance beyond the per-km input, phone data, taxes and breaks.</p></div></section>
+
+<section class="ch r" id="c7" aria-labelledby="h7a"><div class="card">
+<p class="lab">Chapter 7 · 20:45 · The other side of the screen</p><h2 id="h7a">Same order, two views</h2>
+<p><span class="tag t-n">FICTIONAL NARRATIVE</span>Drag the slider. Both views are legitimate; neither is a villain.</p>
+<label>Perspective: <b id="pv">Customer ◀ ▶ Rider</b><input type="range" id="split" min="0" max="100" value="50" aria-label="Slide between customer and rider perspective"></label>
+<div class="cmp" id="cmp"><div class="ri"><h3>RIDER</h3><ul><li>19:02 accepts order</li><li>19:09 reaches restaurant</li><li>19:22 food still being packed</li><li>19:24 leaves, bag on, evening traffic</li><li>19:41 finds the right gate</li></ul></div>
+<div class="cu"><h3>CUSTOMER</h3><ul><li>19:00 order placed</li><li>19:02 “partner assigned”</li><li>19:10 marker moves on map</li><li>19:30 “arriving soon”</li><li>19:41 food at the door</li></ul></div></div>
+<details><summary>Text alternative</summary><p class="sm">Customer view: order placed at 19:00, a moving marker, arrival at 19:41. Rider view: accepted 19:02, reached restaurant 19:09, waited until 19:22, left 19:24, found the gate 19:41. Times are fictional.</p></details></div></section>
+
+<section class="ch" id="c8" aria-labelledby="h8a"><div class="card">
+<p class="lab">Chapter 8 · 22:30 · End of shift</p><h2 id="h8a">The delivery is complete. The work behind it is harder to see.</h2>
+<p><span class="tag t-n">FICTIONAL NARRATIVE</span>Arun lowers the phone. The city keeps ordering.</p>
+<ul class="q"><li>What should a delivery platform be responsible for making visible?</li><li>How should efficiency be balanced against worker safety and time?</li><li>What would a fairer system measure?</li><li>What should customers understand about the labour behind convenience?</li></ul>
+<div class="row"><button class="b" id="top">↑ Return to the beginning</button><a class="b" href="#src" style="text-decoration:none">Sources &amp; method ↓</a></div></div></section>
+</main>
+
+<footer id="src"><div class="card" style="margin:0 auto;text-align:left">
+<p class="lab">Sources &amp; method</p><h2>What is evidence here, and what is not</h2>
+<p><span class="tag t-f">RESEARCH FINDING</span><span class="tag t-i">ILLUSTRATIVE MODEL</span><span class="tag t-n">FICTIONAL NARRATIVE</span> Every statement carries one of these labels. Sliders, maps, timings and the rider are not data.</p>
+<ol class="src">
+<li><b>ILO, World Employment and Social Outlook 2021</b> (23 Feb 2021). Global; surveys and interviews with about 12,000 workers and 85 businesses. Used for: algorithmic management of allocation, evaluation by metrics and ratings, and monitoring; lack of alternative jobs as a stronger motivation among taxi and delivery workers. Limit: global, not India-specific. <a href="https://www.ilo.org/publications/flagship-reports/role-digital-labour-platforms-transforming-world-work" target="_blank" rel="noopener">Report page</a> · <a href="https://www.ilo.org/topics-and-sectors/digital-labour-platforms" target="_blank" rel="noopener">ILO topic page</a></li>
+<li><b>Fairwork India Ratings 2024</b> (IIIT Bangalore CITAPP with Oxford Internet Institute). India; 11 platforms, five principles scored out of 10, 440 worker interviews, Bengaluru, Chennai, Delhi, Kochi, Thiruvananthapuram. Used for: the “fair management” framing and the note that slot-based work allocation has existed since 2022. Limit: city sample; ratings reflect evidence available to researchers. <a href="https://ruralindiaonline.org/en/library/resource/fairwork-india-ratings-2024-labour-standards-in-the-platform-economy/" target="_blank" rel="noopener">Summary at PARI</a></li></ol>
+<p class="note"><b>Honest limits.</b> I read report summaries and abstracts, not the full PDFs. No earnings, waiting-time or accident statistics for India are quoted, because none were verified. Next step for the assignment: read the full ILO report and Fairwork India report, and add Indian studies on delivery-worker income and road safety. Sound is not implemented; the documentary is fully silent.</p></div></footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg",mk=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e};
+/* ---- scene ---- */
+const rnd=(()=>{let s=7;return()=>(s=s*16807%2147483647)/2147483647})();
+[["far",90,200,150,"#0d1118"],["mid",60,300,120,"#080b10"]].forEach(([id,mn,mx,w])=>{for(let x=-20;x<1220;x+=w*.9){const h=mn+rnd()*(mx-mn),bw=w*.8;mk("rect",{x,y:470-h,width:bw,height:h},$("#"+id));if(id==="mid")for(let i=0;i<7;i++)mk("rect",{x:x+8+(i%3)*22,y:470-h+14+Math.floor(i/3)*30,width:9,height:12,fill:"#f0a23c",opacity:rnd()>.4?.7:.1,class:"win"},$("#"+id))}});
+for(let x=120;x<1200;x+=260){mk("rect",{x,y:410,width:4,height:60,fill:"#222"},$("#lamps"));mk("circle",{cx:x+2,cy:410,r:46,fill:"url(#glow)",class:"lamp"},$("#lamps"))}
+const stops=[[0,"#1a2230","#3a4658"],[.25,"#47546a","#d9a35a"],[.5,"#4a3a2c","#c9873a"],[.78,"#1c1620","#6a3228"],[1,"#05070b","#12161d"]];
+const xk=[[0,14],[.12,16],[.25,46],[.4,50],[.5,50],[.62,72],[.78,80],[.9,70],[1,50]];
+const zk=[[0,1],[.12,1.25],[.25,1],[.4,1.5],[.5,1.45],[.62,1.2],[.78,1.5],[.9,1.1],[1,1.35]];
+const lerp=(a,b,t)=>a+(b-a)*t,hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mix=(a,b,t)=>"#"+hx(a).map((v,i)=>Math.round(lerp(v,hx(b)[i],t)).toString(16).padStart(2,"0")).join("");
+const key=(k,p)=>{for(let i=1;i<k.length;i++)if(p<=k[i][0]){const t=(p-k[i-1][0])/(k[i][0]-k[i-1][0]);return lerp(k[i-1][1],k[i][1],t)}return k[k.length-1][1]};
+function color(p){for(let i=1;i<stops.length;i++)if(p<=stops[i][0]){const t=(p-stops[i-1][0])/(stops[i][0]-stops[i-1][0]);return[mix(stops[i-1][1],stops[i][1],t),mix(stops[i-1][2],stops[i][2],t)]}return[stops[4][1],stops[4][2]]}
+const bar=$("#prog");let tick=0;
+function draw(){tick=0;const max=document.documentElement.scrollHeight-innerHeight,p=max>0?Math.min(1,scrollY/max):0,[a,b]=color(p);
+$("#s1").setAttribute("stop-color",a);$("#s2").setAttribute("stop-color",b);
+const night=Math.max(0,1-p/.15)*.6+Math.max(0,(p-.6)/.4);$$(".lamp").forEach(l=>l.setAttribute("opacity",Math.min(1,night+.1)));
+$("#sun").setAttribute("cx",200+p*800);$("#sun").setAttribute("cy",150-Math.sin(p*Math.PI)*60+(p>.7?(p-.7)*500:0));$("#sun").setAttribute("opacity",Math.max(0,.75-night));
+const x=key(xk,p)/100*1200;$("#rider").setAttribute("transform",`translate(${x} 0)`);
+const z=key(zk,p),cx=x,cy=470;$("#cam").setAttribute("transform",`translate(${cx} ${cy}) scale(${z}) translate(${-cx} ${-cy})`);
+$("#phoneglow").setAttribute("opacity",p>.9?.2:1);$("#shade").setAttribute("opacity",p>.9?.25:0);
+$("#lane").setAttribute("stroke-dashoffset",-(p*1600));
+bar.style.width=p*100+"%";bar.setAttribute("aria-valuenow",Math.round(p*100))}
+addEventListener("scroll",()=>{if(!tick)tick=requestAnimationFrame(draw)},{passive:true});addEventListener("resize",draw);
+/* ---- nav ---- */
+const chs=$$("section.ch"),nav=$("#dots");
+chs.forEach((s,i)=>{const b=document.createElement("button");b.textContent=i;b.setAttribute("aria-label",i?"Chapter "+i:"Opening");b.onclick=()=>s.scrollIntoView();nav.appendChild(b)});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){$$("#dots button").forEach((b,i)=>b.setAttribute("aria-current",chs[i]===e.target))}}),{rootMargin:"-45% 0px -45% 0px"});chs.forEach(s=>io.observe(s));
+$("#top").onclick=()=>scrollTo(0,0);
+/* ---- ch1 phone ---- */
+const ph=[["₹ Order payout","Visible: an amount for this order.","May not be visible: how it is calculated, how waiting time is treated, or what the total cost of the trip is to the rider."],["⌖ Pickup &amp; drop","Visible: restaurant and drop area.","May not be visible: how long the food will take, or the building entrance and access issues at the drop."],["⏱ Arrive-by time","Visible: a target time.","May not be visible: how it was estimated, or what happens to the rider’s record when it is missed. Rules vary by platform."],["★ Rating","Visible: a score or status in the rider’s own app.","May not be visible: which signals count, and how they affect future work. This differs between companies and is often undisclosed."]];
+$$(".phone .opt").forEach(b=>b.onclick=()=>{$$(".phone .opt").forEach(x=>x.setAttribute("aria-pressed",x===b));const d=ph[b.dataset.k];$("#phoneOut").innerHTML=`<b>${d[0]}</b><br>${d[1]}<br><span class="mute">${d[2]}</span> <span class="tag t-i">ILLUSTRATIVE</span>`});
+/* ---- ch2 map ---- */
+const mp=[[50,170,"c","Start","Arun goes online here. The app shows the pickup as a point and the route as one line."],[210,100,"f","Crowded junction","Friction point: signals, turning traffic and pedestrians are not visible as a line on a map. The delay is variable."],[300,150,"c","Restaurant","Pickup point. The line stops here, but the work does not: food may still be in preparation."],[400,120,"f","Flyover crossing","Friction point: the shortest line may need a detour via an access road or a U-turn."],[480,80,"f","Narrow lane","Friction point: the last stretch can be slower than the distance suggests."],[550,70,"c","Customer’s gate","Drop point. Finding the exact entrance, gate or floor adds time outside the screen."]];
+mp.forEach((m,i)=>{const g=mk("g",{tabindex:0,role:"button","aria-label":m[3],style:"cursor:pointer"},$("#pts"));if(m[2]==="c")mk("circle",{cx:m[0],cy:m[1],r:9,fill:"#f1ece2"},g);else mk("path",{d:`M${m[0]} ${m[1]-12}L${m[0]+12} ${m[1]}L${m[0]} ${m[1]+12}L${m[0]-12} ${m[1]}Z`,fill:"#d9553f"},g);const t=mk("text",{x:m[0],y:m[1]+28,fill:"#a9a49a","font-size":11,"text-anchor":"middle"},g);t.textContent=m[3];const f=()=>{$("#mapOut").innerHTML=`<b>${m[3]}</b> <span class="tag t-i">ILLUSTRATIVE</span><br>${m[4]}`};g.onclick=f;g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f()}}});
+$("#mapClear").onclick=()=>$("#mapOut").textContent="Circles are route points; diamonds are friction points.";
+/* ---- ch3 waiting ---- */
+let pay=0;$$("[data-p]").forEach(b=>b.onclick=()=>{pay=+b.dataset.p;$$("[data-p]").forEach(x=>x.setAttribute("aria-pressed",x===b));calcW()});
+function calcW(){const w=+$("#wait").value,id=+$("#idle").value;$("#wv").textContent=w;$("#iv").textContent=id;const s=[["To pickup",12,"#5f7ea8"],["Waiting at pickup",w,"#d9553f"],["To customer",18,"#f0a23c"],["Handover",3,"#7fd1a0"],["Between orders",id,"#777"]],T=s.reduce((a,x)=>a+x[1],0);
+$("#seg").innerHTML=s.map(x=>`<i style="width:${x[1]/T*100}%;background:${x[2]}"></i>`).join("");$("#leg").innerHTML=s.map(x=>`<span style="--c:${x[2]}">${x[0]} ${x[1]}m</span>`).join("");
+const g=50+(pay?w:0),h=g/T*60,un=(pay?id:w+id)/T*100;$("#wOut").innerHTML=`Total time: <b>${T} min</b> for one order.<br>Gross ₹${g} ÷ ${T} min = <span class="big">₹${h.toFixed(0)}/hr</span><br><span class="mute">Time not directly rewarded under this pay model: ${un.toFixed(0)}%</span>`}
+$("#wait").oninput=$("#idle").oninput=calcW;calcW();
+/* ---- ch4 loop ---- */
+const ln=[[100,38,"Incentives &amp; task allocation","Which tasks are offered, to whom, and with which rewards.","It can influence which orders and hours a rider accepts.","f","ILO (2021) reports that platforms use algorithmic management to allocate work.","Exact rules vary by company and are rarely published."],[335,38,"Rider decisions &amp; pace","Accepting, declining, choosing hours and speed.","Rewards and deadlines can push toward faster or longer work.","n","Conceptual reasoning. Fairwork India (2024) notes fixed work-slot booking has been used since 2022.","How much any one rider’s choice is shaped by incentives differs between people."],[335,205,"Delivery outcomes &amp; signals","Completion, arrival time, ratings and other records.","Signals can summarise a rider’s work, accurately or not.","f","ILO (2021): work is evaluated using metrics and ratings.","Which signals count at which platform is mostly undisclosed."],[65,205,"Future decisions","Updated offers, rewards or restrictions.","Past signals may feed back into what a rider is offered next.","u","No verified source here proves a direct link for any named platform.","Treat this link as a question to investigate, not an established fact."]];
+const tg={f:["RESEARCH FINDING","t-f"],n:["CONCEPT + FINDING","t-n"],u:["UNCERTAIN","t-u"]};
+ln.forEach((n,i)=>{const g=mk("g",{tabindex:0,role:"button","aria-label":n[2].replace("&amp;","and"),style:"cursor:pointer"},$("#nodes"));mk("rect",{x:n[0]-60,y:n[1]-24,width:120,height:48,rx:6,fill:"#0a0d12",stroke:"#f0a23c","stroke-width":1.5},g);const w=n[2].replace("&amp;","&").split(" ");const t=mk("text",{x:n[0],y:n[1]-3,fill:"#f1ece2","font-size":9.5,"text-anchor":"middle"},g);t.textContent=w.slice(0,Math.ceil(w.length/2)).join(" ");const t2=mk("text",{x:n[0],y:n[1]+11,fill:"#f1ece2","font-size":9.5,"text-anchor":"middle"},g);t2.textContent=w.slice(Math.ceil(w.length/2)).join(" ");
+const f=()=>{const k=tg[n[5]];$("#lOut").innerHTML=`<b>${n[2]}</b> <span class="tag ${k[1]}">${k[0]}</span><br><b>Means:</b> ${n[3]}<br><b>Effect:</b> ${n[4]}<br><b>Evidence:</b> ${n[6]}<br><b>Uncertain:</b> ${n[7]}`};g.onclick=f;g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f()}}});
+/* ---- ch5 decision ---- */
+const dd=[["Faster arrival","May help meet the target time and the customer’s expectation.","May mean tighter gaps, running amber signals or riskier overtakes. Risk depends on roads, weather and enforcement.","Whether speed is rewarded or penalised depends on the platform’s rules."],["Safer journey","Lower exposure to road risk and calmer riding.","May arrive after the target time, which the customer sees as delay and which may register in the rider’s record, depending on the platform.","Whether late arrivals are penalised varies; some platforms state they do not."]];
+$$("[data-d]").forEach(b=>b.onclick=()=>{$$("[data-d]").forEach(x=>x.setAttribute("aria-pressed",x===b));const d=dd[b.dataset.d];$("#dOut").innerHTML=`<b>${d[0]}</b><br><b>Gain:</b> ${d[1]}<br><b>Cost:</b> ${d[2]}<br><span class="mute">${d[3]} The system of competing demands (customer, deadline, road, rules) is the point; blame is not.</span> <span class="tag t-i">ILLUSTRATIVE</span>`});
+/* ---- ch6 earnings ---- */
+const ids=["e1","e2","e3","e4","e5","e6"],def=[50,25,10,10,5,3];
+function calcE(){const v=ids.map(i=>+$("#"+i).value);ids.forEach((i,k)=>$("#"+i+"v").textContent=v[k]);const cost=v[4]*v[5],net=v[0]-cost,T=v[1]+v[2]+v[3],h=net/T*60;
+$("#eseg").innerHTML=`<i style="width:${Math.max(0,net)/v[0]*100}%;background:#7fd1a0"></i><i style="width:${Math.min(cost,v[0])/v[0]*100}%;background:#d9553f"></i>`;
+$("#eOut").innerHTML=`<span style="color:#7fd1a0">■</span> Remaining ₹${net.toFixed(1)} · <span style="color:var(--red)">■</span> Vehicle cost ₹${cost.toFixed(1)}<br>Total time ${T} min → <span class="big">₹${h.toFixed(0)}/hr</span><br><span class="mute">Screen payout alone suggests ₹${(v[0]/v[1]*60).toFixed(0)}/hr (ride time only).</span>`}
+ids.forEach(i=>$("#"+i).oninput=calcE);$("#eReset").onclick=()=>{ids.forEach((i,k)=>$("#"+i).value=def[k]);calcE()};calcE();
+/* ---- ch7 compare ---- */
+$("#split").oninput=e=>{$(".cu").style.clipPath=`inset(0 ${100-e.target.value}% 0 0)`;$("#pv").textContent=e.target.value>66?"Customer view":e.target.value<34?"Rider view":"Both views"};
+draw();
+</script></body></html>
