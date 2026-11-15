@@ -5,6 +5,7 @@ import { useStory } from '../story/store';
 import { hourAt } from '../story/acts';
 import { daylight, rainAt } from './daylight';
 import { riderWorld } from './Rider';
+import { ROOM_AT } from '../story/timeline';
 
 /** Sky colour, fog, sun and ambient light, driven by the time of day. */
 export function Lights() {
@@ -57,7 +58,7 @@ export function Rain() {
     const { progress, reducedMotion } = useStory.getState();
     const r = rainAt(progress);
     const m = ref.current!;
-    m.visible = r > 0.01;
+    m.visible = r > 0.01 && progress < ROOM_AT; // no rain indoors
     if (!m.visible) return;
     const shown = Math.floor(n * r);
     for (let i = 0; i < n; i++) {

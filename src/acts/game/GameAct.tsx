@@ -5,6 +5,7 @@ import {
 } from './engine';
 import { Chip } from '../../ui/Debrief';
 import { useStory } from '../../story/store';
+import { sfx } from '../../audio/sound';
 
 const AD_SECONDS = 5;
 const START_BEST = 400; // Arun's record (FICTIONAL)
@@ -87,6 +88,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
     const sc = score + gained;
     const h = hand.slice(); h[k] = null;
     setBoard(o.b); setScore(sc); setSel(null); setPreview(null);
+    if (o.lines) sfx.clear(o.lines); else sfx.place();
     if (o.lines) setFlash(o.lines > 1 ? `${o.lines} lines! +${gained}` : `Clear! +${gained}`);
     if (sc > best) setBest(sc);
     if (h.every((x) => x == null)) {
@@ -102,6 +104,11 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
   // after a new hand is dealt, check for game over
   useEffect(() => { if (screen === 'play' && hand.length) checkOver(board, hand); }, [hand]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (!flash) return; const t = setTimeout(() => setFlash(null), 900); return () => clearTimeout(t); }, [flash]);
+
+  // sound: game over, the ad jingle, the machine hum behind the screen
+  useEffect(() => { if (screen === 'over') sfx.over(); if (screen === 'ad') { sfx.adStart(); return () => sfx.adStop(); } }, [screen]);
+  useEffect(() => { sfx.drone(revealed); }, [revealed]);
+  useEffect(() => () => { sfx.drone(false); sfx.adStop(); }, []);
 
   // the simulated ad
   useEffect(() => {
@@ -144,7 +151,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
     const id = hand[k];
     if (id == null || screen !== 'play') return;
     drag.current = { k, moved: false };
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    try { (e.target as HTMLElement).setPointerCapture?.(e.pointerId); } catch { /* no active pointer (e.g. synthetic events) */ }
   };
   const onPieceMove = (e: React.PointerEvent) => {
     if (!drag.current) return;
@@ -193,12 +200,10 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
           className="g-board" ref={boardRef} role="grid" aria-label="Board, 8 by 8. Choose a piece, then use arrow keys and Enter." tabIndex={0}
           onKeyDown={onBoardKey}
           onClick={(e) => {
-            if (sel == null) return;
-            const rect = boardRef.current!.getBoundingClientRect();
-            const cs = rect.width / N, s = SH[hand[sel]!];
-            const r = Math.floor((e.clientY - rect.top) / cs) - Math.floor(s.h / 2);
-            const c = Math.floor((e.clientX - rect.left) / cs) - Math.floor(s.w / 2);
-            place(sel, r, c);
+            if (sel == null || hand[sel] == null) return;
+            // use exactly the cell the hover preview showed, so the block lands where it was drawn
+            const t = cellAt(e.clientX, e.clientY, hand[sel]!);
+            place(sel, t.r, t.c);
           }}
           onMouseMove={(e) => { if (sel != null && !drag.current) setPreview(cellAt(e.clientX, e.clientY, hand[sel]!)); }}
         >
@@ -243,7 +248,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
           <div className="g-ad" role="dialog" aria-label="Simulated advertisement">
             <div className="g-ad-tag">AD · simulated</div>
             <div className="g-ad-body">
-              <div className="g-ad-title">ZIPKART GOLD</div>
+              <div className="g-ad-title">FLOPCART GOLD</div>
               <div>Groceries in minutes. ₹0 delivery for 3 months!</div>
             </div>
             <div className="g-ad-bar"><i style={{ width: `${((AD_SECONDS - adLeft) / AD_SECONDS) * 100}%` }} /></div>

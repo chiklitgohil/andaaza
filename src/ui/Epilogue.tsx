@@ -34,7 +34,7 @@ export function Epilogue() {
           {offer ? <Line k="Orders you turned down" v={`${offer.rejects}${offer.rejects > 1 ? ' · bonus lost' : ''}`} /> : <Line k="Offers" v={skipped} />}
           {wait ? <Line k="Minutes waited, unpaid" v={wait.mins} /> : <Line k="Waiting" v={skipped} />}
           {waitChoice && <Line k="At the red light you chose" v={waitChoice === 'fast' ? 'speed' : 'safety'} />}
-          {tip ? <Line k="Customer tipped / you received above base" v={`₹${tip.tip} / ₹${Math.max(0, tip.payout - 60)}`} /> : <Line k="The tip" v={skipped} />}
+          {tip ? <Line k="Customer tipped / you received above base" v={`₹${tip.tip} / ₹${Math.max(0, tip.extra ?? tip.payout - 60)}`} /> : <Line k="The tip" v={skipped} />}
           {strike ? <Line k="At 7 pm you" v={strike === 'stay' ? 'stayed online for ₹150' : 'logged off with the strike'} /> : <Line k="The strike" v={skipped} />}
         </section>
         <section className="ep-card">
@@ -114,12 +114,13 @@ export function Epilogue() {
                 <h2>The Last Mile</h2>
                 <p className="lede">An interactive story for a Science, Technology and Society class. You played one day as Arun, a delivery rider in Ahmedabad, to feel what is hard to see: how apps manage workers, price customers and harvest attention.</p>
                 <h3>What is real and what is invented</h3>
-                <p className="small">Arun, his city, the apps (Zipkart, Gaadi, Stack), every person and every price in the story are invented. The mechanisms they show are drawn from real cases, each labelled by how strong its evidence is. Allegations are shown with the company&rsquo;s response. Where we use a mechanism from another country, we say so.</p>
+                <p className="small">Arun, his city, the apps (Flopcart, Gaadi, Stack), every person and every price in the story are invented. Flopcart is a joke name: it is not Flipkart or any other real company, and nothing in the story describes what Flipkart does. The mechanisms they show are drawn from real cases, each labelled by how strong its evidence is. Allegations are shown with the company&rsquo;s response. Where we use a mechanism from another country, we say so.</p>
                 <h3>Privacy</h3>
                 <p className="small">This site collects nothing: no analytics, no cookies, no trackers, no accounts. It never uses your camera, microphone or location. The published version blocks every request to other websites, and the counter at the top right shows the count. Your choices stay in this tab and vanish when you close it.</p>
                 <h3>Credits</h3>
                 <ul className="small">
                   <li>3D models: Kenney (kenney.nl), released under CC0.</li>
+                  <li>Sound: synthesised live in your browser. There are no audio files and no recordings.</li>
                   <li>The hidden rules in Stack re-create, in simplified form, what Ayo Omolewa reported finding in a popular puzzle game (<a href="https://ayoships.com/breakdowns/block-blast" target="_blank" rel="noreferrer noopener">ayoships.com/breakdowns/block-blast</a>). Credit for that analysis is his.</li>
                   <li>Research and code were developed with the help of an AI assistant (Claude) and checked against sources. Mistakes are possible; the sources are listed so you can check.</li>
                 </ul>

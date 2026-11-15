@@ -2,22 +2,16 @@
 // The ride app "Gaadi", the stranger, the driver Mahesh and all prices are FICTIONAL.
 // The claimed effects (phone model, battery, payment) come from REPORTED tests and ALLEGED viral posts;
 // the companies deny them. Their sizes are taken from those single posts and tests.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { sfx } from '../../audio/sound';
 import { Phone } from '../../ui/Phone';
 import { Chip } from '../../ui/Debrief';
 import { useStory } from '../../story/store';
-import type { Label } from '../../content/types';
+import { PriceLab, priceFor, SCENARIOS, MODELS, PAYS, AREAS, type Mode, type PhoneSet } from './PriceLab';
 
-type Step = 'quote' | 'guess' | 'compare' | 'discount' | 'riding' | 'receipt' | 'driver';
+type Step = 'quote' | 'guess' | 'compare' | 'discount' | 'booked';
 const BASE = 168;           // ₹, meter-style fare for this 6.2 km trip (invented)
 const RAIN_SURGE = 1.4;     // disclosed "high demand" multiplier, same for everyone (invented, under India's 2× cap)
-
-interface Factor { id: string; who: 'arun' | 'stranger'; label: string; pct: number; tag: Label; note: string }
-const FACTORS: Factor[] = [
-  { id: 'phone', who: 'stranger', label: 'Phone: new iPhone', pct: 0.178, tag: 'ALLEGED', note: 'Viral posts in India (Jan 2025) showed one trip at ₹342.47 on iPhone vs ₹290.79 on Android. The regulator sent notices; Ola and Uber denied it. No finding published.' },
-  { id: 'card', who: 'stranger', label: 'Paying by Amex card', pct: 0.626, tag: 'ALLEGED', note: 'One viral US video (Apr 2026): $33.05 with Amex vs $20.33 with Visa. Uber says it never sets prices by card brand.' },
-  { id: 'battery', who: 'arun', label: 'Battery at 6%', pct: 0.058, tag: 'CONTESTED', note: 'One Brussels newspaper test: €17.56 at 12% vs €16.60 at 84%. A US fact-check found identical prices. Uber denies using battery.' },
-];
 
 const fmt = (v: number) => `₹${Math.round(v)}`;
 
@@ -30,24 +24,20 @@ function noise(seed: number) {
 export default function RideAct({ onDone }: { onDone: () => void }) {
   const note = useStory((s) => s.note);
   const [step, setStep] = useState<Step>('quote');
+  useEffect(() => { if (step === 'booked') sfx.ping(); }, [step]);
   const [guess, setGuess] = useState<string | null>(null);
-  const [view, setView] = useState<'claims' | 'company'>('claims');
-  const [on, setOn] = useState<Record<string, boolean>>({ phone: true, card: true, battery: true });
+  const [phones, setPhones] = useState<[PhoneSet, PhoneSet]>(SCENARIOS[0].v);
+  const [scenario, setScenario] = useState<number | null>(0);
+  const [mode, setMode] = useState<Mode>('reported');
   const [tries, setTries] = useState<{ a: number; b: number }[]>([]);
   const [median, setMedian] = useState(230);
-  const [cut, setCut] = useState(32);
 
   const quoted = BASE * RAIN_SURGE;
-  const price = (who: 'arun' | 'stranger', k = 1) => {
-    if (view === 'company') return quoted * k;
-    const pct = FACTORS.filter((f) => f.who === who && on[f.id]).reduce((a, f) => a + f.pct, 0);
-    return quoted * (1 + pct) * k;
-  };
-  const arunPrice = price('arun');
-  const strangerPrice = price('stranger');
+  const price = (i: 0 | 1, k = 1) => priceFor(phones[i], mode, quoted).price * k;
+  const arunPrice = price(0);
+  const strangerPrice = price(1);
+  const label = (p: PhoneSet) => `${MODELS[p.model]} · ${p.battery}% · ${PAYS[p.pay]}`;
   const shownWas = quoted * 1.25; // the app's own crossed-out "regular" price (invented)
-  const paid = arunPrice;
-  const driverGets = paid * (1 - cut / 100);
 
   const GUESSES = [
     { id: 'same', label: 'Same price' },
@@ -58,7 +48,7 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
 
   const tryAgain = () => {
     const n = tries.length + 1;
-    setTries((t) => [...t, { a: price('arun', noise(n)), b: price('stranger', noise(n + 0.37)) }].slice(-6));
+    setTries((t) => [...t, { a: price(0, noise(n)), b: price(1, noise(n + 0.37)) }].slice(-6));
   };
 
   const arunScreen = (
@@ -66,7 +56,7 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
       <div className="ra-brand">gaadi</div>
       <div className="ra-route">
         <div><span className="dot-g" /> Tyre puncture shop, Ring Road</div>
-        <div><span className="dot-r" /> Home · Bapunagar</div>
+        <div><span className="dot-r" /> {phones[0].area === 'mixed' ? 'Home · Bapunagar' : AREAS[phones[0].area]}</div>
       </div>
       <div className="ra-map" aria-hidden="true"><i className="ra-line" /><b className="ra-car" /></div>
       <div className="ra-badge">High demand: rain · fares are higher ({RAIN_SURGE}×)</div>
@@ -116,34 +106,15 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
         </div>
       )}
 
-      {/* ---------- 2. side by side ---------- */}
+      {/* ---------- 2. side by side: build your own comparison ---------- */}
       {step === 'compare' && (
         <div className="compare">
           <div className="ride-row">
-            <Phone owner="Arun · old Android · 6% · UPI" battery={6} model="android">{arunScreen}</Phone>
-            <div className="compare-mid">
-              <div className="seg" role="radiogroup" aria-label="Which story is true?">
-                <button role="radio" aria-checked={view === 'claims'} className={view === 'claims' ? 'on' : ''} onClick={() => setView('claims')}>If the viral claims are right</button>
-                <button role="radio" aria-checked={view === 'company'} className={view === 'company' ? 'on' : ''} onClick={() => setView('company')}>If the company is right</button>
-              </div>
-              <div className="gap-readout">
-                <span>{fmt(arunPrice)}</span><em>vs</em><span>{fmt(strangerPrice)}</span>
-              </div>
-              {view === 'claims' ? (
-                <ul className="factors">
-                  {FACTORS.map((f) => (
-                    <li key={f.id}>
-                      <label>
-                        <input type="checkbox" checked={on[f.id]} onChange={(e) => setOn((o) => ({ ...o, [f.id]: e.target.checked }))} />
-                        <b>{f.label}</b> → {f.who === 'arun' ? 'Arun' : 'him'} +{Math.round(f.pct * 1000) / 10}% <Chip label={f.tag} />
-                      </label>
-                      <span className="tiny">{f.note}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="small">The companies say prices depend on route, time, demand and supply, the same for everyone at that spot and second. Only the rain surge ({RAIN_SURGE}×) applies, and it applies to both of you. <Chip label="STATEMENT" /></p>
-              )}
+            <Phone owner={`Arun · ${label(phones[0])}`} battery={phones[0].battery} model={phones[0].model === 'iphone' ? 'iphone' : 'android'}>{arunScreen}</Phone>
+            <div className="compare-mid lab wide">
+              <p className="kicker">Try it yourself</p>
+              <p className="lab-title">Same corner, same second. Change anything about either phone.</p>
+              <PriceLab phones={phones} setPhones={setPhones} active={scenario} setActive={setScenario} mode={mode} setMode={setMode} quoted={quoted} prices={[arunPrice, strangerPrice]} />
               <div className="fair-test">
                 <p className="small"><b>Here&rsquo;s the catch.</b> Real prices also jump around from second to second for everyone. Ask again a few times:</p>
                 <button className="btn small" onClick={tryAgain}>↻ Both ask again</button>
@@ -152,25 +123,27 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
                     {tries.map((t, i) => <li key={i}>{fmt(t.a)} vs {fmt(t.b)} <span className="muted">(gap {fmt(Math.abs(t.b - t.a))})</span></li>)}
                   </ol>
                 )}
-                {tries.length >= 3 && view === 'company' && <p className="tiny">Even with <b>no</b> personal pricing, two screens disagree by chance. A single screenshot can&rsquo;t settle it. Only many paired requests can.</p>}
+                {tries.length >= 3 && <p className="tiny">Even with <b>no</b> personal pricing, two screens disagree by chance. A single screenshot can&rsquo;t settle it. Only many paired requests, with everything else held equal, can.</p>}
+              </div>
+              <p className="small" style={{ marginTop: 12 }}>
+                You guessed <b>{GUESSES.find((g) => g.id === guess)?.label}</b>. The honest answer: <b>nobody outside the company can tell from two screens</b>.
+                The claims point in different directions, the companies deny all of them, and no regulator has made a finding.
+              </p>
+              {/* always visible at the bottom of the panel, however far you have scrolled */}
+              <div className="lab-footer">
+                <span className="tiny">Done comparing? Your fare: <b>{fmt(arunPrice)}</b></span>
+                <button className="btn" onClick={() => setStep('discount')}>Book the ride →</button>
               </div>
             </div>
-            <Phone owner="Stranger · new iPhone · 82% · Amex" battery={82} model="iphone">
+            <Phone owner={`Stranger · ${label(phones[1])}`} battery={phones[1].battery} model={phones[1].model === 'iphone' ? 'iphone' : 'android'}>
               <div className="ride-app">
                 <div className="ra-brand">gaadi</div>
-                <div className="ra-route"><div><span className="dot-g" /> Tyre puncture shop, Ring Road</div><div><span className="dot-r" /> Bapunagar</div></div>
+                <div className="ra-route"><div><span className="dot-g" /> Tyre puncture shop, Ring Road</div><div><span className="dot-r" /> {AREAS[phones[1].area]}</div></div>
                 <div className="ra-map" aria-hidden="true"><i className="ra-line" /><b className="ra-car" /></div>
                 <div className="ra-badge">High demand: rain · fares are higher ({RAIN_SURGE}×)</div>
                 <div className="ra-option sel"><div><b>Gaadi Go</b><span>4 min away · 6.2 km</span></div><div className="ra-price"><b>{fmt(strangerPrice)}</b></div></div>
               </div>
             </Phone>
-          </div>
-          <div className="verdict">
-            <p>
-              You guessed <b>{GUESSES.find((g) => g.id === guess)?.label}</b>. The honest answer: <b>nobody outside the company can tell from two screens</b>.
-              The claims point in different directions, the companies deny all of them, and no regulator has made a finding.
-            </p>
-            <button className="btn" onClick={() => setStep('discount')}>Book the ride →</button>
           </div>
         </div>
       )}
@@ -180,7 +153,7 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
         <div className="ride-row">
           <Phone owner="Arun" battery={5} model="android">
             {arunScreen}
-            <div className="ra-cta"><button className="g-btn" onClick={() => setStep('riding')}>Book Gaadi Go · {fmt(arunPrice)}</button></div>
+            <div className="ra-cta"><button className="g-btn" onClick={() => { note('ride-booked', Math.round(arunPrice)); setStep('booked'); }}>Book Gaadi Go · {fmt(arunPrice)}</button></div>
           </Phone>
           <div className="side-card">
             <p className="kicker">Before you tap “Book”</p>
@@ -199,64 +172,24 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
         </div>
       )}
 
-      {/* ---------- 4. the ride ---------- */}
-      {step === 'riding' && (
+      {/* ---------- 4. booked: the taxi pulls up; the ride itself happens in the street ---------- */}
+      {step === 'booked' && (
         <div className="ride-row">
-          <Phone owner="Arun" battery={4} model="android">
+          <Phone owner="Arun" battery={5} model="android">
             <div className="ride-app">
               <div className="ra-brand">gaadi</div>
-              <div className="ra-driver"><b>Mahesh</b> · white hatchback · GJ 01 ●●●● · ★ 4.9</div>
-              <div className="ra-map big" aria-hidden="true"><i className="ra-line" /><b className="ra-car moving" onAnimationEnd={() => setStep('receipt')} /></div>
-              <p className="tiny" style={{ textAlign: 'center' }}>Rain on the windscreen. The wipers keep time.</p>
+              <p className="r-title">Your ride is here</p>
+              <div className="ra-driver"><b>Mahesh</b> · yellow taxi · GJ 01 ●●●● · ★ 4.9</div>
+              <div className="ra-map" aria-hidden="true"><i className="ra-line" /><b className="ra-car" /></div>
+              <p className="tiny" style={{ textAlign: 'center' }}>Fare {fmt(arunPrice)} · pay by UPI at the end</p>
             </div>
           </Phone>
-          <div className="side-card"><p className="big-q">Mahesh drives in silence. His phone, on the dashboard, keeps pinging with the next request.</p></div>
-        </div>
-      )}
-
-      {/* ---------- 5. receipt, then the driver's side ---------- */}
-      {(step === 'receipt' || step === 'driver') && (
-        <div className={`ride-row ${step === 'driver' ? 'two' : ''}`}>
-          <Phone owner="Arun" battery={3} model="android">
-            <div className="ride-app receipt">
-              <div className="ra-brand">gaadi</div>
-              <p className="r-title">You&rsquo;ve arrived</p>
-              <p className="r-amt">{fmt(paid)}</p>
-              <p className="tiny">Paid by UPI · 6.2 km · 19 min</p>
-              <p className="r-rate">Rate Mahesh ★★★★★</p>
-            </div>
-          </Phone>
-          {step === 'receipt' && (
-            <div className="side-card">
-              <p className="big-q">You paid {fmt(paid)}. How much of it reaches the man who drove you?</p>
-              <button className="btn" autoFocus onClick={() => setStep('driver')}>Look at Mahesh&rsquo;s phone ↻</button>
-            </div>
-          )}
-          {step === 'driver' && (
-            <>
-              <Phone owner="Mahesh · driver" battery={41} model="android" time="22:01">
-                <div className="ride-app driver">
-                  <div className="ra-brand">gaadi <small>partner</small></div>
-                  <p className="r-title">Trip complete</p>
-                  <p className="r-amt">{fmt(driverGets)}</p>
-                  <p className="tiny">Your earnings for this trip</p>
-                  <div className="split"><i style={{ width: `${100 - cut}%` }} /><b style={{ width: `${cut}%` }} /></div>
-                  <p className="tiny">Rider paid {fmt(paid)} · platform kept {fmt(paid - driverGets)}</p>
-                  <div className="ra-next">New request in 0:14 · 2.1 km away · Accept?</div>
-                </div>
-              </Phone>
-              <div className="side-card">
-                <label className="slider">Platform&rsquo;s cut: <b>{cut}%</b>
-                  <input type="range" min={10} max={55} value={cut} onChange={(e) => setCut(+e.target.value)} />
-                </label>
-                <p className="small">Mahesh gets <b>{fmt(driverGets)}</b>. Neither you nor he could see the split when you booked. <Chip label="WHAT-IF" /></p>
-                <p className="tiny"><Chip label="DOCUMENTED" /> India&rsquo;s 2025 aggregator guidelines say drivers using their own car should get at least 80% of the fare, and cap surge at 2× the base fare. States had to adopt them; adoption varies.{cut > 20 && ' At this cut, Mahesh would get less than that.'}</p>
-                <p className="tiny"><Chip label="CONTESTED" /> 258 UK drivers who audited their own data found Uber&rsquo;s cut rose to as much as 50% on some trips. Uber says it does not recognise the figures.</p>
-                <p className="closing">All day an app decided what Arun was worth. Tonight he paid a man in the same position.</p>
-                <button className="btn" onClick={() => { note('ride', { paid: Math.round(paid), driver: Math.round(driverGets), cut }); onDone(); }}>Go inside →</button>
-              </div>
-            </>
-          )}
+          <div className="side-card">
+            <p className="kicker">21:44 · the shutter comes down behind you</p>
+            <p className="big-q">You leave the scooter outside the shop and get in.</p>
+            <p className="small">Scroll to ride home through the rain.</p>
+            <button className="btn" autoFocus onClick={onDone}>Get in →</button>
+          </div>
         </div>
       )}
     </div>

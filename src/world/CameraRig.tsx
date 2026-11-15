@@ -5,8 +5,8 @@ import { useStory } from '../story/store';
 import { home, phoneWorld, riderWorld } from './Rider';
 import { atTime } from '../story/acts';
 import { LOOP_LEN, frameAt, routeAt } from './path';
-
-const HOME_AT = atTime('22:40');
+import { HOME_AT, ROOM_AT } from '../story/timeline';
+import { ROOM } from './roomLayout';
 
 /**
  * Follows Arun along his loop. The camera itself rides the road (sampled a little behind him on the
@@ -14,6 +14,7 @@ const HOME_AT = atTime('22:40');
  */
 export function CameraRig() {
   const { camera } = useThree();
+  if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__cam = camera;
   const look = useRef(new THREE.Vector3());
   const goal = useMemo(() => new THREE.Vector3(), []);
   const goalLook = useMemo(() => new THREE.Vector3(), []);
@@ -43,6 +44,12 @@ export function CameraRig() {
       goal.copy(home.pos).addScaledVector(home.face, 6 - push * 2.5).addScaledVector(across, 2.2 - push).add(new THREE.Vector3(0, 2.2 - push * 0.6, 0));
       goalLook.copy(home.pos).add(new THREE.Vector3(0, 1.1, 0));
     }
+    if (progress >= ROOM_AT) {
+      // his room: from the doorway, slowly closing in until the phone buzzes at 23:30
+      const push = THREE.MathUtils.smoothstep(progress, ROOM_AT, atTime('23:30'));
+      goal.copy(ROOM.camFar).lerp(ROOM.camNear, push);
+      goalLook.copy(ROOM.look);
+    }
 
     const diving = phase === 'dive' || phase === 'phone';
     // a slow, deliberate push from wherever we are straight into the phone (1.6 s)
@@ -54,7 +61,9 @@ export function CameraRig() {
     const pos = goal.clone().lerp(screen, k);
     const lk = goalLook.clone().lerp(phoneWorld, Math.min(1, k * 2.2));
 
-    const s = first.current || reducedMotion ? 1 : 1 - Math.pow(0.04, dt);
+    // cut, don't fly, when the shot jumps across the world (street ↔ room)
+    const cut = camera.position.distanceTo(pos) > 60;
+    const s = first.current || reducedMotion || cut ? 1 : 1 - Math.pow(0.04, dt);
     first.current = false;
     camera.position.lerp(pos, k > 0.001 ? 1 : s);
     look.current.lerp(lk, k > 0.001 ? 1 : s);

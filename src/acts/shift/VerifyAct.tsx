@@ -3,8 +3,11 @@ import { useState } from 'react';
 import { Phone } from '../../ui/Phone';
 import { BehindScreen, PartnerHeader, Toast } from './common';
 import { useStory } from '../../story/store';
+import { sfx } from '../../audio/sound';
+import { useLab } from '../lab';
+import { FaceLab, FacePhone, FACE_PRESETS } from './FaceLab';
 
-type Step = 'offline' | 'selfie' | 'slots' | 'reveal';
+type Step = 'offline' | 'selfie' | 'lab' | 'slots' | 'reveal';
 const FIXES = [
   { id: 'helmet', label: 'Take off the helmet' },
   { id: 'light', label: 'Move under the street light' },
@@ -25,22 +28,26 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
   const [slots, setSlots] = useState<Record<string, boolean>>({ a: true });
   const clock = `06:${String(50 + tries * 4).padStart(2, '0')}`;
   const ready = fixed.helmet && fixed.light;
+  const lab = useLab(FACE_PRESETS);
 
   const capture = () => {
     setResult('checking');
+    sfx.shutter();
     setTimeout(() => {
       const n = tries + 1;
       setTries(n);
       // it passes once the helmet is off and the light is better, but never on the first try
-      setResult(ready && n >= 2 ? 'ok' : 'fail');
+      const ok = ready && n >= 2;
+      setResult(ok ? 'ok' : 'fail');
+      if (ok) sfx.success(); else sfx.error();
     }, 1300);
   };
 
   return (
     <div className="act ride-act">
       <div className="ride-row">
-        <Phone owner="Arun · Zipkart Partner" battery={100} model="android" time={clock}>
-          <PartnerHeader earned={0} online={step !== 'offline' && step !== 'selfie'} />
+        <Phone owner="Arun · Flopcart Partner" battery={100} model="android" time={clock}>
+          <PartnerHeader earned={0} online={step === 'slots' || step === 'reveal'} />
           {step === 'offline' && (
             <div className="zp-body center">
               <p className="zp-big">Good morning, Arun</p>
@@ -67,7 +74,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
               {result !== 'ok' ? (
                 <button className="zp-go small" disabled={result === 'checking' || tries >= 3} onClick={capture}>{tries === 0 ? 'Take selfie' : 'Try again'}</button>
               ) : (
-                <button className="zp-go small" onClick={() => setStep('slots')}>Continue</button>
+                <button className="zp-go small" onClick={() => setStep('lab')}>Continue</button>
               )}
               {tries >= 3 && result === 'fail' && (
                 <>
@@ -79,6 +86,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
               )}
             </div>
           )}
+          {step === 'lab' && <FacePhone v={lab.v} />}
           {step === 'slots' && (
             <div className="zp-body">
               <p className="zp-title">Book today&rsquo;s slots</p>
@@ -115,6 +123,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
             {tries > 0 && <p className="tiny">Morning orders missed while verifying: {tries * 2}</p>}
           </div>
         )}
+        {step === 'lab' && <FaceLab lab={lab} onNext={() => setStep('slots')} />}
         {step === 'slots' && (
           <div className="side-card">
             <p className="big-q">To earn the bonus, you must be online in the hottest hours of the day.</p>

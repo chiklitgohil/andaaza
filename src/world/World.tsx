@@ -7,6 +7,7 @@ import { Rider } from './Rider';
 import { Lights, Rain } from './Atmosphere';
 import { CameraRig } from './CameraRig';
 import { Life } from './Life';
+import { Room } from './Room';
 
 export default function World() {
   const [dpr, setDpr] = useState(1.5);
@@ -26,6 +27,7 @@ export default function World() {
       <Rider />
       <Life />
       <Rain />
+      <Room />
       <CameraRig />
     </Canvas>
   );

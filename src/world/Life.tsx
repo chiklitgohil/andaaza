@@ -9,6 +9,8 @@ import { daylight, rainAt } from './daylight';
 import { hourAt } from '../story/acts';
 
 // ---------------- traffic ----------------
+// no taxis in the background traffic: the only taxi in the story is the one Arun books
+const STREET_CARS = CARS.filter((u) => !u.includes('taxi'));
 interface CarSpec { url: string; t0: number; speed: number; lane: number }
 
 function Car({ spec }: { spec: CarSpec }) {
@@ -51,7 +53,7 @@ function Traffic() {
     for (let i = 0; i < 12; i++) {
       const sameWay = i % 3 === 0;
       out.push({
-        url: CARS[i % CARS.length],
+        url: STREET_CARS[i % STREET_CARS.length],
         t0: r(),
         speed: (sameWay ? 1 : -1) * (5 + r() * 5),
         lane: sameWay ? -2.3 : 2.3, // keep left (India): same-way traffic left, oncoming on the right

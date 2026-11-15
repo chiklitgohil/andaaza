@@ -1,16 +1,35 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { ROOM_AT } from '../story/timeline';
 import { ACTS, BEATS, clock } from '../story/acts';
 import { useStory } from '../story/store';
 import { jumpTo } from '../story/useScrollEngine';
 import { DebriefPanel } from './Debrief';
 import { getRequests, subscribe } from './requestWatch';
 import { Epilogue } from './Epilogue';
+import { setSound } from '../audio/sound';
+
+function toggleSound(on?: boolean) {
+  const next = on ?? !useStory.getState().sound;
+  setSound(next);
+  useStory.setState({ sound: next });
+}
+
+function SoundButton() {
+  const sound = useStory((s) => s.sound);
+  return (
+    <button className={`sound-btn ${sound ? 'on' : ''}`} aria-pressed={sound} onClick={() => toggleSound()} title="Sound is made in your browser. Nothing is downloaded.">
+      {sound ? '🔊 Sound on' : '🔇 Sound off'}
+    </button>
+  );
+}
+
 
 const END_AT = 0.985;
 
 const ACT_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentType<{ onDone: () => void }>>> = {
   game: lazy(() => import('../acts/game/GameAct')),
   ride: lazy(() => import('../acts/ride/RideAct')),
+  arrive: lazy(() => import('../acts/ride/ArriveAct')),
   verify: lazy(() => import('../acts/shift/VerifyAct')),
   offer: lazy(() => import('../acts/shift/OfferAct')),
   wait: lazy(() => import('../acts/shift/WaitAct')),
@@ -38,6 +57,7 @@ function Hud() {
           >{i + 1}</button>
         ))}
       </nav>
+      <SoundButton />
       <div className={`privacy ${third ? 'warn' : ''}`} title="This page sends nothing. Every network request is counted here, locally.">
         <span className="pdot" />{third} requests to other sites
       </div>
@@ -66,9 +86,30 @@ function Narration() {
           <span className="muted"> · this chapter is being built. Keep scrolling.</span>
         </div>
       )}
+      {progress < 0.01 && <SoundInvite />}
       {progress < 0.01 && <div className="scroll-hint" aria-hidden="true">scroll ↓</div>}
     </>
   );
+}
+
+function SoundInvite() {
+  const sound = useStory((s) => s.sound);
+  if (sound) return null;
+  return (
+    <div className="sound-invite">
+      <span>🎧 Best with sound</span>
+      <button className="btn small" onClick={() => toggleSound(true)}>Turn sound on</button>
+    </div>
+  );
+}
+
+/** A short fade from black when the camera cuts between the street and Arun's room. */
+function RoomFade() {
+  const inRoom = useStory((s) => s.progress >= ROOM_AT);
+  const prev = useRef(inRoom);
+  const [k, setK] = useState(0);
+  useEffect(() => { if (prev.current !== inRoom) { prev.current = inRoom; setK((x) => x + 1); } }, [inRoom]);
+  return k ? <div key={k} className="cut-fade" aria-hidden="true" /> : null;
 }
 
 function Buzz() {
@@ -130,6 +171,7 @@ function End() {
 export function Overlay() {
   return (
     <>
+      <RoomFade />
       <Hud />
       <End />
       <Narration />

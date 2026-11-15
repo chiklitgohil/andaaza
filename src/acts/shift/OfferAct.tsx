@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react';
 import { Phone } from '../../ui/Phone';
 import { BehindScreen, PartnerHeader, Toast } from './common';
 import { useStory } from '../../story/store';
+import { sfx } from '../../audio/sound';
+import { useLab } from '../lab';
+import { DayLab, DayPhone, DAY_PRESETS, simulate } from './DayLab';
 
 interface Offer { pay: number; km: number; from: string; to: string }
 const OFFERS: Offer[] = [
-  { pay: 38, km: 2.4, from: 'Zipkart dark store', to: 'Shanti Heights' },
+  { pay: 38, km: 2.4, from: 'Flopcart dark store', to: 'Shanti Heights' },
   { pay: 22, km: 9.1, from: 'Shree Ganesh Restaurant', to: 'Naroda GIDC' },
-  { pay: 44, km: 3.0, from: 'Zipkart dark store', to: 'Nikol' },
+  { pay: 44, km: 3.0, from: 'Flopcart dark store', to: 'Nikol' },
   { pay: 25, km: 7.8, from: 'Chai point', to: 'Odhav ring road' },
   { pay: 41, km: 2.8, from: 'Sweet Mart', to: 'Bapunagar' },
 ];
@@ -24,7 +27,8 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   const [earned, setEarned] = useState(392);
   const [rejects, setRejects] = useState(0);
   const [lost, setLost] = useState(false);
-  const [phase, setPhase] = useState<'offers' | 'odometer' | 'nextday' | 'reveal'>('offers');
+  const [phase, setPhase] = useState<'offers' | 'odometer' | 'nextday' | 'lab' | 'reveal'>('offers');
+  const lab = useLab(DAY_PRESETS);
   const [target, setTarget] = useState(15);
   const [bonus, setBonus] = useState(130);
   const offer = OFFERS[i];
@@ -32,17 +36,18 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     if (phase !== 'offers') return;
     setLeft(SECONDS);
+    sfx.ping();
     const id = setInterval(() => setLeft((x) => x - 1), 1000);
     return () => clearInterval(id);
   }, [i, phase]);
-  useEffect(() => { if (phase === 'offers' && left <= 0) decide(false, true); }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (phase === 'offers' && left > 0 && left <= 3) sfx.tick(); if (phase === 'offers' && left <= 0) decide(false, true); }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function decide(accept: boolean, timeout = false) {
-    if (accept) { setDone((d) => d + 1); setEarned((e) => e + offer.pay); }
+    if (accept) { setDone((d) => d + 1); setEarned((e) => e + offer.pay); sfx.cash(); }
     else {
       const r = rejects + 1;
       setRejects(r);
-      if (r > REJECTS_ALLOWED) setLost(true);
+      if (r > REJECTS_ALLOWED) { setLost(true); sfx.error(); }
       void timeout;
     }
     if (i + 1 >= OFFERS.length) { note('offer', { done: done + (accept ? 1 : 0), rejects: rejects + (accept ? 0 : 1) }); setPhase('odometer'); }
@@ -54,14 +59,21 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   return (
     <div className="act ride-act">
       <div className="ride-row">
-        <Phone owner="Arun · Zipkart Partner" battery={71} model="android" time={phase === 'nextday' || phase === 'reveal' ? '07:02' : '11:48'}>
-          <PartnerHeader earned={earned} extra={
-            <div className="zp-bar" aria-label={`Bonus progress ${done} of ${target}`}>
-              <div className="zp-bar-top"><span>Daily bonus ₹{bonus}</span><span>{done}/{target}</span></div>
-              <div className="zp-track"><i style={{ width: `${pct}%` }} /><b className="flag" style={{ left: '100%' }}>⚑</b></div>
-              {lost && <span className="zp-lost">Bonus lost: too many rejections today</span>}
-            </div>
-          } />
+        <Phone owner="Arun · Flopcart Partner" battery={phase === 'lab' ? 12 : 71} model="android" time={phase === 'lab' ? '22:30' : phase === 'nextday' || phase === 'reveal' ? '07:02' : '11:48'}>
+          {phase === 'lab' ? (
+            <>
+              <PartnerHeader earned={Math.round(simulate(lab.v).gross + simulate(lab.v).bonus)} online={false} />
+              <DayPhone v={lab.v} />
+            </>
+          ) : (
+            <PartnerHeader earned={earned} extra={
+              <div className="zp-bar" aria-label={`Bonus progress ${done} of ${target}`}>
+                <div className="zp-bar-top"><span>Daily bonus ₹{bonus}</span><span>{done}/{target}</span></div>
+                <div className="zp-track"><i style={{ width: `${pct}%` }} /><b className="flag" style={{ left: '100%' }}>⚑</b></div>
+                {lost && <span className="zp-lost">Bonus lost: too many rejections today</span>}
+              </div>
+            } />
+          )}
           {phase === 'offers' && offer && (
             <div className="zp-body">
               <div className="zp-offer" key={i}>
@@ -88,11 +100,12 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
           {(phase === 'nextday' || phase === 'reveal') && (
             <div className="zp-body center">
               {phase === 'nextday' && target === 15 ? (
-                <button className="zp-go small" onClick={() => { setTarget(30); setBonus(205); setDone(0); setEarned(0); setLost(false); setPhase('reveal'); }}>Open today&rsquo;s app</button>
+                <button className="zp-go small" onClick={() => { sfx.ping(); setTarget(30); setBonus(205); setDone(0); setEarned(0); setLost(false); }}>Open today&rsquo;s app</button>
               ) : (
                 <>
                   <Toast tone="good">🎉 New earnings model! Earn more with our upgraded bonus.</Toast>
                   <p className="tiny">Bonus ₹205 for 30 orders (yesterday: ₹130 for 15)</p>
+                  {phase === 'nextday' && <button className="zp-go small" onClick={() => setPhase('lab')}>Plan today →</button>}
                 </>
               )}
             </div>
@@ -110,8 +123,13 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
           <div className="side-card"><p className="big-q">You rode 2.7 km the app doesn&rsquo;t count.</p><p className="small">Nobody else can see your odometer. The app&rsquo;s number is the one that pays.</p></div>
         )}
         {phase === 'nextday' && (
-          <div className="side-card"><p className="big-q">Yesterday you finished at {done}/{15}. A new day, the same app.</p></div>
+          <div className="side-card">
+            {target === 15
+              ? <p className="big-q">Yesterday you finished at {done}/15. A new day, the same app.</p>
+              : <><p className="big-q">Twice the orders for 58% more money. Is that an upgrade?</p><p className="small">Plan today and find out.</p></>}
+          </div>
         )}
+        {phase === 'lab' && <DayLab lab={lab} onNext={() => setPhase('reveal')} />}
         {phase === 'reveal' && (
           <BehindScreen
             title="The finish line moved overnight"

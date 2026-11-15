@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { LANDMARKS, LOOP, LOOP_LEN, frameAt } from './path';
 import { signTexture } from './textures';
+import { Scooter } from './Rider';
 import { daylight, rainAt } from './daylight';
 import { hourAt } from '../story/acts';
 import { useStory } from '../story/store';
@@ -102,9 +103,13 @@ function useLayout() {
     // trees on the inner pavement, electricity poles on the outer
     for (let t = 0; t < 1; t += 23 / LOOP_LEN) {
       const { pos, side } = frameAt(t);
-      if (r() > 0.35) { const p = pos.clone().addScaledVector(side, -6.6); add(M('suburban', r() > 0.5 ? 'tree-large' : 'tree-small'), mat4(p.x, 0.14, p.z, r() * 6, SCALE.tree)); }
+      const [a, b, c] = [r(), r(), r()];
+      // keep shop fronts clear: no tree in front of a landmark's sign on this side of the road
+      const blocks = LANDMARKS.some((l) => l.side === -1 && tDist(t, l.t) < 0.025);
+      if (a > 0.35 && !blocks) { const p = pos.clone().addScaledVector(side, -6.6); add(M('suburban', b > 0.5 ? 'tree-large' : 'tree-small'), mat4(p.x, 0.14, p.z, c * 6, SCALE.tree)); }
     }
     for (let t = 0.005; t < 1; t += 19 / LOOP_LEN) {
+      if (LANDMARKS.some((l) => l.side === 1 && tDist(t, l.t) < 0.012)) continue; // nor a pole
       const { pos, side, tan } = frameAt(t);
       const p = pos.clone().addScaledVector(side, 7.6);
       add(M('roads', 'electricity-pole'), mat4(p.x, 0.14, p.z, Math.atan2(tan.x, tan.z) + Math.PI / 2, 10));
@@ -154,7 +159,7 @@ function Landmark({ l }: { l: (typeof LANDMARKS)[number] }) {
     <group position={[p.x, 0, p.z]} rotation={[0, rot, 0]}>
       <InstancedModel url={url} items={items} glow shadows />
       {/* shop sign and a warm lit doorway, facing the road */}
-      <mesh position={[0, 3.9, 4.75]}>
+      <mesh position={[0, l.kind === 'restaurant' ? 4.5 : 3.9, 5.35]}>
         <planeGeometry args={[6.6, 1.25]} />
         <meshStandardMaterial map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.35} toneMapped={false} />
       </mesh>
@@ -162,7 +167,45 @@ function Landmark({ l }: { l: (typeof LANDMARKS)[number] }) {
         <planeGeometry args={[1.8, 2.3]} />
         <meshBasicMaterial color="#ffcf8a" />
       </mesh>
+      {l.kind === 'restaurant' && <RestaurantFront />}
+      {l.kind === 'tyre' && <TyreShopFront />}
     </group>
+  );
+}
+
+/** Shree Ganesh: an awning, two parasol tables, a lit kitchen hatch, and riders' scooters waiting at the kerb. */
+function RestaurantFront() {
+  const awning = useMemo(() => [mat4(0, 1.5, 4.4, 0, 5.5)], []);
+  const parasols = useMemo(() => [mat4(-2.7, 0, 6.2, 0, 5.5), mat4(2.2, 0, 6.3, 0.5, 5.5)], []);
+  const chair = (x: number, z: number, c: string) => (
+    <mesh key={`${x}${z}`} position={[x, 0.32, z]} castShadow><boxGeometry args={[0.42, 0.64, 0.42]} /><meshStandardMaterial color={c} roughness={0.7} /></mesh>
+  );
+  return (
+    <>
+      <InstancedModel url={M('commercial', 'detail-awning-wide')} items={awning} shadows />
+      <InstancedModel url={M('commercial', 'detail-parasol-a')} items={parasols} shadows />
+      {[chair(-3.6, 6.2, '#d23b2f'), chair(-1.8, 6.2, '#d23b2f'), chair(1.3, 6.5, '#f1ece2'), chair(3.1, 6.1, '#f1ece2')]}
+      {/* kitchen hatch, lit */}
+      <mesh position={[-2.7, 1.8, 4.76]}><planeGeometry args={[1.5, 0.9]} /><meshBasicMaterial color="#ffd9a0" /></mesh>
+      {/* other riders' scooters, waiting for the same "ready" food */}
+      <group position={[4.2, 0, 7.4]} rotation={[0, Math.PI / 2, 0]}><Scooter box="#e4572e" /></group>
+      <group position={[5.9, 0, 7.4]} rotation={[0, Math.PI / 2 + 0.15, 0]}><Scooter box="#2fa36f" /></group>
+    </>
+  );
+}
+
+/** The tyre-puncture stall at 21:30: shutter half down, tyres stacked, one bare bulb. */
+function TyreShopFront() {
+  return (
+    <>
+      <mesh position={[0, 1.75, 4.8]} castShadow><boxGeometry args={[2.1, 1.1, 0.08]} /><meshStandardMaterial color="#9aa0a8" metalness={0.4} roughness={0.5} /></mesh>
+      {[0, 1, 2, 3].map((i) => (
+        <mesh key={i} position={[-2.7, 0.18 + i * 0.3, 5.7]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+          <torusGeometry args={[0.42, 0.15, 8, 18]} /><meshStandardMaterial color="#1e1e22" roughness={0.9} />
+        </mesh>
+      ))}
+      <mesh position={[0.9, 2.55, 5.05]}><sphereGeometry args={[0.1, 10, 8]} /><meshBasicMaterial color="#fff2c0" toneMapped={false} /></mesh>
+    </>
   );
 }
 

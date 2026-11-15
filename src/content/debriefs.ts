@@ -9,7 +9,7 @@ export const DEBRIEFS_SHIFT: Record<string, Debrief> = {
     actId: 'verify',
     title: 'Verify it’s you',
     message: 'Before Arun earns a rupee, software decides whether he is allowed to work. When a face check fails, or an account is blocked, there is often no person to argue with and no reason given.',
-    honesty: 'The selfie is simulated: this page never uses your camera. Zipkart, its slots and its bonus are invented.',
+    honesty: 'The selfie is simulated: this page never uses your camera. Flopcart, its slots and its bonus are invented.',
     facts: [
       {
         text: 'In a survey of 150 Uber drivers in India, nearly half said they had been temporarily or permanently locked out of their accounts by selfie verification. Riders report Swiggy and Zomato also use selfies to log in.',
@@ -28,6 +28,11 @@ export const DEBRIEFS_SHIFT: Record<string, Debrief> = {
         label: 'DOCUMENTED',
         response: 'Uber says facial verification "was not the reason" for his removal and that there was robust human review.',
         sources: [{ title: 'Bates Wells and the EHRC support Uber Eats driver who faced problematic AI checks', publisher: 'Bates Wells', url: 'https://bateswells.co.uk/updates/bates-wells-and-the-ehrc-supports-uber-eats-driver-who-faced-problematic-ai-checks/', opened: true }],
+      },
+      {
+        text: 'A US government evaluation of 189 face-recognition algorithms from 99 developers (NIST, December 2019) found that most of them showed demographic differences in error rates: they made more mistakes for some groups of people than others.',
+        label: 'DOCUMENTED',
+        sources: [{ title: 'NIST Study Evaluates Effects of Race, Age, Sex on Face Recognition Software', publisher: 'NIST', url: 'https://www.nist.gov/news-events/news/2019/12/nist-study-evaluates-effects-race-age-sex-face-recognition-software', opened: true }],
       },
       {
         text: 'Blinkit riders told Newslaundry their daily bonus requires staying logged in from 12 to 4 pm, the hottest hours of the day.',
@@ -219,6 +224,16 @@ export const DEBRIEFS: Record<string, Debrief> = {
           { title: 'Uber comment on Consumer Reports', publisher: 'Uber', url: 'https://www.uber.com/us/en/newsroom/uber-comment-consumer-reports/', opened: true },
         ],
       },
+    ],
+  },
+  arrive: {
+    actId: 'arrive',
+    title: 'What the fare paid for',
+    message:
+      'Arun paid one number and Mahesh received another. Neither of them saw the split when the ride was booked. ' +
+      'How much of a fare reaches the driver is set by the platform, can change from trip to trip, and is rarely shown to either side.',
+    honesty: 'Mahesh, his trips, his costs and every rupee in this chapter are invented. The cut you choose is a WHAT-IF; the facts below are not.',
+    facts: [
       {
         text: 'India’s Motor Vehicle Aggregator Guidelines (July 2025) cap surge pricing at twice the base fare and say drivers using their own vehicles should receive at least 80% of the fare. States were asked to adopt them.',
         label: 'DOCUMENTED',
