@@ -1,32 +1,29 @@
-# The Glass City
+# Andaaza
 
-An interactive 3D walk through the hidden machinery of everyday apps: what they **collect**, what they **infer**, and what is **done** with it. Every claim carries an evidence label (DOCUMENTED, REPORTED, ALLEGED, CONTESTED, STATEMENT, WHAT-IF, FICTIONAL). An STS class project.
+*andaaza (n.): a guess, an estimate.*
 
-## Acts
-1. **Mirror Room**: a live, local-only reveal of what any website can read from your browser.
-2. **Glass City**: eleven places in one day, with real cases and three mini-games (Puppet Theatre, Stack Shift, Dispatcher).
-3. **Broker Tower**: real, documented segment names assembled into a profile, followed by an illustrative auction.
-4. **Auditor's Lab**: design fair tests against a shop with a hidden rule.
-Plus the Myths Room, What you can do, the Case Library and About & method.
+An interactive 3D story about what apps **collect**, what they **infer**, and how those guesses can be used against the people they are about. You play one day as Arun, a delivery rider in Ahmedabad, from 06:15 to midnight. Over the day his phone checks his face, sets his pay, prices his taxi ride home and keeps him playing a game in bed. An STS (Science, Technology and Society) class project.
+
+## How it works
+- **Scroll** to move through the day. At each stop the camera dives into Arun's phone.
+- **Hands-on labs** at every stop: move the sliders, or pick a preset, and see the result and the reasons behind it.
+- **Behind the screen** panels after each stop say what is real. Every claim carries an evidence label: DOCUMENTED, REPORTED, ALLEGED, CONTESTED, STATEMENT, WHAT-IF or FICTIONAL. Allegations are shown with the company's response.
+
+Arun, his city, every person and price, and the apps (Flopcart, Gaadi, Stack) are invented. Flopcart is a joke name, not Flipkart. The mechanisms they show are drawn from real, sourced cases.
 
 ## Privacy
-No analytics, trackers, cookies or third-party requests. The production build injects a Content-Security-Policy with `connect-src 'none'`, and an on-page counter lists every network request.
-
-## Data
-- `data/cases/*.json`: the case library (source of truth), one file per city stop.
-- `data/myths.json`: weak or debunked claims.
-- `SOURCES.md`: generated, human-readable list of every case and source (`npm run sources`).
-- `npm run validate`: the honesty audit. The build fails if a case lacks a label, sources, outcome or limits, or if an ALLEGED/CONTESTED case lacks the company's response.
-- `npm run check-links`: a dev-time link checker (it runs on your machine, never in the site).
+No analytics, trackers, cookies or third-party requests. The production build injects a Content-Security-Policy with `connect-src 'none'`, and an on-page counter shows every network request. The site never uses the camera, microphone or location. Sound is off until the visitor turns it on, and it is synthesised in the browser.
 
 ## Run
 ```
 npm install
 npm run dev        # development
-npm run build      # validate + generate SOURCES.md + type-check + build to dist/
+npm run build      # type-check + build to dist/
 npm run preview    # serve the production build
 ```
-The site is static: `npm run build` produces a `dist/` folder that any static host (for example Netlify or Vercel) can serve as-is. It is not deployed anywhere at the moment.
+The site is static: `npm run build` produces a `dist/` folder that any static host (for example Netlify) can serve as-is.
 
 ## Credits
-The Stack Shift rigged dealer is a simplified, original illustration of rules reported by Ayo Omolewa (https://ayoships.com/breakdowns/block-blast). All 3D geometry is procedural. Facts are as of 13 November 2026.
+- 3D models: Kenney (kenney.nl), CC0.
+- Stack's hidden rules are a simplified re-creation of what Ayo Omolewa reported finding in a popular puzzle game (https://ayoships.com/breakdowns/block-blast).
+- Built with React, three.js and react-three-fiber.

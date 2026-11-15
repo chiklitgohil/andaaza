@@ -39,7 +39,7 @@ export const ACTS: Act[] = [
 ];
 
 export const BEATS: Beat[] = [
-  { at: atTime('06:15'), time: '06:15', lines: ['THE LAST MILE', 'You are Arun. Ahmedabad. 06:15.', 'Scroll to start your day.'] },
+  { at: atTime('06:15'), time: '06:15', lines: ['Andaaza', 'andaaza (n.) · a guess, an estimate. What your apps make of you.','You are Arun. Ahmedabad. 06:15.', 'Scroll to start your day.'] },
   { at: atTime('06:32'), time: '06:32', lines: ['The bag is on your back. The scooter coughs, then starts.', 'Your phone is the only boss you will see today.'] },
   { at: atTime('08:00'), time: '08:00', lines: ['The city wakes up hungry.'] },
   { at: atTime('11:30'), time: '11:30', lines: ['The sun climbs. So does the temperature.'] },

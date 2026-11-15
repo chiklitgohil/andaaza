@@ -1,7 +1,7 @@
 {
-  "name": "the-last-mile",
+  "name": "andaaza",
   "version": "1.0.0",
-  "description": "The Last Mile: an interactive 3D story. You are Arun, a delivery rider in Ahmedabad (STS project)",
+  "description": "Andaaza (a guess, an estimate): an interactive 3D story about what apps collect, infer and use against you, told through one day as a delivery rider in Ahmedabad (STS project)",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

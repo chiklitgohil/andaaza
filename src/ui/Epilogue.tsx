@@ -111,7 +111,8 @@ export function Epilogue() {
             ) : (
               <>
                 <p className="kicker">About this project</p>
-                <h2>The Last Mile</h2>
+                <h2>Andaaza</h2>
+                <p className="small"><i>Andaaza</i> is Hindi for a guess or an estimate. Every app in this story was making one about Arun.</p>
                 <p className="lede">An interactive story for a Science, Technology and Society class. You played one day as Arun, a delivery rider in Ahmedabad, to feel what is hard to see: how apps manage workers, price customers and harvest attention.</p>
                 <h3>What is real and what is invented</h3>
                 <p className="small">Arun, his city, the apps (Flopcart, Gaadi, Stack), every person and every price in the story are invented. Flopcart is a joke name: it is not Flipkart or any other real company, and nothing in the story describes what Flipkart does. The mechanisms they show are drawn from real cases, each labelled by how strong its evidence is. Allegations are shown with the company&rsquo;s response. Where we use a mechanism from another country, we say so.</p>
