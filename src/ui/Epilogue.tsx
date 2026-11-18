@@ -4,6 +4,7 @@ import { DEBRIEFS } from '../content/debriefs';
 import { ACTS } from '../story/acts';
 import { LABEL_COLOR, LABEL_MEANING, type Label } from '../content/types';
 import { Chip } from './Debrief';
+import { scoreOf } from '../acts/guess';
 
 type J = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -16,7 +17,8 @@ const skipped = <span className="muted">skipped</span>;
 export function Epilogue() {
   const journal = useStory((s) => s.journal) as J;
   const restart = useStory((s) => s.restart);
-  const [panel, setPanel] = useState<'none' | 'evidence' | 'about'>('none');
+  const [panel, setPanel] = useState<'none' | 'about'>('none');
+  const score = scoreOf(journal);
   const { verify, offer, wait, tip, strike, game, ride } = journal;
   const guess = journal['ride-guess'];
   const waitChoice = journal['wait-choice'];
@@ -32,6 +34,12 @@ export function Epilogue() {
         </figure>
         <p className="twist-gloss">He wrote this in 1990, years before smartphones.</p>
         <p className="twist-gloss">Today you met three apps, and each kept its own piece of Arun: a face-match score, an acceptance rate, a battery level, minutes of play. Each made its <i>andaaza</i> from its piece. None of them was looking at the whole person.</p>
+        {score.made > 0 && (
+          <div className="andaaza-score" aria-label="Your Andaaza score">
+            <b>{score.right}<small>/{score.made}</small></b>
+            <p>You made {score.made} guesses about the apps today and got {score.right} right. The apps guessed about Arun all day, with far more data than you had.</p>
+          </div>
+        )}
         <button className="btn" autoFocus onClick={() => setStage('day')}>See Arun&rsquo;s day, the way the apps saw it →</button>
       </div>
     );
@@ -90,51 +98,52 @@ export function Epilogue() {
       </div>
 
       <div className="row">
-        <button className="btn" onClick={() => setPanel('evidence')}>All the evidence</button>
+        <button className="btn" onClick={() => document.getElementById('evidence')?.scrollIntoView({ behavior: 'smooth' })}>Evidence and sources ↓</button>
         <button className="btn ghost" onClick={() => setPanel('about')}>About this project</button>
         <button className="btn ghost" onClick={() => { restart(); scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); }}>Start the day again</button>
       </div>
 
+      <section id="evidence" className="evidence" aria-label="Evidence and sources">
+        <p className="kicker">Evidence and sources</p>
+        <h2>Every claim in the story, and where it comes from</h2>
+        <p className="small">During the story we kept the screens clear. Here is everything behind them: how strong each claim&rsquo;s evidence is, what the company said, the source, and what we invented.</p>
+        <div className="legend">
+          {(Object.keys(LABEL_COLOR) as Label[]).map((l) => <p key={l}><Chip label={l} /> {LABEL_MEANING[l]}</p>)}
+        </div>
+        {ACTS.map((a) => {
+          const d = DEBRIEFS[a.id];
+          if (!d) return null;
+          return (
+            <section key={a.id} className="ev-act">
+              <h3>{a.time} · {d.title}</h3>
+              <ul className="facts">
+                {d.facts.map((f, i) => (
+                  <li key={i}>
+                    <Chip label={f.label} /> {f.text}
+                    {f.response && <span className="resp">Response: {f.response}</span>}
+                    <span className="srcs">{f.sources.map((s) => (
+                      <a key={s.url} href={s.url} target="_blank" rel="noreferrer noopener">{s.publisher}{s.opened ? '' : ' (snippet only)'}</a>
+                    ))}</span>
+                  </li>
+                ))}
+                {d.honesty && <li className="invented"><Chip label="FICTIONAL" /> {d.honesty}</li>}
+              </ul>
+            </section>
+          );
+        })}
+      </section>
+
       {panel !== 'none' && (
-        <div className="ep-modal" role="dialog" aria-label={panel === 'evidence' ? 'All the evidence' : 'About this project'}>
+        <div className="ep-modal" role="dialog" aria-label="About this project">
           <div className="debrief wide">
             <button className="btn ghost small close" onClick={() => setPanel('none')}>✕ Close</button>
-            {panel === 'evidence' ? (
-              <>
-                <p className="kicker">All the evidence</p>
-                <h2>Every claim in this story, with its label</h2>
-                <div className="legend">
-                  {(Object.keys(LABEL_COLOR) as Label[]).map((l) => <p key={l}><Chip label={l} /> {LABEL_MEANING[l]}</p>)}
-                </div>
-                {ACTS.map((a) => {
-                  const d = DEBRIEFS[a.id];
-                  if (!d) return null;
-                  return (
-                    <section key={a.id} className="ev-act">
-                      <h3>{a.time} · {d.title}</h3>
-                      <ul className="facts">
-                        {d.facts.map((f, i) => (
-                          <li key={i}>
-                            <Chip label={f.label} /> {f.text}
-                            {f.response && <span className="resp">Response: {f.response}</span>}
-                            <span className="srcs">{f.sources.map((s) => (
-                              <a key={s.url} href={s.url} target="_blank" rel="noreferrer noopener">{s.publisher}{s.opened ? '' : ' (snippet only)'}</a>
-                            ))}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  );
-                })}
-              </>
-            ) : (
-              <>
+            <>
                 <p className="kicker">About this project</p>
                 <h2>Andaaza</h2>
                 <p className="small"><i>Andaaza</i> is Hindi for a guess or an estimate. Every app in this story was making one about Arun.</p>
                 <p className="lede">An interactive story for a Science, Technology and Society class. You played one day as Arun, a delivery rider in Ahmedabad, to feel what is hard to see: how apps manage workers, price customers and harvest attention.</p>
                 <h3>What is real and what is invented</h3>
-                <p className="small">Arun, his city, the apps (Flopcart, Gaadi, Stack), every person and every price in the story are invented. Flopcart is a joke name: it is not Flipkart or any other real company, and nothing in the story describes what Flipkart does. The mechanisms they show are drawn from real cases, each labelled by how strong its evidence is. Allegations are shown with the company&rsquo;s response. Where we use a mechanism from another country, we say so.</p>
+                <p className="small">Arun, his city, the apps (Flopcart, Gaadi, Stack), every person and every price in the story are invented. Flopcart is a joke name: it is not Flipkart or any other real company, and nothing in the story describes what Flipkart does. The mechanisms they show are drawn from real cases. During the story the wording says how sure we are (&ldquo;riders say&rdquo;, &ldquo;the company denies it&rdquo;); the evidence list on this page gives every claim its label, the company&rsquo;s response and its source. Where we use a mechanism from another country, we say so.</p>
                 <h3>Privacy</h3>
                 <p className="small">This site collects nothing: no analytics, no cookies, no trackers, no accounts. It never uses your camera, microphone or location. The published version blocks every request to other websites, and the counter at the top right shows the count. Your choices stay in this tab and vanish when you close it.</p>
                 <h3>Credits</h3>
@@ -147,7 +156,6 @@ export function Epilogue() {
                 </ul>
                 <p className="small muted">Facts as of November 2026.</p>
               </>
-            )}
           </div>
         </div>
       )}

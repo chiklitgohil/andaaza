@@ -1,7 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
-import { sfx } from '../../audio/sound';
-import { Chip } from '../../ui/Debrief';
-import type { Label } from '../../content/types';
+import type { ReactNode } from 'react';
 
 /** Header of Arun's FICTIONAL delivery app, "Flopcart Partner". */
 export function PartnerHeader({ earned, online = true, extra }: { earned: number; online?: boolean; extra?: ReactNode }) {
@@ -13,26 +10,6 @@ export function PartnerHeader({ earned, online = true, extra }: { earned: number
         <span className="zp-earned">Today ₹{earned}</span>
       </div>
       {extra}
-    </div>
-  );
-}
-
-export interface Reveal { text: ReactNode; label: Label }
-
-/** The "other side of the screen" card that appears after you've played. */
-export function BehindScreen({ title, points, children, onNext, nextLabel = 'Put the phone away →' }: {
-  title: string; points: Reveal[]; children?: ReactNode; onNext: () => void; nextLabel?: string;
-}) {
-  useEffect(() => { sfx.reveal(); }, []);
-  return (
-    <div className="side-card behind">
-      <p className="kicker">Behind the screen</p>
-      <p className="big-q">{title}</p>
-      <ul className="reveal-list">
-        {points.map((p, i) => <li key={i}><Chip label={p.label} /> <span>{p.text}</span></li>)}
-      </ul>
-      {children}
-      <button className="btn" onClick={onNext}>{nextLabel}</button>
     </div>
   );
 }

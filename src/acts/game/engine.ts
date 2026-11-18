@@ -125,9 +125,9 @@ export function harvestChecks(p: Player, score: number, loaded: number | null, s
   const ratio = loaded != null ? loaded / p.lastEcpm : 0;
   const bar = p.bestStart + s.step * (1 + p.revives);
   return [
-    { label: 'Your last 3 rewarded ads were watched to the end', met: p.recentAds.every(Boolean), detail: `${p.recentAds.filter(Boolean).length}/3` },
-    { label: 'The ad loaded right now pays ≥ 3.5× your last one', met: loaded != null && ratio >= 3.5, detail: loaded == null ? 'no ad loaded' : `${ratio.toFixed(1)}×` },
-    { label: `Score ≥ your record + ${s.step}`, met: score >= bar, detail: `${score} / ${bar}` },
+    { label: 'You watched your last 3 ads', met: p.recentAds.every(Boolean), detail: `${p.recentAds.filter(Boolean).length}/3` },
+    { label: 'The next ad pays 3.5× your last', met: loaded != null && ratio >= 3.5, detail: loaded == null ? 'no ad loaded' : `${ratio.toFixed(1)}×` },
+    { label: `You’re ${s.step} past your record`, met: score >= bar, detail: `${score} / ${bar}` },
   ];
 }
 

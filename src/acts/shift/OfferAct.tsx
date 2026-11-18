@@ -1,12 +1,14 @@
 // ACT 2 · THE OFFER. Orders on a timer, a rejection limit, a bonus target that moves.
-// All amounts are FICTIONAL, shaped like those riders reported to Newslaundry (Blinkit, 2025).
+// All amounts are FICTIONAL, shaped like those riders reported (see debriefs.ts).
 import { useEffect, useState } from 'react';
 import { Phone } from '../../ui/Phone';
-import { BehindScreen, PartnerHeader, Toast } from './common';
+import { PartnerHeader, Toast } from './common';
 import { useStory } from '../../story/store';
 import { sfx } from '../../audio/sound';
-import { useLab } from '../lab';
-import { DayLab, DayPhone, DAY_PRESETS, simulate } from './DayLab';
+import { Guess } from '../guess';
+import { Unfold } from '../unfold';
+import { UNFOLD } from '../../content/unfold';
+import { DayLab, DayPhone, dayFor, simulate, type DV } from './DayLab';
 
 interface Offer { pay: number; km: number; from: string; to: string }
 const OFFERS: Offer[] = [
@@ -28,7 +30,9 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   const [rejects, setRejects] = useState(0);
   const [lost, setLost] = useState(false);
   const [phase, setPhase] = useState<'offers' | 'odometer' | 'nextday' | 'lab' | 'reveal'>('offers');
-  const lab = useLab(DAY_PRESETS);
+  const [scheme, setScheme] = useState<DV['scheme']>('new');
+  const [answered, setAnswered] = useState(false);
+  const day = simulate(dayFor(scheme));
   const [target, setTarget] = useState(15);
   const [bonus, setBonus] = useState(130);
   const offer = OFFERS[i];
@@ -62,8 +66,8 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
         <Phone owner="Arun · Flopcart Partner" battery={phase === 'lab' ? 12 : 71} model="android" time={phase === 'lab' ? '22:30' : phase === 'nextday' || phase === 'reveal' ? '07:02' : '11:48'}>
           {phase === 'lab' ? (
             <>
-              <PartnerHeader earned={Math.round(simulate(lab.v).gross + simulate(lab.v).bonus)} online={false} />
-              <DayPhone v={lab.v} />
+              <PartnerHeader earned={Math.round(day.gross + day.bonus)} online={false} />
+              <DayPhone v={dayFor(scheme)} />
             </>
           ) : (
             <PartnerHeader earned={earned} extra={
@@ -105,7 +109,6 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
                 <>
                   <Toast tone="good">🎉 New earnings model! Earn more with our upgraded bonus.</Toast>
                   <p className="tiny">Bonus ₹205 for 30 orders (yesterday: ₹130 for 15)</p>
-                  {phase === 'nextday' && <button className="zp-go small" onClick={() => setPhase('lab')}>Plan today →</button>}
                 </>
               )}
             </div>
@@ -115,34 +118,24 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
         {phase === 'offers' && (
           <div className="side-card">
             <p className="kicker">11:48 · four more to the bonus</p>
-            <p className="big-q">Each order disappears in {SECONDS} seconds. You see the pay before you see the whole route.</p>
-            <p className="small">Turn down a bad one and you risk the bonus. Accept everything and some trips pay less than your fuel.</p>
+            <p className="big-q">{SECONDS} seconds per order. Say no too often and the bonus is gone.</p>
           </div>
         )}
         {phase === 'odometer' && (
-          <div className="side-card"><p className="big-q">You rode 2.7 km the app doesn&rsquo;t count.</p><p className="small">Nobody else can see your odometer. The app&rsquo;s number is the one that pays.</p></div>
+          <div className="side-card"><p className="big-q">You rode 2.7 km the app doesn&rsquo;t count.</p></div>
         )}
         {phase === 'nextday' && (
           <div className="side-card">
             {target === 15
               ? <p className="big-q">Yesterday you finished at {done}/15. A new day, the same app.</p>
-              : <><p className="big-q">Twice the orders for 58% more money. Is that an upgrade?</p><p className="small">Plan today and find out.</p></>}
+              : <Guess id="offer-upgrade" q="Twice the orders for 58% more money. Is that an upgrade?" options={['Yes, more money', 'No']} correct={1}
+                  onAnswer={() => setAnswered(true)}
+                  reveal={<>Play the same day under both rules and see.</>} />}
+            {answered && target !== 15 && <button className="btn" onClick={() => setPhase('lab')}>Play the day →</button>}
           </div>
         )}
-        {phase === 'lab' && <DayLab lab={lab} onNext={() => setPhase('reveal')} />}
-        {phase === 'reveal' && (
-          <BehindScreen
-            title="The finish line moved overnight"
-            onNext={onDone}
-            points={[
-              { label: 'REPORTED', text: <>Blinkit riders told Newslaundry (2025) the bonus ladder changed from ₹130 for 15 orders to ₹205 for 30. Blinkit did not answer questions.</> },
-              { label: 'CONTESTED', text: <>In 2023 Blinkit switched from a flat fee to distance-based pay; riders said per-order pay fell from ₹25 to ₹15 and shut dark stores in protest. Blinkit called it an opt-in model that pays for effort.</> },
-              { label: 'REPORTED', text: <>Swiggy&rsquo;s daily incentive was reported to be forfeited after more than one rejection (2021). Zomato temporarily waived rejection penalties during the Dec 2025 strike.</> },
-              { label: 'ALLEGED', text: <>Riders say pins can be up to 1 km off, so they ride distance they aren&rsquo;t paid for.</> },
-              { label: 'DOCUMENTED', text: <>When Shipt switched to a black-box pay formula, a worker-built audit (MIT) found 41% of workers were paid less, by about 11% on average.</> },
-            ]}
-          />
-        )}
+        {phase === 'lab' && <DayLab scheme={scheme} setScheme={setScheme} onNext={() => setPhase('reveal')} />}
+        {phase === 'reveal' && <Unfold items={UNFOLD.offer} onDone={onDone} />}
       </div>
     </div>
   );

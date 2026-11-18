@@ -1,11 +1,13 @@
 // ACT 3 · READY IN 2 MINUTES. Unpaid waiting, a deadline at a red light, the heat.
 import { useEffect, useState } from 'react';
 import { Phone } from '../../ui/Phone';
-import { BehindScreen, PartnerHeader, Toast } from './common';
+import { PartnerHeader, Toast } from './common';
 import { useStory } from '../../story/store';
 import { sfx } from '../../audio/sound';
-import { Range, Why, Stat, useLab, rupees } from '../lab';
-import { DeadlineLab, DeadlinePhone, DEADLINE_PRESETS } from './DeadlineLab';
+import { Guess } from '../guess';
+import { Unfold } from '../unfold';
+import { UNFOLD } from '../../content/unfold';
+import { DeadlineLab, DeadlinePhone, trip } from './DeadlineLab';
 
 type Step = 'wait' | 'deliver' | 'lab' | 'heat' | 'reveal';
 
@@ -19,11 +21,8 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
   const [choice, setChoice] = useState<'fast' | 'safe' | null>(null);
   const [cooler, setCooler] = useState(false);
   const READY_AT = 18;
-  const lab = useLab(DEADLINE_PRESETS);
-  const [waits, setWaits] = useState(4);     // waits like this per day
-  const [days, setDays] = useState(26);      // days worked per month
-  const [rate, setRate] = useState(1.5);     // ₹ per minute, if waiting were paid
-  const unpaidHours = (mins * waits * days) / 60;
+  const [promise, setPromise] = useState(10);
+  const monthHours = Math.round((READY_AT * 4 * 26) / 60);   // 4 waits a day, 26 days a month (FICTIONAL)
   // once the food arrives, give the reader a moment before "Start delivery" can be pressed
   const [armed, setArmed] = useState(false);
   useEffect(() => {
@@ -96,7 +95,7 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
               {choice && <button className="zp-go small" onClick={() => { note('wait-choice', choice); setStep('lab'); }}>Next order →</button>}
             </div>
           )}
-          {step === 'lab' && <DeadlinePhone v={lab.v} />}
+          {step === 'lab' && <DeadlinePhone v={trip(promise)} />}
           {(step === 'heat' || step === 'reveal') && (
             <div className="zp-body center">
               <p className="zp-title">43°C · Heat advisory</p>
@@ -108,49 +107,25 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
         </Phone>
 
         {step === 'wait' && (
-          <div className="side-card lab">
+          <div className="side-card">
             <p className="kicker">13:05 · the lunch rush</p>
-            <p className="big-q">The app says the food is ready. The kitchen says two minutes. It is never two minutes.</p>
-            <p className="small">Hold the button to wait. Watch what your earnings do while you stand here.</p>
+            <p className="big-q">The app says the food is ready. The kitchen says two minutes. Hold the button to wait.</p>
             {mins >= READY_AT && (
-              <>
-                <p className="bad">{READY_AT} minutes of your shift. ₹0.</p>
-                <p className="lab-k" style={{ display: 'block', marginTop: 12 }}>Now make it a month</p>
-                <Range label="Waits like this per day" value={waits} min={1} max={10} onChange={setWaits} />
-                <Range label="Days worked per month" value={days} min={15} max={30} onChange={setDays} />
-                <Range label="If waiting were paid, per minute" value={rate} min={0} max={4} step={0.5} fmt={(x) => `₹${x}`} onChange={setRate} />
-                <div className="lab-stats">
-                  <Stat k="Unpaid hours a month" v={Math.round(unpaidHours)} tone="bad" />
-                  <Stat k="Worth, at that rate" v={rupees(unpaidHours * 60 * rate)} tone="warn" />
-                </div>
-                <Why items={[
-                  { label: 'REPORTED', text: <>Indian delivery riders interviewed for a 2025 study described waiting and constant app-tapping as unpaid &ldquo;invisible labour&rdquo;.</> },
-                  { label: 'STATEMENT', text: <>Zomato says its average hourly earnings figure counts all logged-in time, waiting included.</> },
-                ]} />
-              </>
+              <Guess id="wait-hours" big={false}
+                q={`Waits like this, about 4 a day, 26 days a month. How many unpaid hours is that?`}
+                options={['About 5', 'About 15', 'About 30']} correct={2}
+                reveal={`About ${monthHours} hours a month, paid ₹0.`} />
             )}
           </div>
         )}
         {step === 'deliver' && (
           <div className="side-card">
-            <p className="big-q">The customer is watching a countdown. You are watching a red light.</p>
-            <p className="small">The clock on their screen keeps running while you wait. What do you do?</p>
+            <p className="big-q">Their countdown keeps running. Your light is red. What do you do?</p>
           </div>
         )}
-        {step === 'lab' && <DeadlineLab lab={lab} onNext={() => setStep('heat')} />}
+        {step === 'lab' && <DeadlineLab promise={promise} setPromise={setPromise} onNext={() => setStep('heat')} />}
         {step === 'heat' && <div className="side-card"><p className="big-q">By 2:40 pm the road shimmers. Your bonus needs you online until 4.</p></div>}
-        {step === 'reveal' && (
-          <BehindScreen
-            title="Work the app does not count"
-            onNext={onDone}
-            points={[
-              { label: 'REPORTED', text: <>Interviews with Indian delivery riders (arXiv, 2025) describe waiting and constant app-tapping as unpaid &ldquo;invisible labour&rdquo;. Zomato says its hourly figures include waiting time.</> },
-              { label: 'CONTESTED', text: <>All 13 Blinkit and Zepto riders Reuters interviewed (2022) said 10-minute deadlines often made them speed. Blinkit&rsquo;s CEO said riders are not penalised for delays.</> },
-              { label: 'STATEMENT', text: <>In January 2026, after the Labour Minister met the platforms, Blinkit dropped &ldquo;10 minutes&rdquo; from its branding. Zomato&rsquo;s CEO says riders never see the customer&rsquo;s timer.</> },
-              { label: 'REPORTED', text: <>A reporter who worked shifts in Delhi&rsquo;s 43°C heat (The Wire, May 2026) earned ₹44 for 57 minutes and found a cooler with an empty tank. Platforms said they provide coolers, vests and glucose.</> },
-            ]}
-          />
-        )}
+        {step === 'reveal' && <Unfold items={UNFOLD.wait} onDone={onDone} />}
       </div>
     </div>
   );

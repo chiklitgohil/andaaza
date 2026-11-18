@@ -1,11 +1,12 @@
 // ACT 1 · VERIFY IT'S YOU. The selfie is SIMULATED: this page never touches your camera.
 import { useState } from 'react';
 import { Phone } from '../../ui/Phone';
-import { BehindScreen, PartnerHeader, Toast } from './common';
+import { PartnerHeader, Toast } from './common';
 import { useStory } from '../../story/store';
 import { sfx } from '../../audio/sound';
-import { useLab } from '../lab';
-import { FaceLab, FacePhone, FACE_PRESETS } from './FaceLab';
+import { Unfold } from '../unfold';
+import { UNFOLD } from '../../content/unfold';
+import { FaceLab, FacePhone } from './FaceLab';
 
 type Step = 'offline' | 'selfie' | 'lab' | 'slots' | 'reveal';
 const FIXES = [
@@ -28,7 +29,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
   const [slots, setSlots] = useState<Record<string, boolean>>({ a: true });
   const clock = `06:${String(50 + tries * 4).padStart(2, '0')}`;
   const ready = fixed.helmet && fixed.light;
-  const lab = useLab(FACE_PRESETS);
+  const [mark, setMark] = useState(80);
 
   const capture = () => {
     setResult('checking');
@@ -86,7 +87,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
               )}
             </div>
           )}
-          {step === 'lab' && <FacePhone v={lab.v} />}
+          {step === 'lab' && <FacePhone mark={mark} />}
           {step === 'slots' && (
             <div className="zp-body">
               <p className="zp-title">Book today&rsquo;s slots</p>
@@ -111,8 +112,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
         {step === 'selfie' && (
           <div className="side-card">
             <p className="kicker">{clock} · still dark · helmet on</p>
-            <p className="big-q">The app won&rsquo;t let you work until it recognises your face.</p>
-            <p className="small">Every minute here is a minute of the morning rush you are not paid for. What do you change?</p>
+            <p className="big-q">No face match, no work. What do you change?</p>
             <div className="guess-grid one">
               {FIXES.map((f) => (
                 <button key={f.id} className={`btn ghost ${fixed[f.id] ? 'picked' : ''}`} onClick={() => setFixed((x) => ({ ...x, [f.id]: true }))} disabled={fixed[f.id]}>
@@ -123,26 +123,15 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
             {tries > 0 && <p className="tiny">Morning orders missed while verifying: {tries * 2}</p>}
           </div>
         )}
-        {step === 'lab' && <FaceLab lab={lab} onNext={() => setStep('slots')} />}
+        {step === 'lab' && <FaceLab mark={mark} setMark={setMark} onNext={() => setStep('slots')} />}
         {step === 'slots' && (
           <div className="side-card">
-            <p className="big-q">To earn the bonus, you must be online in the hottest hours of the day.</p>
-            <p className="small">Untick the 12–4 pm slot and see what happens to the bonus.</p>
+            <p className="big-q">The bonus needs you online 12–4 pm, the hottest hours.</p>
+            <p className="small">Try unticking that slot.</p>
             {!slots.b && <p className="bad">Without the 12–4 pm slot, today&rsquo;s bonus is gone.</p>}
           </div>
         )}
-        {step === 'reveal' && (
-          <BehindScreen
-            title="A face check you cannot argue with"
-            onNext={onDone}
-            points={[
-              { label: 'REPORTED', text: <>In MIT Technology Review&rsquo;s survey of 150 Uber drivers in India, nearly half had been temporarily or permanently locked out by selfie checks. Riders report Swiggy and Zomato use selfies too.</> },
-              { label: 'ALLEGED', text: <>A Zomato rider rated 4.85 was blocked in 2024 for vague &ldquo;behavioural issues&rdquo;; the Telangana High Court issued notice. Zomato cites behavioural issues.</> },
-              { label: 'REPORTED', text: <>Blinkit bonuses reportedly require staying logged in from 12 to 4 pm, the hottest part of the day.</> },
-              { label: 'DOCUMENTED', text: <>Karnataka&rsquo;s 2025 gig-worker law requires 14 days&rsquo; notice, with reasons, before a platform terminates a worker.</> },
-            ]}
-          />
-        )}
+        {step === 'reveal' && <Unfold items={UNFOLD.verify} onDone={onDone} />}
       </div>
     </div>
   );

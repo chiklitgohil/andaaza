@@ -1,24 +1,17 @@
 // ACT 2 lab: play out a whole day of offers under your own rules and the app's bonus rules.
 // Offers, pay, speeds and times are FICTIONAL; the bonus ladders and rejection rule are shaped like reports.
-import { Lab, Presets, Range, Seg, Toggle, Why, Stat, useLab, seeded, rupees, type Preset, type WhyItem } from '../lab';
+import { Lab, Seg, Stat, seeded, rupees } from '../lab';
 
 export interface DV { minRate: number; protect: boolean; fuel: number; pin: number; scheme: 'old' | 'new'; limit: number; hours: number }
 
-export const DAY_PRESETS: Preset<DV>[] = [
-  { name: 'Accept everything', note: 'Never risk the bonus. Take every order the app sends.', v: { minRate: 0, protect: true, fuel: 2.2, pin: 0.5, scheme: 'new', limit: 1, hours: 11 } },
-  { name: 'Picky: ₹5/km or better', note: 'Turn down trips that pay less than ₹5 a kilometre, whatever happens to the bonus.', v: { minRate: 5, protect: false, fuel: 2.2, pin: 0.5, scheme: 'new', limit: 1, hours: 11 } },
-  { name: 'Picky, but save the bonus', note: 'Picky until the rejection limit is used up, then forced to accept anything.', v: { minRate: 5, protect: true, fuel: 2.2, pin: 0.5, scheme: 'new', limit: 1, hours: 11 } },
-  { name: 'Yesterday’s bonus', note: 'Accept everything, under the old ladder: ₹130 at 15 orders, ₹555 at 32.', v: { minRate: 0, protect: true, fuel: 2.2, pin: 0.5, scheme: 'old', limit: 1, hours: 11 } },
-  { name: 'If pins were accurate', note: 'Accept everything, and every kilometre you ride is a kilometre you are paid for.', v: { minRate: 0, protect: true, fuel: 2.2, pin: 0, scheme: 'new', limit: 1, hours: 11 } },
-  { name: 'If saying no were free', note: 'No rejection limit. Picky at ₹5/km.', v: { minRate: 5, protect: false, fuel: 2.2, pin: 0.5, scheme: 'new', limit: 99, hours: 11 } },
-];
+// Arun accepts every order (to protect the bonus); only the app's bonus ladder changes. FICTIONAL day.
+export const dayFor = (scheme: DV['scheme']): DV => ({ minRate: 0, protect: true, fuel: 2.2, pin: 0.5, scheme, limit: 1, hours: 11 });
 
 // Bonus ladders as Blinkit riders reported them to Newslaundry (2025): [orders, ₹ for the highest rung reached]
 const SCHEMES: Record<DV['scheme'], [number, number][]> = {
   old: [[15, 130], [32, 555]],
   new: [[30, 205], [40, 338], [43, 448]],
 };
-const ladderText = (k: DV['scheme']) => SCHEMES[k].map(([n, b]) => `₹${b} at ${n}`).join(', ');
 const SPEED = 22;      // km/h in city traffic (FICTIONAL)
 const HANDLING = 5;    // minutes at pickup and drop (FICTIONAL)
 const GAP = 3;         // minutes waiting for the next offer (FICTIONAL)
@@ -87,47 +80,18 @@ export function DayPhone({ v }: { v: DV }) {
   );
 }
 
-export function DayLab({ lab, onNext }: { lab: ReturnType<typeof useLab<DV>>; onNext: () => void }) {
-  const { v, set } = lab;
-  const d = simulate(v);
-  const why: WhyItem[] = [];
-  if (d.hit) why.push({ label: 'REPORTED', text: <>{d.orders} orders reached the ₹{d.bonus} rung ({d.reached![0]} orders){d.next ? `; ₹${d.next[1]} needed ${d.next[0]}` : ''}. Riders reported the ladder changing from {ladderText('old')} to {ladderText('new')}.</> });
-  else if (d.lost) why.push({ label: 'REPORTED', bad: true, text: <>Bonus lost after {d.rejects} rejections with {v.limit} allowed. Swiggy riders reported in 2021 that more than one rejection a day forfeited the incentive.</> });
-  else why.push({ label: 'REPORTED', bad: true, text: <>Bonus missed: {d.orders} orders, and the first rung needs {d.next?.[0]}. Riders reported the ladder changing from {ladderText('old')} to {ladderText('new')}.</> });
-  if (d.forced) why.push({ bad: true, text: <>{d.forced} trips you would have refused were accepted only to protect the bonus.</> });
-  if (d.poor) why.push({ bad: true, text: <>{d.poor} trips paid less than ₹4 a kilometre.</> });
-  if (d.unpaid) why.push({ label: 'ALLEGED', bad: true, text: <>{d.unpaid.toFixed(1)} km ridden but not paid for, because the pin was {v.pin} km off on every trip. Riders say pins can be up to a kilometre off.</> });
-  why.push({ text: <>{Math.round(d.idle)} minutes waiting for the next offer, unpaid. Fuel of {rupees(d.fuel)} came out of your pocket. Neither appears on the app&rsquo;s summary.</> });
-  why.push({ label: 'FICTIONAL', text: <>The 60 offers, speeds and times are invented, and are the same every time so you can compare rules fairly.</> });
-
+export function DayLab({ scheme, setScheme, onNext }: { scheme: DV['scheme']; setScheme: (s: DV['scheme']) => void; onNext: () => void }) {
+  const d = simulate(dayFor(scheme));
+  const other = simulate(dayFor(scheme === 'old' ? 'new' : 'old'));
   return (
-    <Lab title="Plan your day. Then live it." hint="Choose your rules and the app's rules. A whole day of 60 offers plays out instantly.">
-      <Presets items={DAY_PRESETS} active={lab.active} onPick={lab.pick} />
-
-      <div className="lab-sticky">
+    <Lab kicker="The same day, twice" title={`${d.orders} orders. Same roads, same hours. Only the bonus rules change.`}>
+      <Seg options={[['old', 'Yesterday’s bonus'], ['new', 'Today’s bonus']]} value={scheme} onChange={setScheme} />
       <div className="strip" aria-label="Each offer of the day">{d.kinds.map((k, i) => <i key={i} className={k} />)}</div>
-      <div className="legend-row"><span><i style={{ background: 'var(--grn)' }} />accepted</span><span><i style={{ background: 'var(--red)' }} />accepted, under ₹4/km</span><span><i style={{ background: '#3a3c44' }} />rejected</span><span><i style={{ border: '1px dashed #555' }} />after you logged off</span></div>
       <div className="lab-stats">
-        <Stat k="App says you earned" v={rupees(d.gross + d.bonus)} />
-        <Stat k="After fuel" v={rupees(d.net)} tone={d.net < 700 ? 'bad' : 'warn'} />
-        <Stat k="Per hour, after fuel" v={rupees(d.net / d.hours)} tone={d.net / d.hours < 80 ? 'bad' : 'warn'} />
+        <Stat k="Bonus" v={d.hit ? rupees(d.bonus) : '₹0'} tone={d.bonus >= other.bonus ? 'good' : 'bad'} />
+        <Stat k="Day, after fuel" v={rupees(d.net)} tone={d.net >= other.net ? 'good' : 'bad'} />
       </div>
-      </div>
-      <p className="lab-k" style={{ display: 'block' }}>Your rules</p>
-      <Range label="Only accept trips paying at least" value={v.minRate} min={0} max={9} step={0.5} fmt={(x) => (x ? `₹${x}/km` : 'anything')} onChange={(x) => set('minRate', x)} />
-      <Toggle label="Protect the bonus: once my rejections are used up, accept anything" value={v.protect} onChange={(x) => set('protect', x)} />
-      <div className="lab-grid">
-        <Range label="Fuel cost" value={v.fuel} min={1.5} max={4} step={0.1} fmt={(x) => `₹${x.toFixed(1)}/km`} onChange={(x) => set('fuel', x)} />
-        <Range label="Hours online" value={v.hours} min={6} max={13} fmt={(x) => `${x} h`} onChange={(x) => set('hours', x)} />
-      </div>
-      <p className="lab-k" style={{ display: 'block', marginTop: 8 }}>The app&rsquo;s rules</p>
-      <Seg label="Bonus ladder" options={[['old', `Yesterday: ${ladderText('old')}`], ['new', `Today: ${ladderText('new')}`]]} value={v.scheme} onChange={(x) => set('scheme', x)} />
-      <div className="lab-grid">
-        <Range label="Rejections allowed" value={v.limit} min={0} max={10} fmt={(x) => (x >= 10 ? 'no limit' : String(x))} onChange={(x) => set('limit', x >= 10 ? 99 : x)} />
-        <Range label="Pin error per trip" value={v.pin} min={0} max={1.5} step={0.1} fmt={(x) => `${x.toFixed(1)} km`} onChange={(x) => set('pin', x)} />
-      </div>
-
-      <Why items={why} />
+      <p className="lab-verdict bad">Under today&rsquo;s rules the same {d.orders} orders earn {rupees(Math.abs(simulate(dayFor('old')).bonus - simulate(dayFor('new')).bonus))} less in bonus.</p>
       <div className="lab-next"><button className="btn" onClick={onNext}>What&rsquo;s behind this? →</button></div>
     </Lab>
   );

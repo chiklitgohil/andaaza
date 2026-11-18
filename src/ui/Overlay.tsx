@@ -3,7 +3,6 @@ import { ROOM_AT } from '../story/timeline';
 import { ACTS, BEATS, clock } from '../story/acts';
 import { useStory } from '../story/store';
 import { jumpTo } from '../story/useScrollEngine';
-import { DebriefPanel } from './Debrief';
 import { getRequests, subscribe } from './requestWatch';
 import { Epilogue } from './Epilogue';
 import { setSound } from '../audio/sound';
@@ -123,28 +122,16 @@ function Buzz() {
 function Stage() {
   const phase = useStory((s) => s.phase);
   const actId = useStory((s) => s.actId);
-  const surface = useStory((s) => s.surface);
-  const showDebrief = useStory((s) => s.showDebrief);
   const finish = useStory((s) => s.finish);
-  if (!actId || !['phone', 'surface', 'debrief'].includes(phase)) return null;
+  if (!actId || phase !== 'phone') return null;
   const Comp = ACT_COMPONENTS[actId];
   return (
     <div className={`stage st-${phase}`}>
       {phase === 'phone' && Comp && (
         <Suspense fallback={<div className="loading">…</div>}>
-          <Comp onDone={surface} />
+          <Comp onDone={finish} />
         </Suspense>
       )}
-      {phase === 'surface' && (
-        <div className="surface" role="dialog" aria-label="End of chapter">
-          <p className="surface-q">What just happened?</p>
-          <div className="row">
-            <button className="btn" autoFocus onClick={showDebrief}>Show me</button>
-            <button className="btn ghost" onClick={finish}>Keep going →</button>
-          </div>
-        </div>
-      )}
-      {phase === 'debrief' && <DebriefPanel actId={actId} onClose={finish} />}
     </div>
   );
 }
