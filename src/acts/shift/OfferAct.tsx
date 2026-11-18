@@ -6,6 +6,7 @@ import { PartnerHeader, Toast } from './common';
 import { useStory } from '../../story/store';
 import { sfx } from '../../audio/sound';
 import { Guess } from '../guess';
+import { Stat } from '../lab';
 import { Unfold } from '../unfold';
 import { UNFOLD } from '../../content/unfold';
 import { DayLab, DayPhone, dayFor, simulate, type DV } from './DayLab';
@@ -20,6 +21,11 @@ const OFFERS: Offer[] = [
 ];
 const SECONDS = 12;
 const REJECTS_ALLOWED = 1;
+const PETROL = 2.2;                                   // ₹ per km on Arun's scooter (FICTIONAL, see the strike ledger)
+const minutesFor = (km: number) => Math.round(km * 3.2 + 7);   // city riding plus pickup and handover (FICTIONAL)
+const netOf = (o: Offer) => o.pay - Math.round(o.km * PETROL);
+const isBad = (o: Offer) => o.pay / o.km < 4;        // under ₹4 a km barely covers petrol and time
+type Took = 'acc' | 'rej' | 'late';
 
 export default function OfferAct({ onDone }: { onDone: () => void }) {
   const note = useStory((s) => s.note);
@@ -29,7 +35,8 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   const [earned, setEarned] = useState(392);
   const [rejects, setRejects] = useState(0);
   const [lost, setLost] = useState(false);
-  const [phase, setPhase] = useState<'offers' | 'odometer' | 'nextday' | 'lab' | 'reveal'>('offers');
+  const [phase, setPhase] = useState<'offers' | 'recap' | 'odometer' | 'nextday' | 'lab' | 'reveal'>('offers');
+  const [took, setTook] = useState<Took[]>([]);
   const [scheme, setScheme] = useState<DV['scheme']>('new');
   const [answered, setAnswered] = useState(false);
   const day = simulate(dayFor(scheme));
@@ -52,9 +59,9 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
       const r = rejects + 1;
       setRejects(r);
       if (r > REJECTS_ALLOWED) { setLost(true); sfx.error(); }
-      void timeout;
     }
-    if (i + 1 >= OFFERS.length) { note('offer', { done: done + (accept ? 1 : 0), rejects: rejects + (accept ? 0 : 1) }); setPhase('odometer'); }
+    setTook((t) => [...t, accept ? 'acc' : timeout ? 'late' : 'rej']);
+    if (i + 1 >= OFFERS.length) { note('offer', { done: done + (accept ? 1 : 0), rejects: rejects + (accept ? 0 : 1) }); setPhase('recap'); }
     else setI(i + 1);
   }
 
@@ -63,7 +70,7 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   return (
     <div className="act ride-act">
       <div className="ride-row">
-        <Phone owner="Arun · Flopcart Partner" battery={phase === 'lab' ? 12 : 71} model="android" time={phase === 'lab' ? '22:30' : phase === 'nextday' || phase === 'reveal' ? '07:02' : '11:48'}>
+        <Phone owner="Arun · Flopcart Partner" battery={phase === 'lab' ? 12 : 71} model="android" time={phase === 'lab' ? '22:30' : phase === 'nextday' || phase === 'reveal' ? '07:02' : phase === 'odometer' ? '09:58' : phase === 'recap' ? '09:33' : '09:31'}>
           {phase === 'lab' ? (
             <>
               <PartnerHeader earned={Math.round(day.gross + day.bonus)} online={false} />
@@ -93,6 +100,12 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
               </div>
             </div>
           )}
+          {phase === 'recap' && (
+            <div className="zp-body center">
+              <p className="zp-title">No new orders nearby</p>
+              <p className="tiny">Stay online to keep your streak.</p>
+            </div>
+          )}
           {phase === 'odometer' && (
             <div className="zp-body center">
               <p className="zp-title">Order delivered ✓</p>
@@ -115,14 +128,33 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
           )}
         </Phone>
 
-        {phase === 'offers' && (
-          <div className="side-card">
-            <p className="kicker">11:48 · four more to the bonus</p>
-            <p className="big-q">{SECONDS} seconds per order. Say no too often and the bonus is gone.</p>
+        {phase === 'offers' && offer && (
+          <div className="side-card offer-x">
+            <p className="kicker">09:31 · {Math.max(0, target - done)} more to the bonus</p>
+            <div className="ox-status">
+              <div><small>Daily bonus</small><b>{lost ? 'Lost' : `₹${bonus}`}</b><span>{done}/{target} orders</span></div>
+              <div><small>Rejections left</small><b className={rejects >= REJECTS_ALLOWED ? 'bad' : ''}>{Math.max(0, REJECTS_ALLOWED - rejects)}</b><span>of {REJECTS_ALLOWED} allowed today</span></div>
+              <div><small>Earned today</small><b>₹{earned}</b><span>before petrol</span></div>
+            </div>
+            <p className="ox-h">This order, the whole picture</p>
+            <p className="tiny">The app shows the pay in big numbers. This is what it puts in small print.</p>
+            <dl className="ox-sheet" key={i}>
+              <dt>Pay</dt><dd>₹{offer.pay}</dd>
+              <dt>Distance</dt><dd>{offer.km} km</dd>
+              <dt>Drop-off</dt><dd>{offer.to}</dd>
+              <dt>Petrol (≈ ₹{PETROL}/km)</dt><dd className="bad">−₹{Math.round(offer.km * PETROL)}</dd>
+              <dt>Left for Arun</dt><dd><b>₹{netOf(offer)}</b></dd>
+              <dt>Per km</dt><dd className={isBad(offer) ? 'bad' : 'good'}>₹{(offer.pay / offer.km).toFixed(1)}/km · {isBad(offer) ? 'a bad trip' : 'worth it'}</dd>
+            </dl>
           </div>
         )}
+        {phase === 'recap' && <OfferRecap took={took} lost={lost} done={done} target={target} bonus={bonus} onNext={() => setPhase('odometer')} />}
         {phase === 'odometer' && (
-          <div className="side-card"><p className="big-q">You rode 2.7 km the app doesn&rsquo;t count.</p></div>
+          <div className="side-card">
+            <p className="kicker">You rode 2.7 km the app doesn&rsquo;t count</p>
+            <Guess id="odometer" feel="The 2.7 km nobody paid for" q="Do you report it?" options={['Report it', 'Let it go']}
+              reveal={(i) => i === 0 ? 'Twenty minutes later: “Distance is calculated by the system.” Three orders went to someone else.' : 'Not worth the fight. The next order is already ringing.'} />
+          </div>
         )}
         {phase === 'nextday' && (
           <div className="side-card">
@@ -137,6 +169,42 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
         {phase === 'lab' && <DayLab scheme={scheme} setScheme={setScheme} onNext={() => setPhase('reveal')} />}
         {phase === 'reveal' && <Unfold items={UNFOLD.offer} onDone={onDone} />}
       </div>
+    </div>
+  );
+}
+
+/** After the five offers: what each choice meant, and how the app scored it. */
+function OfferRecap({ took, lost, done, target, bonus, onNext }: { took: Took[]; lost: boolean; done: number; target: number; bonus: number; onNext: () => void }) {
+  const accepted = OFFERS.filter((_, k) => took[k] === 'acc');
+  const kept = accepted.reduce((s, o) => s + netOf(o), 0);
+  const mins = accepted.reduce((s, o) => s + minutesFor(o.km), 0);
+  const tookBad = accepted.some(isBad);
+  const line = (o: Offer, t: Took) => t === 'late' ? 'Too slow. Another rider grabbed it, and the app still counted it as a rejection.'
+    : t === 'rej' ? (isBad(o) ? 'Said no to a bad trip. The sensible call, and it still counts against you.' : 'Said no. Counted against you, even though it was your choice to make.')
+    : isBad(o) ? `Took a bad one. ${minutesFor(o.km)} minutes across the city for ₹${netOf(o)} after petrol.` : `Good call. ₹${netOf(o)} after petrol for ${minutesFor(o.km)} minutes.`;
+  return (
+    <div className="side-card offer-recap">
+      <p className="kicker">You had {SECONDS} seconds for each</p>
+      <p className="lab-title">Here is what each choice meant.</p>
+      <ul className="or-list">
+        {OFFERS.map((o, k) => (
+          <li key={k} className={took[k] === 'acc' ? (isBad(o) ? 'bad' : 'good') : 'no'}>
+            <b>₹{o.pay} · {o.km} km · {o.to}</b><span>{line(o, took[k])}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="lab-stats">
+        <Stat k="Kept after petrol" v={`₹${kept}`} />
+        <Stat k="Time on the road" v={`${mins} min`} />
+        <Stat k="Daily bonus" v={lost ? 'Lost' : done >= target ? `₹${bonus}` : `${done}/${target}`} tone={lost ? 'bad' : 'warn'} />
+      </div>
+      <p className="lab-verdict bad">{lost
+        ? (OFFERS.some((o, k) => took[k] === 'rej' && isBad(o))
+          ? 'Saying no to bad trips was the sensible thing to do. The app punished it anyway, and the bonus is gone for the whole day.'
+          : 'Saying no, or being a few seconds slow, is part of the job. The app punished it anyway, and the bonus is gone for the whole day.')
+        : tookBad ? 'You kept the bonus alive by taking trips that barely paid for petrol. That is the trade the app sets up.'
+        : 'You chose well and kept the bonus. Most days, the offers are not this kind.'}</p>
+      <div className="lab-next"><button className="btn" onClick={onNext}>Deliver the last order →</button></div>
     </div>
   );
 }

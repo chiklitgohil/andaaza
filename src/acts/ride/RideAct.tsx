@@ -135,7 +135,7 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
 
       {step === 'booked' && (
         <div className="ride-row">
-          <Phone owner="Arun" battery={5} model="android">
+          <Phone owner="Arun" battery={5} model="android" time="21:44">
             <div className="ride-app">
               <div className="ra-brand">gaadi</div>
               <p className="r-title">Your ride is here</p>

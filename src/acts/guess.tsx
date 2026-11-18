@@ -12,9 +12,10 @@ export interface GuessProps {
   reveal: ReactNode | ((pick: number) => ReactNode);
   onAnswer?: (pick: number) => void;
   big?: boolean;                                // the question as a headline
+  feel?: string;                                // a short name for an unscored feelings question, kept for the end screen
 }
 
-export function Guess({ id, q, options, correct, reveal, onAnswer, big = true }: GuessProps) {
+export function Guess({ id, q, options, correct, reveal, onAnswer, big = true, feel }: GuessProps) {
   const note = useStory((s) => s.note);
   const [pick, setPick] = useState<number | null>(null);
   const answer = (i: number) => {
@@ -23,7 +24,10 @@ export function Guess({ id, q, options, correct, reveal, onAnswer, big = true }:
     if (correct != null) {
       note(`guess:${id}`, { right: i === correct });
       if (i === correct) sfx.success(); else sfx.error();
-    } else sfx.reveal();
+    } else {
+      if (feel) note(`feel:${id}`, { k: feel, a: options[i] });
+      sfx.reveal();
+    }
     onAnswer?.(i);
   };
   return (
@@ -48,4 +52,9 @@ export function Guess({ id, q, options, correct, reveal, onAnswer, big = true }:
 export function scoreOf(journal: Record<string, unknown>) {
   const all = Object.entries(journal).filter(([k]) => k.startsWith('guess:')).map(([, v]) => v as { right: boolean });
   return { made: all.length, right: all.filter((g) => g.right).length };
+}
+
+/** What the visitor chose in Arun's shoes, in the order it happened. */
+export function feelingsOf(journal: Record<string, unknown>) {
+  return Object.entries(journal).filter(([k]) => k.startsWith('feel:')).map(([, v]) => v as { k: string; a: string });
 }

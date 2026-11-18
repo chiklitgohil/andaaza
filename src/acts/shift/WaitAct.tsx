@@ -50,7 +50,7 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
   }, [step, choice]);
 
   const mm = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-  const time = step === 'wait' ? `13:${String(5 + mins).padStart(2, '0')}` : step === 'deliver' ? '13:26' : '14:40';
+  const time = step === 'wait' ? `13:${String(5 + mins).padStart(2, '0')}` : step === 'deliver' || step === 'lab' ? '13:26' : '14:40';
 
   return (
     <div className="act ride-act">
@@ -124,7 +124,13 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
           </div>
         )}
         {step === 'lab' && <DeadlineLab promise={promise} setPromise={setPromise} onNext={() => setStep('heat')} />}
-        {step === 'heat' && <div className="side-card"><p className="big-q">By 2:40 pm the road shimmers. Your bonus needs you online until 4.</p></div>}
+        {step === 'heat' && (
+          <div className="side-card">
+            <p className="kicker">14:40 · 43°C</p>
+            <Guess id="heat" feel="43°C, and the bonus needs you until 4" q="Your head is spinning. The bonus needs you online until 4. Do you log off?" options={['Log off and rest', 'Stay for the bonus']}
+              reveal={(i) => i === 0 ? 'You sit in the shade. Today’s bonus is gone.' : 'You stay. At a red light, the road tilts for a second.'} />
+          </div>
+        )}
         {step === 'reveal' && <Unfold items={UNFOLD.wait} onDone={onDone} />}
       </div>
     </div>

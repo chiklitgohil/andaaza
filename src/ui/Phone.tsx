@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { useStory } from '../story/store';
 
 /** A phone frame with a status bar. Used for Arun's phone and other people's phones. */
 export function Phone({
@@ -7,6 +8,9 @@ export function Phone({
   children: ReactNode; owner?: string; battery?: number; time?: string; model?: 'android' | 'iphone'; className?: string; label?: string;
 }) {
   const low = battery <= 15;
+  // Arun's phone sets the clock: the top bar shows the same time while a stop is open
+  const isArun = !!owner?.startsWith('Arun');
+  useEffect(() => { if (isArun) useStory.setState({ phoneClock: time }); }, [isArun, time]);
   return (
     <div className={`phone ${model} ${className}`} aria-label={label ?? `${owner ?? 'A'} phone`}>
       {model === 'iphone' ? <div className="phone-notch" /> : <div className="phone-punch" />}

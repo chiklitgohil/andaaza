@@ -17,6 +17,7 @@ export default function ArriveAct({ onDone }: { onDone: () => void }) {
   const [step, setStep] = useState<'receipt' | 'driver' | 'reveal'>('receipt');
   const [cut, setCut] = useState(30);
   const [guessed, setGuessed] = useState(false);
+  const [rated, setRated] = useState(false);
   useEffect(() => { if (step === 'driver') sfx.reveal(); else if (step === 'receipt') sfx.ping(); }, [step]);
 
   const paid = booked;
@@ -65,7 +66,10 @@ export default function ArriveAct({ onDone }: { onDone: () => void }) {
               <Stat k="Mahesh gets" v={rupees(driverGets)} tone={cut > 20 ? 'warn' : 'good'} />
               <Stat k={`His ${TRIPS} trips tonight, after fuel`} v={rupees(shiftNet)} tone={shiftNet < 1000 ? 'bad' : 'warn'} />
             </div>
-            <div className="lab-next"><button className="btn" onClick={() => { note('ride', { paid: Math.round(paid), driver: Math.round(driverGets), cut }); setStep('reveal'); }}>What&rsquo;s the real cut? →</button></div>
+            <Guess id="rate" feel="Rating Mahesh" big={false} q="The app asks you to rate Mahesh. The ride was slow in the rain." options={['★★★★★', '★★★★']}
+              onAnswer={() => setRated(true)}
+              reveal={(i) => i === 0 ? 'Five. You know what a four does to someone in your job.' : 'A four. Tomorrow his app may send him fewer rides. Nobody will tell him why.'} />
+            {rated && <div className="lab-next"><button className="btn" onClick={() => { note('ride', { paid: Math.round(paid), driver: Math.round(driverGets), cut }); setStep('reveal'); }}>What&rsquo;s the real cut? →</button></div>}
           </Lab>
         )}
         {step === 'reveal' && <Unfold items={UNFOLD.arrive} onDone={onDone} doneLabel="Go inside →" />}

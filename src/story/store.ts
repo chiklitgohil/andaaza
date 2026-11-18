@@ -14,6 +14,7 @@ interface State {
   reducedMotion: boolean;
   sound: boolean;            // on by default; it starts at the visitor's first click (a browser rule)
   journal: Record<string, unknown>;   // choices, guesses and results for the "Your day" recap
+  phoneClock: string | null; // the time on Arun's phone while a stop is open; the top bar shows it too
   setProgress: (p: number) => void;
   buzz: (id: string) => void;
   dive: () => void;
@@ -34,16 +35,17 @@ export const useStory = create<State>((set, get) => ({
   reducedMotion: reduced(),
   sound: true,
   journal: {},
+  phoneClock: null,
   setProgress: (p) => set({ progress: p }),
-  buzz: (id) => set({ phase: 'buzz', actId: id }),
+  buzz: (id) => set({ phase: 'buzz', actId: id, phoneClock: null }),
   dive: () => set({ phase: 'dive' }),
   openPhone: () => set({ phase: 'phone' }),
   surface: () => set({ phase: 'surface' }),
   showDebrief: () => set({ phase: 'debrief' }),
   finish: () => {
     const id = get().actId;
-    set((s) => ({ phase: 'ride', actId: null, done: id ? { ...s.done, [id]: true } : s.done }));
+    set((s) => ({ phase: 'ride', actId: null, phoneClock: null, done: id ? { ...s.done, [id]: true } : s.done }));
   },
   note: (key, value) => set((s) => ({ journal: { ...s.journal, [key]: value } })),
-  restart: () => set({ phase: 'ride', actId: null, done: {}, journal: {}, progress: 0 }),
+  restart: () => set({ phase: 'ride', actId: null, done: {}, journal: {}, progress: 0, phoneClock: null }),
 }));

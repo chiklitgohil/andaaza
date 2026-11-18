@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ROOM_AT } from '../story/timeline';
-import { ACTS, BEATS, clock } from '../story/acts';
+import { ACTS, BEATS, clock, type Feel } from '../story/acts';
+import { sfx } from '../audio/sound';
 import { useStory } from '../story/store';
 import { jumpTo } from '../story/useScrollEngine';
 import { getRequests, subscribe } from './requestWatch';
@@ -39,12 +40,14 @@ const ACT_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentTy
 function Hud() {
   const progress = useStory((s) => s.progress);
   const done = useStory((s) => s.done);
+  const phase = useStory((s) => s.phase);
+  const phoneClock = useStory((s) => s.phoneClock);
   const [, force] = useState(0);
   useEffect(() => subscribe(() => force((n) => n + 1)), []);
   const third = getRequests().thirdParty.length;
   return (
     <header className="hud">
-      <div className="hud-clock" aria-live="off"><span className="hud-time">{clock(progress)}</span><span className="hud-place">Ahmedabad</span></div>
+      <div className="hud-clock" aria-live="off"><span className="hud-time">{phase === 'phone' && phoneClock ? phoneClock : clock(progress)}</span><span className="hud-place">Ahmedabad</span></div>
       <nav className="hud-acts" aria-label="Chapters">
         {ACTS.map((a, i) => (
           <button
@@ -77,6 +80,7 @@ function Narration() {
       {op > 0.02 && (
         <div className={`narration ${beat.at === 0 ? 'title' : ''}`} style={{ opacity: op }} aria-live="polite">
           {beat.lines.map((l, i) => <p key={i}>{l}</p>)}
+          {beat.ask && op > 0.3 && <RoadAsk ask={beat.ask} />}
         </div>
       )}
       {soon && (
@@ -87,6 +91,23 @@ function Narration() {
       )}
       {progress < 0.01 && <div className="scroll-hint" aria-hidden="true">scroll ↓</div>}
     </>
+  );
+}
+
+/** A question in Arun's shoes, on the road between stops. One tap, no right answer, and the scroll never stops. */
+function RoadAsk({ ask }: { ask: Feel }) {
+  const picked = useStory((s) => s.journal[`feel:${ask.id}`] as { a: string } | undefined);
+  const note = useStory((s) => s.note);
+  const i = picked ? ask.options.indexOf(picked.a) : -1;
+  return (
+    <div className="road-ask">
+      <p className="road-q">{ask.q}</p>
+      {i < 0 ? (
+        <div className="road-opts">
+          {ask.options.map((o) => <button key={o} className="road-btn" onClick={() => { note(`feel:${ask.id}`, { k: ask.k, a: o }); sfx.reveal(); }}>{o}</button>)}
+        </div>
+      ) : <p className="road-reply">{ask.replies[i]}</p>}
+    </div>
   );
 }
 
@@ -122,14 +143,31 @@ function Buzz() {
 function Stage() {
   const phase = useStory((s) => s.phase);
   const actId = useStory((s) => s.actId);
-  const finish = useStory((s) => s.finish);
   if (!actId || phase !== 'phone') return null;
+  return <StageInner key={actId} actId={actId} />;
+}
+
+/** The phone comes out of Arun's pocket when a stop opens, and goes back in when it ends. */
+function StageInner({ actId }: { actId: string }) {
+  const finish = useStory((s) => s.finish);
+  const reduced = useStory((s) => s.reducedMotion);
+  const [motion, setMotion] = useState<'pull' | 'still' | 'away'>(reduced ? 'still' : 'pull');
+  useEffect(() => {
+    if (motion !== 'pull') return;
+    const t = setTimeout(() => setMotion('still'), 1300);   // only the first phones out animate, not every step inside a stop
+    return () => clearTimeout(t);
+  }, [motion]);
+  const done = () => {
+    if (reduced) { finish(); return; }
+    setMotion('away');
+    setTimeout(finish, 480);
+  };
   const Comp = ACT_COMPONENTS[actId];
   return (
-    <div className={`stage st-${phase}`}>
-      {phase === 'phone' && Comp && (
+    <div className={`stage st-phone ${motion}`}>
+      {Comp && (
         <Suspense fallback={<div className="loading">…</div>}>
-          <Comp onDone={finish} />
+          <Comp onDone={done} />
         </Suspense>
       )}
     </div>

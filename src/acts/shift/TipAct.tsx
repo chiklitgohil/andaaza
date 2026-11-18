@@ -45,7 +45,7 @@ export default function TipAct({ onDone }: { onDone: () => void }) {
             <label className="slider dark">Tip: <b>₹{tip}</b><input type="range" min={0} max={100} step={5} value={tip} disabled={step === 'guess'} onChange={(e) => setTip(+e.target.value)} /></label>
           </div>
         </Phone>
-        <Phone owner="Arun · Flopcart Partner" battery={33} model="android" time="17:31">
+        <Phone owner="Arun · Flopcart Partner" battery={33} model="android" time="17:30">
           <PartnerHeader earned={741} />
           <div className="zp-body center">
             <p className="zp-title">Order delivered ✓</p>

@@ -10,7 +10,17 @@ import { useStory } from '../../story/store';
 import { sfx } from '../../audio/sound';
 
 const AD_SECONDS = 5;
-const START_BEST = 400; // Arun's record (FICTIONAL)
+const START_BEST = 120;  // Arun's record (FICTIONAL)
+const START_SCORE = 100; // tonight's game, continued: close enough to the record to beat it in a few turns
+// tonight's board, part-filled and scattered (6×6, 0 = empty): room for a few hands before it gets tight
+const START_BOARD = [
+  3, 0, 0, 0, 0, 9,
+  0, 0, 0, 0, 0, 0,
+  0, 0, 12, 0, 0, 0,
+  0, 7, 0, 0, 14, 0,
+  2, 0, 0, 0, 14, 0,
+  2, 0, 0, 18, 0, 0,
+];
 
 interface LogEntry { n: number; deal: Deal; score: number; game: number }
 
@@ -63,12 +73,12 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
     setLog((l) => [{ n: l.length + 1, deal: d, score: sc, game: g }, ...l].slice(0, 60));
   }, [settings]);
 
-  const newGame = useCallback((startScore = 0) => {
+  const newGame = useCallback((startScore = START_SCORE) => {
     const p = player.current;
     if (score > 0 && score < p.bestStart) p.gamesBelowRecord++; else if (score >= p.bestStart) p.gamesBelowRecord = 0;
     p.bestStart = Math.max(best, score);
     p.revives = 0; p.harvestFired = false; p.setTimes = [];
-    const b = Array(N * N).fill(0);
+    const b = startScore === START_SCORE ? START_BOARD.slice() : Array(N * N).fill(0);
     setBest(p.bestStart);
     setBoard(b); setScore(startScore); setSel(null);
     const g = game + (screen === 'splash' ? 0 : 1);
@@ -200,7 +210,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
         </div>
 
         <div
-          className="g-board" ref={boardRef} role="grid" aria-label="Board, 8 by 8. Choose a piece, then use arrow keys and Enter." tabIndex={0}
+          className="g-board" ref={boardRef} role="grid" aria-label={`Board, ${N} by ${N}. Choose a piece, then use arrow keys and Enter.`} tabIndex={0}
           onKeyDown={onBoardKey}
           onClick={(e) => {
             if (sel == null || hand[sel] == null) return;
@@ -233,8 +243,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
           <div className="g-modal">
             <div className="g-logo big">STACK</div>
             <p>Your best: <b>{best}</b></p>
-            <button className="g-btn" autoFocus onClick={() => newGame(0)}>Play</button>
-            <button className="g-btn ghost" onClick={() => newGame(360)}>Continue tonight&rsquo;s game (score 360)</button>
+            <button className="g-btn" autoFocus onClick={() => newGame(START_SCORE)}>Continue tonight&rsquo;s game · {START_SCORE} points</button>
           </div>
         )}
         {screen === 'over' && (
@@ -244,7 +253,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
             {settings.online && loaded != null ? (
               <button className="g-btn pulse" autoFocus onClick={() => setScreen('ad')}>▶ Watch an ad to keep going</button>
             ) : <p className="g-small">No ad available (offline)</p>}
-            <button className="g-link" onClick={() => (revealed ? newGame(0) : endFirstGame())}>No thanks</button>
+            <button className="g-link" onClick={() => (revealed ? newGame(START_SCORE) : endFirstGame())}>No thanks</button>
           </div>
         )}
         {screen === 'ad' && (
@@ -275,7 +284,6 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
   // ---------- the reveal: the other side of the screen ----------
   const checks = harvestChecks(player.current, score, loaded, settings);
   const armed = settings.rulesOn && checks.every((c) => c.met) && !player.current.harvestFired;
-  const marginLine = Math.ceil(player.current.bestStart * 1.1);
 
   return (
     <div className="act game-act">
@@ -289,7 +297,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
           <Guess id="game-luck" q="Was that last hand just bad luck?" options={['Bad luck', 'Chosen for me']}
             onAnswer={() => setAnswered(true)}
             reveal={deathDeal?.kind === 'LETHAL' ? 'It felt unfair. It might have been chosen.' : 'From the front of the phone, you can’t tell.'} />
-          {answered && <button className="btn" autoFocus onClick={() => { setRevealed(true); newGame(0); }}>Turn the phone around ↻</button>}
+          {answered && <button className="btn" autoFocus onClick={() => { setRevealed(true); newGame(START_SCORE); }}>Turn the phone around ↻</button>}
           {answered && <button className="btn ghost small" onClick={() => setUnfold(true)}>Put the phone down</button>}
         </div>
       )}
@@ -311,8 +319,8 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
             </div>
             <div className="bb-card">
               <h3>Rule 2 · Past your record</h3>
-              <div className={`ck ${score >= marginLine ? 'ok' : ''}`}><span>{score >= marginLine ? '✓' : '·'}</span>10% past your record<em>{score} / {marginLine}</em></div>
-              <p className="tiny">Then 1 hand in 5 is impossible.</p>
+              <div className={`ck ${score > player.current.bestStart ? 'ok' : ''}`}><span>{score > player.current.bestStart ? '✓' : '·'}</span>You passed your record<em>{score} / {player.current.bestStart}</em></div>
+              <p className="tiny">Then the next hand cannot be finished. (Reported: 1 hand in 5, once you&rsquo;re 10% past it. Made certain here to keep the game short.)</p>
               <label className="tog hero-tog"><input type="checkbox" checked={settings.rulesOn} onChange={(e) => setSettings((s) => ({ ...s, rulesOn: e.target.checked }))} /> Hidden rules {settings.rulesOn ? 'ON' : 'OFF'}</label>
             </div>
           </div>

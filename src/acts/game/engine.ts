@@ -2,8 +2,10 @@
 // ad-funded puzzle game (ayoships.com/breakdowns/block-blast, Oct 2026; REPORTED, one researcher,
 // developer did not reply). The thresholds marked REPORTED come from his write-up. Everything else
 // (ad prices drawn per deal, pacing defaults) is our own invention and is labelled so in the UI.
+// SIMPLIFIED for a short game: the reported "past your record" rule makes 1 hand in 5 impossible once you are
+// 10% past your record; here the first hand after you pass it is impossible. The UI says so.
 
-export const N = 8;
+export const N = 6;   // a small board, so Arun's last game takes a few turns, not ten minutes
 export type Board = number[]; // N*N, 0 = empty, otherwise colour id
 
 export interface Shape { rows: string[]; c: [number, number][]; h: number; w: number; n: number }
@@ -139,17 +141,15 @@ export function decideDeal(
   let rule: string | null = null;
   if (s.rulesOn && !first) {
     const checks = harvestChecks(p, score, loaded, s);
-    const marginLine = Math.ceil(p.bestStart * 1.1);
     const recent = p.setTimes.slice(-6);
     const avg = recent.length >= 3 ? recent.reduce((a, x) => a + x, 0) / recent.length : null;
     if (checks.every((c) => c.met) && !p.harvestFired) {
       want = 'lethal'; rule = 'Ad harvest';
       why = `All three harvest conditions met (ad worth ${(loaded! / p.lastEcpm).toFixed(1)}× your last). Requesting a lethal hand.`;
       p.harvestFired = true;
-    } else if (p.bestStart > 0 && score >= marginLine) {
-      const roll = Math.random() * 100;
-      if (roll < 20) { want = 'lethal'; rule = 'Past your record'; why = `You are 10% past your record (${marginLine}). Rolled ${roll.toFixed(0)} < 20: lethal hand.`; }
-      else { why = `Past-record rule rolled ${roll.toFixed(0)} (needs < 20). You survive this deal.`; rule = null; }
+    } else if (p.bestStart > 0 && score > p.bestStart) {
+      want = 'lethal'; rule = 'Past your record';
+      why = `You just passed your record (${p.bestStart}). Requesting a hand you cannot finish.`;
     }
     const prior = why.startsWith('Past-record') ? `${why} ` : '';
     if (!want && avg !== null && avg < 4.2 && score >= 0.93 * Math.max(p.bestStart, score)) {
@@ -167,7 +167,8 @@ export function decideDeal(
   }
   if (want === 'hard') return { hand: genSolvable(b, HARD), kind: 'hard', why, nodes: 0, rule, loaded };
   if (want === 'easy') return { hand: genSolvable(b, EASY), kind: 'easy', why, nodes: 0, rule, loaded };
-  return { hand: genSolvable(b), kind: 'normal', why, nodes: 0, rule: want === 'lethal' ? rule : null, loaded };
+  // OUR pacing choice for a short game on a small board: ordinary hands use the smaller pieces, so the record is reachable
+  return { hand: genSolvable(b, EASY), kind: 'normal', why, nodes: 0, rule: want === 'lethal' ? rule : null, loaded };
 }
 
 export const hue = (i: number) => `hsl(${(i * 47) % 360} 70% 58%)`;

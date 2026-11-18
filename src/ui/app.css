@@ -46,6 +46,10 @@ a { color: var(--amber); }
 /* ---------- narration ---------- */
 .narration { position: fixed; left: 6vw; bottom: 14vh; z-index: 10; max-width: 560px; pointer-events: none; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85); }
 .narration p { margin: 0 0 8px; font: italic 1.55rem/1.3 var(--serif); }
+.narration.title { max-width: 620px; }
+/* a soft dark haze behind the opening title, so the white text reads over the city; it fades with the title on the first scroll */
+.narration.title::before { content: ''; position: absolute; inset: -70px -110px -60px -120px; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 70% 65% at 40% 55%, rgba(5, 7, 12, 0.84), rgba(5, 7, 12, 0.58) 50%, rgba(5, 7, 12, 0) 80%); }
+.narration.title p:nth-child(3) { font-style: normal; }
 .narration.title p:first-child { font: 400 clamp(3.5rem, 9vw, 7.5rem)/0.92 var(--serif); font-style: normal; letter-spacing: -0.02em; margin-bottom: 10px; }
 .narration.title p:nth-child(2) { font: 500 0.82rem/1.4 var(--mono); font-style: normal; letter-spacing: 0.06em; color: var(--mute); margin-bottom: 22px; }
 .scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 10; font: 600 0.75rem var(--mono); letter-spacing: 0.25em; color: var(--mute); animation: bob 1.6s infinite ease-in-out; }
@@ -87,7 +91,7 @@ a { color: var(--amber); }
 .g-score, .g-best { display: flex; flex-direction: column; align-items: center; font: 800 1.4rem var(--sans); color: #fff; }
 .g-score small, .g-best small { font: 700 0.6rem var(--sans); letter-spacing: 0.15em; color: #b8acd9; }
 .g-best { font-size: 1rem; color: #ffd166; }
-.g-board { position: relative; display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; padding: 6px; border-radius: 12px; background: #0f0b1c; aspect-ratio: 1; box-shadow: inset 0 0 0 2px #2b2450; }
+.g-board { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; padding: 6px; border-radius: 12px; background: #0f0b1c; aspect-ratio: 1; box-shadow: inset 0 0 0 2px #2b2450; }
 .cell { border-radius: 5px; background: #221b3d; aspect-ratio: 1; transition: background 0.12s; }
 .cell.pv { background: rgba(127, 227, 255, 0.55); }
 .cell.bad { background: rgba(255, 96, 96, 0.5); }
@@ -460,3 +464,59 @@ a { color: var(--amber); }
 .hero-tog { margin-top: 12px !important; font-weight: 700; color: var(--amber) !important; }
 .game-unfold { position: absolute; right: 6vw; top: 50%; transform: translateY(-50%); z-index: 2; }
 .game-unfold .unfold { width: min(440px, 36vw); }
+
+/* in Arun's shoes: questions on the road, and what you chose */
+.road-ask { pointer-events: auto; margin-top: 14px; padding: 12px 14px; max-width: 460px; background: rgba(10, 12, 18, 0.72); border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: 10px; text-shadow: none; backdrop-filter: blur(6px); }
+.narration .road-ask p.road-q { font: 1.12rem/1.35 var(--serif); font-style: normal; margin: 0 0 10px; }
+.road-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.road-btn { font: 600 0.85rem var(--sans); color: var(--ink); background: rgba(255, 255, 255, 0.06); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.road-btn:hover { border-color: var(--amber); background: rgba(240, 162, 60, 0.14); }
+.narration .road-ask p.road-reply { font: italic 1.1rem/1.4 var(--serif); margin: 0; color: #f1ddb8; animation: fadein 0.5s ease-out; }
+.ep-felt { margin: 26px 0 8px; max-width: 760px; }
+.ep-felt h3 { font: 600 0.8rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin: 0 0 10px; }
+.ep-felt ul { list-style: none; padding: 0; margin: 0 0 8px; }
+.ep-felt li { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.92rem; }
+.ep-felt li span { color: var(--mute); }
+.ep-felt li b { font: italic 400 1rem var(--serif); text-align: right; }
+
+/* the offer: the whole picture beside the phone, then what each choice meant */
+.offer-x .ox-status { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0 14px; }
+.ox-status div { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.ox-status small, .ox-status span { display: block; font-size: 0.68rem; color: var(--mute); }
+.ox-status b { display: block; font: 700 1.15rem var(--mono); margin: 2px 0; }
+.ox-status b.bad { color: var(--red); }
+.ox-h { font: 1.15rem/1.3 var(--serif); margin: 0 0 2px; }
+.ox-sheet { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 10px 0 0; font-size: 0.9rem; animation: fadein 0.35s ease-out; }
+.ox-sheet dt { color: var(--mute); }
+.ox-sheet dd { margin: 0; text-align: right; font-family: var(--mono); }
+.ox-sheet dd.bad { color: var(--red); }
+.ox-sheet dd.good { color: var(--grn); }
+.offer-recap { width: min(520px, 40vw); max-height: 84vh; overflow-y: auto; }
+.or-list { list-style: none; padding: 0; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+.or-list li { padding: 8px 10px 8px 12px; border-left: 3px solid var(--mute); background: rgba(255, 255, 255, 0.03); border-radius: 0 8px 8px 0; font-size: 0.86rem; }
+.or-list li b { display: block; font: 600 0.78rem var(--mono); margin-bottom: 2px; }
+.or-list li.good { border-color: var(--grn); }
+.or-list li.bad { border-color: var(--red); }
+.or-list li.no { border-color: var(--amber); }
+
+/* the phone comes out of Arun's pocket: it rises from below with a tilt and settles; the card beside it follows */
+@keyframes pullout { 0% { transform: translateY(75vh) rotate(-9deg) scale(0.92); } 70% { transform: translateY(-10px) rotate(0.6deg) scale(1.005); } 100% { transform: none; } }
+@keyframes putaway { to { transform: translateY(80vh) rotate(7deg) scale(0.92); } }
+@keyframes cardin { from { opacity: 0; transform: translateX(26px); } }
+.stage.pull .phone { animation: pullout 0.75s cubic-bezier(0.2, 0.8, 0.25, 1) backwards; }
+.stage.pull .phone + .phone { animation-delay: 0.1s; }
+.stage.pull :is(.side-card, .lab, .compare-mid, .reveal-cta) { animation: cardin 0.5s ease-out 0.45s backwards; }
+.stage.away .phone { animation: putaway 0.45s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+.stage.away :is(.side-card, .lab, .compare-mid, .reveal-cta, .blackbox, .game-unfold) { transition: opacity 0.25s; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .stage.pull .phone, .stage.away .phone, .stage.pull :is(.side-card, .lab, .compare-mid, .reveal-cta) { animation: none; } }
+
+/* the strike: the group chat keeps moving while the offer counts down */
+.chat-log { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none; }
+.chat-log .bubble { animation: rise2 0.3s ease-out; }
+.chat-log .bubble b { display: block; font-size: 0.7rem; color: #1f6d58; }
+.chat-log .bubble.at-you { background: #fff6dc; }
+.chat-head small { font-weight: 400; opacity: 0.8; }
+.zp-pop .zp-timer { margin: 8px 0 2px; }
+.countdown b { font-family: var(--mono); color: var(--amber); }
+.countdown.urgent b { color: var(--red); }
+.chat { min-height: 0; overflow: hidden; }

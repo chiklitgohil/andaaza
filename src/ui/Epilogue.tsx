@@ -4,7 +4,7 @@ import { DEBRIEFS } from '../content/debriefs';
 import { ACTS } from '../story/acts';
 import { LABEL_COLOR, LABEL_MEANING, type Label } from '../content/types';
 import { Chip } from './Debrief';
-import { scoreOf } from '../acts/guess';
+import { scoreOf, feelingsOf } from '../acts/guess';
 
 type J = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -19,6 +19,7 @@ export function Epilogue() {
   const restart = useStory((s) => s.restart);
   const [panel, setPanel] = useState<'none' | 'about'>('none');
   const score = scoreOf(journal);
+  const felt = feelingsOf(journal);
   const { verify, offer, wait, tip, strike, game, ride } = journal;
   const guess = journal['ride-guess'];
   const waitChoice = journal['wait-choice'];
@@ -62,7 +63,7 @@ export function Epilogue() {
           {wait ? <Line k="Minutes waited, unpaid" v={wait.mins} /> : <Line k="Waiting" v={skipped} />}
           {waitChoice && <Line k="At the red light you chose" v={waitChoice === 'fast' ? 'speed' : 'safety'} />}
           {tip ? <Line k="Customer tipped / you received above base" v={`₹${tip.tip} / ₹${Math.max(0, tip.extra ?? tip.payout - 60)}`} /> : <Line k="The tip" v={skipped} />}
-          {strike ? <Line k="At 7 pm you" v={strike === 'stay' ? 'stayed online for ₹150' : 'logged off with the strike'} /> : <Line k="The strike" v={skipped} />}
+          {strike ? <Line k="At 7 pm you" v={strike === 'stay' ? 'stayed online for ₹150' : journal['strike-expired'] ? 'let the offer run out' : 'logged off with the strike'} /> : <Line k="The strike" v={skipped} />}
         </section>
         <section className="ep-card">
           <h3><span>Customer</span> priced</h3>
@@ -87,6 +88,14 @@ export function Epilogue() {
           <Line k="Arun’s price to advertisers" v="$14.83 per 1,000 ads" />
         </section>
       </div>
+
+      {felt.length > 0 && (
+        <section className="ep-felt" aria-label="What you told yourself today">
+          <h3>What you chose in Arun&rsquo;s shoes</h3>
+          <ul>{felt.map((f) => <li key={f.k}><span>{f.k}</span><b>{f.a}</b></li>)}</ul>
+          <p className="small">None of these had a right answer. Arun makes choices like them every day, with the rent due and an app keeping score.</p>
+        </section>
+      )}
 
       <div className="ep-q">
         <p>Questions to take with you:</p>
