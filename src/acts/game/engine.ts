@@ -75,10 +75,11 @@ export function genSolvable(b: Board, pool: number[] = ALL) {
 }
 /** REPORTED mechanism: two pieces that fit, one that does not, and no order finishes the hand. */
 export function genLethal(b: Board) {
-  for (let t = 0; t < 300; t++) {
+  // kept small so the phone never freezes: on an open board there may be no such hand, and the rule simply retries
+  for (let t = 0; t < 80; t++) {
     const h = triple(ALL);
     if (h.filter((i) => fitsAnywhere(b, SH[i])).length !== 2) continue;
-    const r = solve(b, h, 9000);
+    const r = solve(b, h, 2500);
     if (!r.ok && !r.over) return { h, nodes: r.nodes };
   }
   return null;
@@ -98,7 +99,7 @@ export type Device = 'ios' | 'android';
 export interface Settings {
   rulesOn: boolean;      // "honest mode" when false
   online: boolean;       // false = airplane mode / ad blocker: no ad can load
-  step: 500 | 750 | 1000;
+  step: number;         // points past your record (reported: 500, 750 or 1,000; scaled down for our short game)
   country: Country;
   device: Device;
 }

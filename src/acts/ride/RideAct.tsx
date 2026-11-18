@@ -9,7 +9,7 @@ import { Seg } from '../lab';
 import { Guess } from '../guess';
 import { Unfold } from '../unfold';
 import { UNFOLD } from '../../content/unfold';
-import { ARUN, STRANGER, claims, label, priceFor, type Mode } from './PriceLab';
+import { ARUN, STRANGER, AREAS, PhoneControls, claims, label, priceFor, type Mode, type PhoneSet } from './PriceLab';
 
 type Step = 'quote' | 'guess' | 'compare' | 'discount' | 'booked';
 const BASE = 168;           // ₹, meter-style fare for this 6.2 km trip (invented)
@@ -38,10 +38,13 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
   const [discountAsked, setDiscountAsked] = useState(false);
   const [mode, setMode] = useState<Mode>('claims');
   const [tries, setTries] = useState<{ a: number; b: number }[]>([]);
+  const [phones, setPhones] = useState<[PhoneSet, PhoneSet]>([ARUN, STRANGER]);
+  const [testing, setTesting] = useState(false);
+  const changed = phones[0] !== ARUN || phones[1] !== STRANGER;
 
   const quoted = BASE * RAIN_SURGE;
-  const arunPrice = priceFor(ARUN, mode, quoted);
-  const strangerPrice = priceFor(STRANGER, mode, quoted);
+  const arunPrice = priceFor(phones[0], mode, quoted);
+  const strangerPrice = priceFor(phones[1], mode, quoted);
   const shownWas = quoted * 1.25; // the app's own crossed-out "regular" price (invented)
   const gap = strangerPrice - arunPrice;
 
@@ -50,12 +53,12 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
     setTries((t) => [...t, { a: arunPrice * noise(n), b: strangerPrice * noise(n + 0.37) }].slice(-4));
   };
 
-  const screen = (price: number, crossed: boolean) => (
+  const screen = (price: number, crossed: boolean, who = 0) => (
     <div className="ride-app">
       <div className="ra-brand">gaadi</div>
       <div className="ra-route">
         <div><span className="dot-g" /> Tyre puncture shop, Ring Road</div>
-        <div><span className="dot-r" /> Home · Bapunagar</div>
+        <div><span className="dot-r" /> {phones[who].area === 'mixed' ? 'Home · Bapunagar' : AREAS[phones[who].area]}</div>
       </div>
       <div className="ra-map" aria-hidden="true"><i className="ra-line" /><b className="ra-car" /></div>
       <div className="ra-badge">High demand: rain · fares are higher ({RAIN_SURGE}×)</div>
@@ -67,7 +70,7 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
     </div>
   );
 
-  const claimed = [...claims(STRANGER).map((c) => `his ${c.text.replace(/^an? /, '')} +${Math.round(c.pct * 100)}%`), ...claims(ARUN).map((c) => `your ${c.text.replace(/^an? /, '')} +${Math.round(c.pct * 100)}%`)];
+  const claimed = [...claims(phones[1]).map((c) => `his ${c.text} +${Math.round(c.pct * 100)}%`), ...claims(phones[0]).map((c) => `your ${c.text} +${Math.round(c.pct * 100)}%`)];
 
   return (
     <div className="act ride-act">
@@ -99,12 +102,25 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
       {step === 'compare' && (
         <div className="compare">
           <div className="ride-row">
-            <Phone owner={`Arun · ${label(ARUN)}`} battery={ARUN.battery} model="android">{screen(arunPrice, false)}</Phone>
+            <Phone owner={`Arun · ${label(phones[0])}`} battery={phones[0].battery} model={phones[0].model === 'iphone' ? 'iphone' : 'android'}>{screen(arunPrice, false, 0)}</Phone>
             <div className="compare-mid lab">
               <p className="kicker">Same corner, same second</p>
               <div className="gap-readout"><span>{fmt(arunPrice)}</span><em>{Math.abs(gap) < 1 ? 'same' : gap > 0 ? `he pays ${fmt(gap)} more` : `you pay ${fmt(-gap)} more`}</em><span>{fmt(strangerPrice)}</span></div>
               <Seg label="Flip the hidden switch" options={[['claims', 'What critics claim'], ['company', 'What the companies say']]} value={mode} onChange={setMode} />
-              <p className="small">{mode === 'claims' ? `Claimed: ${claimed.join(', ')}.` : 'Nothing personal is used. Only the trip, the time and the rain.'}</p>
+              <p className="small">{mode === 'company' ? 'Nothing personal is used. Only the trip, the time and the rain.' : claimed.length ? `Claimed: ${claimed.join(', ')}.` : 'Nothing anyone has claimed applies to these two phones.'}</p>
+              <button className={`btn ghost small test-toggle ${testing ? 'on' : ''}`} aria-expanded={testing} onClick={() => setTesting((x) => !x)}>{testing ? 'Hide the test controls ▴' : 'Test it yourself: change either phone ▾'}</button>
+              {testing && (
+                <div className="tester">
+                  <div className="pl-two">
+                    <PhoneControls who="Your phone" p={phones[0]} onChange={(p) => setPhones([p, phones[1]])} />
+                    <PhoneControls who="His phone" p={phones[1]} onChange={(p) => setPhones([phones[0], p])} />
+                  </div>
+                  <div className="row">
+                    <button className="btn ghost small" onClick={() => setPhones([phones[0], phones[0]])}>Make both phones identical</button>
+                    {changed && <button className="btn ghost small" onClick={() => setPhones([ARUN, STRANGER])}>Back to tonight</button>}
+                  </div>
+                </div>
+              )}
               <div className="fair-test">
                 <p className="small">Prices also jump from second to second. Ask again:</p>
                 <button className="btn small" onClick={tryAgain}>↻ Both ask again</button>
@@ -112,7 +128,7 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
               </div>
               <div className="lab-footer"><button className="btn" onClick={() => setStep('discount')}>Book the ride →</button></div>
             </div>
-            <Phone owner={`Stranger · ${label(STRANGER)}`} battery={STRANGER.battery} model="iphone">{screen(strangerPrice, false)}</Phone>
+            <Phone owner={`Stranger · ${label(phones[1])}`} battery={phones[1].battery} model={phones[1].model === 'iphone' ? 'iphone' : 'android'}>{screen(strangerPrice, false, 1)}</Phone>
           </div>
         </div>
       )}

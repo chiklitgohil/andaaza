@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  N, SH, ECPM, put, fits, fitsAnywhere, decideDeal, drawAdPrice, harvestChecks, hue,
-  type Board, type Deal, type Player, type Settings,
+  N, SH, ECPM, put, fits, fitsAnywhere, decideDeal, drawAdPrice, harvestChecks, baseEcpm, hue,
+  type Board, type Deal, type Player, type Settings, type Country, type Device,
 } from './engine';
 import { Guess } from '../guess';
 import { Unfold } from '../unfold';
@@ -39,9 +39,10 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
   const note = useStory((s) => s.note);
   const [revealed, setRevealed] = useState(false);
   const [unfold, setUnfold] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [answered, setAnswered] = useState(false);
   const [screen, setScreen] = useState<'splash' | 'play' | 'over' | 'ad' | 'final'>('splash');
-  const [settings, setSettings] = useState<Settings>({ rulesOn: true, online: true, step: 500, country: 'IN', device: 'android' });
+  const [settings, setSettings] = useState<Settings>({ rulesOn: true, online: true, step: 20, country: 'IN', device: 'android' });
   const [board, setBoard] = useState<Board>(() => Array(N * N).fill(0));
   const [hand, setHand] = useState<(number | null)[]>([]);
   const [score, setScore] = useState(0);
@@ -315,7 +316,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
               {checks.map((c) => (
                 <div key={c.label} className={`ck ${c.met ? 'ok' : ''}`}><span>{c.met ? '✓' : '·'}</span>{c.label}<em>{c.detail}</em></div>
               ))}
-              <p className="tiny">All three → the next hand cannot be placed.</p>
+              <p className="tiny">All three → the next hand cannot be placed. (Reported: 500 to 1,000 points past your record. Scaled down here for a short game.)</p>
             </div>
             <div className="bb-card">
               <h3>Rule 2 · Past your record</h3>
@@ -324,6 +325,23 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
               <label className="tog hero-tog"><input type="checkbox" checked={settings.rulesOn} onChange={(e) => setSettings((s) => ({ ...s, rulesOn: e.target.checked }))} /> Hidden rules {settings.rulesOn ? 'ON' : 'OFF'}</label>
             </div>
           </div>
+          <button className={`btn ghost small test-toggle ${testing ? 'on' : ''}`} aria-expanded={testing} onClick={() => setTesting((x) => !x)}>{testing ? 'Hide the test controls ▴' : 'Test it yourself: Wi-Fi, country, phone, ads ▾'}</button>
+          {testing && (
+            <div className="bb-card tester">
+              <label className="tog"><input type="checkbox" checked={!settings.online} onChange={(e) => setSettings((s) => ({ ...s, online: !e.target.checked }))} /> Wi-Fi off / ad blocker on (no ad can load, so nothing to harvest)</label>
+              <div className="row">
+                <label>Country <select value={settings.country} onChange={(e) => { const country = e.target.value as Country; setSettings((s) => ({ ...s, country })); player.current.lastEcpm = ECPM[country][settings.device]; }}>
+                  {Object.entries(ECPM).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
+                </select></label>
+                <label>Phone <select value={settings.device} onChange={(e) => { const device = e.target.value as Device; setSettings((s) => ({ ...s, device })); player.current.lastEcpm = ECPM[settings.country][device]; }}>
+                  <option value="android">Android (Arun)</option><option value="ios">iPhone</option>
+                </select></label>
+              </div>
+              <p className="tiny">What a player like this is reportedly worth: <b>${baseEcpm(settings).toFixed(2)}</b> per 1,000 ads watched. Ad loaded right now: <b>{loaded == null ? 'none' : `$${loaded.toFixed(2)}`}</b> (each ad&rsquo;s price is our own made-up auction).</p>
+              <button className="btn small" onClick={() => { forcedAd.current = player.current.lastEcpm * 4; setLoaded(forcedAd.current); }}>Load a high-value ad for the next hand</button>
+            </div>
+          )}
+
           <div className="bb-card log">
             <h3>Last hands</h3>
             <ol className="dlog" aria-live="polite">

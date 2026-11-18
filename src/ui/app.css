@@ -520,3 +520,13 @@ a { color: var(--amber); }
 .countdown b { font-family: var(--mono); color: var(--amber); }
 .countdown.urgent b { color: var(--red); }
 .chat { min-height: 0; overflow: hidden; }
+
+/* "Test it yourself": the full controls, kept behind a button so the screen stays light */
+.test-toggle { margin: 6px 0 8px; }
+.test-toggle.on { border-color: var(--amber); color: var(--amber); }
+.tester { margin: 6px 0 10px; animation: fadein 0.3s ease-out; }
+.tester .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.pl-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pl-controls { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.pl-controls label { display: block; font-size: 0.8rem; margin: 6px 0; }
+.pl-controls select { display: block; width: 100%; font: 0.8rem var(--sans); background: #0a0b0d; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; margin-top: 3px; }
