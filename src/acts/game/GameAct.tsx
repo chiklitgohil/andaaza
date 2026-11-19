@@ -358,7 +358,7 @@ export default function GameAct({ onDone }: { onDone: () => void }) {
 
       {unfold && (
         <div className="game-unfold">
-          <Unfold items={UNFOLD.game} doneLabel="Put the phone down →" onDone={onDone} />
+          <Unfold impact="game" items={UNFOLD.game} doneLabel="Put the phone down →" onDone={onDone} />
         </div>
       )}
     </div>

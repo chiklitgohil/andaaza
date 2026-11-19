@@ -131,7 +131,7 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
               reveal={(i) => i === 0 ? 'You sit in the shade. Today’s bonus is gone.' : 'You stay. At a red light, the road tilts for a second.'} />
           </div>
         )}
-        {step === 'reveal' && <Unfold items={UNFOLD.wait} onDone={onDone} />}
+        {step === 'reveal' && <Unfold impact="wait" items={UNFOLD.wait} onDone={onDone} />}
       </div>
     </div>
   );

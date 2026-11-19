@@ -51,7 +51,7 @@ export default function StrikeAct({ onDone }: { onDone: () => void }) {
   const left = Math.max(0, Math.ceil(DECIDE - (t - POP_AT) / 1000));
   useEffect(() => { if (shown.length) sfx.chat(); }, [shown.length]);
   useEffect(() => { if (popped) sfx.ping(); }, [popped]);
-  useEffect(() => { if (popped && !choice && left > 0 && left <= 5) sfx.tick(); }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (popped && !choice && left > 0 && left < DECIDE) sfx.clock(1 - left / DECIDE); }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (popped && !choice && left <= 0) { setExpired(true); setChoice('strike'); note('strike-expired', true); sfx.error(); }
   }, [left, popped, choice, note]);
@@ -113,7 +113,7 @@ export default function StrikeAct({ onDone }: { onDone: () => void }) {
         </Phone>
 
         {step === 'choice' && (
-          <div className="side-card">
+          <div className="side-card strike-card">
             <p className="kicker">18:58 · two minutes to seven</p>
             <p className="big-q">Your friends strike at 7. The app just made staying pay five times more.</p>
             {popped && !choice && <p className={`small countdown ${left <= 5 ? 'urgent' : ''}`}>The offer disappears in <b>{left}s</b>. The group is waiting for your answer. If you don&rsquo;t decide, you don&rsquo;t get the shift.</p>}
@@ -126,7 +126,18 @@ export default function StrikeAct({ onDone }: { onDone: () => void }) {
                   ? ['He sends a photo of an empty dark store. For one night, it worked.', 'He writes back: “Same for all of us.”', 'The group celebrates without you.']
                   : ['He writes back: “None of us can.”', 'He doesn’t reply.', 'The group keeps talking without you.'])[i]} />
             )}
-            {replied && <button className="btn" onClick={() => { note('strike', choice); setStep('ledger'); }}>End of shift →</button>}
+            {replied && (
+              <div className="press">
+                <p className="ox-h">What just happened to you</p>
+                <div className="press-two">
+                  <div><small>Your friends</small><b>Hold together</b><span>&ldquo;If we stay split, nothing changes.&rdquo; The strike only works if every rider logs off.</span></div>
+                  <div><small>Your app</small><b>₹150 / order</b><span>Five times the usual, tonight only, penalties waived. It arrived two minutes before 7.</span></div>
+                </div>
+                <p className="small">You had {DECIDE} seconds to choose, alone, without knowing what anyone else would do. The bonus gave each rider a private reason to break ranks.</p>
+                <p className="lab-verdict bad">The app didn&rsquo;t ban the strike. It made breaking it look sensible, one rider at a time.</p>
+                <button className="btn" onClick={() => { note('strike', choice); setStep('ledger'); }}>End of shift →</button>
+              </div>
+            )}
           </div>
         )}
         {step === 'ledger' && (
@@ -149,7 +160,7 @@ export default function StrikeAct({ onDone }: { onDone: () => void }) {
             )}
           </Lab>
         )}
-        {step === 'reveal' && <Unfold items={UNFOLD.strike} onDone={onDone} />}
+        {step === 'reveal' && <Unfold impact="strike" items={UNFOLD.strike} onDone={onDone} />}
       </div>
     </div>
   );

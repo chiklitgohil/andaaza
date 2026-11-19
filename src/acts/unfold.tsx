@@ -4,16 +4,21 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { sfx } from '../audio/sound';
 import { Guess } from './guess';
+import { useStory } from '../story/store';
+import { impactOf } from '../content/impact';
 
 export type UnfoldItem =
-  | { say: ReactNode }
+  | { say: ReactNode; lead?: boolean }
   | { id: string; ask: ReactNode; options: string[]; correct?: number; reveal: ReactNode };
 
 const isAsk = (x: UnfoldItem): x is Extract<UnfoldItem, { ask: ReactNode }> => 'ask' in x;
 
-export function Unfold({ items, onDone, kicker = 'Behind the screen', doneLabel = 'Keep going →' }: {
+export function Unfold({ items: rest, onDone, kicker = 'Behind the screen', doneLabel = 'Keep going →', impact }: {
   items: UnfoldItem[]; onDone: () => void; kicker?: string; doneLabel?: string;
+  impact?: string;   // act id: open with what this stop just cost Arun, from the visitor's own choices
 }) {
+  const journal = useStory((s) => s.journal);
+  const [items] = useState<UnfoldItem[]>(() => [...(impact ? impactOf(impact, journal).map((say) => ({ say, lead: true })) : []), ...rest]);
   const [n, setN] = useState(1);                       // how many lines are showing
   const [answered, setAnswered] = useState<Record<number, boolean>>({});
   const box = useRef<HTMLDivElement>(null);
@@ -65,7 +70,7 @@ export function Unfold({ items, onDone, kicker = 'Behind the screen', doneLabel 
           <div key={i} className={`uf-line ${i < n - 1 ? 'past' : 'now'}`}>
             {isAsk(it)
               ? <Guess id={it.id} q={it.ask} options={it.options} correct={it.correct} reveal={it.reveal} big={false} onAnswer={() => setAnswered((a) => ({ ...a, [i]: true }))} />
-              : <p>{it.say}</p>}
+              : <>{'lead' in it && it.lead && (i === 0 || !('lead' in items[i - 1] && (items[i - 1] as { lead?: boolean }).lead)) && <span className="uf-lead-k">What it cost you</span>}<p className={'lead' in it && it.lead ? 'lead' : ''}>{it.say}</p></>}
           </div>
         ))}
       </div>

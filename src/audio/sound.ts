@@ -307,6 +307,15 @@ export const sfx = {
   success: () => [660, 880, 1320].forEach((f, i) => tone(f, 0.18, 0.03, { at: i * 0.08 })),
   shutter: () => { burst(0.03, 0.1, { type: 'highpass', freq: 3000 }); burst(0.04, 0.08, { type: 'highpass', freq: 2200, at: 0.07 }); },
   tick: () => burst(0.015, 0.06, { freq: 3200, q: 4 }),
+  /** A clock tick that tightens as time runs out (k: 0 = plenty of time, 1 = almost gone); a heartbeat joins near the end. */
+  clock: (k: number) => {
+    const f = 1150 + 950 * k;
+    burst(0.025, 0.08 + 0.1 * k, { freq: f, q: 7 });
+    tone(f / 2, 0.045, 0.012 + 0.03 * k, { type: 'square', lp: 2000 });
+    if (k > 0.6) { tone(62, 0.16, 0.06 * k, { to: 44 }); tone(58, 0.14, 0.045 * k, { to: 42, at: 0.18 }); }
+  },
+  /** A new order lands: the phone buzzes against your leg, then pings. */
+  order: () => { burst(0.22, 0.07, { type: 'lowpass', freq: 160, q: 2 }); burst(0.22, 0.07, { type: 'lowpass', freq: 160, q: 2, at: 0.3 }); tone(1175, 0.1, 0.04, { at: 0.12 }); tone(1568, 0.2, 0.04, { at: 0.2 }); },
   whoosh: () => burst(1.4, 0.09, { freq: 300, to: 2600, q: 1.2, attack: 1.0 }),
   unlock: () => { tone(988, 0.06, 0.03); tone(1480, 0.12, 0.03, { at: 0.06 }); },
   reveal: () => { burst(0.9, 0.05, { freq: 2400, to: 300, q: 1.5, attack: 0.05 }); tone(110, 1.4, 0.05, { type: 'sawtooth', lp: 400, attack: 0.2 }); },

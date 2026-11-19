@@ -81,7 +81,7 @@ export default function TipAct({ onDone }: { onDone: () => void }) {
             <div className="lab-next"><button className="btn" onClick={() => { note('tip', { tip, payout: Math.round(payout), extra: Math.round(reaches) }); setStep('reveal'); }}>Why would an app do this? →</button></div>
           </Lab>
         )}
-        {step === 'reveal' && <Unfold items={UNFOLD.tip} onDone={onDone} />}
+        {step === 'reveal' && <Unfold impact="tip" items={UNFOLD.tip} onDone={onDone} />}
       </div>
     </div>
   );

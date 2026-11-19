@@ -275,6 +275,17 @@ export const DEBRIEFS: Record<string, Debrief> = {
         sources: [OMOLEWA],
       },
       {
+        text: 'The analysis reports that each request to the game’s ad-price server sends 40 fields (including carrier, storage, the hour and recent ad prices), and that on-device models with 27, 52 and 93 inputs (such as first score, phone model, RAM, country and time since install) predict ad value, level difficulty and next-day activity. Server-side models predict churn, lifetime value and whether you will tap “revive”; their weights are not visible.',
+        label: 'REPORTED',
+        response: 'Hungry Studio did not reply to a request for comment. The analysis has not been independently replicated.',
+        sources: [OMOLEWA],
+      },
+      {
+        text: 'Sensor Tower estimated that Block Blast made about $127 million from ads between January and May 2026 (about $131 million for its developer, Hungry Studio). These are market-tracker estimates, not company figures.',
+        label: 'REPORTED',
+        sources: [OMOLEWA, { title: 'Sensor Tower: Mobile Game Ad Monetization in 2026', publisher: 'Game Dev Reports (summary of Sensor Tower)', url: 'https://gamedevreports.substack.com/p/sensor-tower-mobile-game-ad-monetization', opened: false }],
+      },
+      {
         text: 'Ad platforms really do report ad revenue per individual user and let apps set different price floors for different players.',
         label: 'DOCUMENTED',
         sources: [

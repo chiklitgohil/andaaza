@@ -72,7 +72,7 @@ export default function ArriveAct({ onDone }: { onDone: () => void }) {
             {rated && <div className="lab-next"><button className="btn" onClick={() => { note('ride', { paid: Math.round(paid), driver: Math.round(driverGets), cut }); setStep('reveal'); }}>What&rsquo;s the real cut? →</button></div>}
           </Lab>
         )}
-        {step === 'reveal' && <Unfold items={UNFOLD.arrive} onDone={onDone} doneLabel="Go inside →" />}
+        {step === 'reveal' && <Unfold impact="arrive" items={UNFOLD.arrive} onDone={onDone} doneLabel="Go inside →" />}
       </div>
     </div>
   );

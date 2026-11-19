@@ -37,6 +37,7 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   const [lost, setLost] = useState(false);
   const [phase, setPhase] = useState<'offers' | 'recap' | 'odometer' | 'nextday' | 'lab' | 'reveal'>('offers');
   const [took, setTook] = useState<Took[]>([]);
+  const [odoDone, setOdoDone] = useState(false);
   const [scheme, setScheme] = useState<DV['scheme']>('new');
   const [answered, setAnswered] = useState(false);
   const day = simulate(dayFor(scheme));
@@ -47,11 +48,20 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     if (phase !== 'offers') return;
     setLeft(SECONDS);
-    sfx.ping();
+    sfx.order();
     const id = setInterval(() => setLeft((x) => x - 1), 1000);
     return () => clearInterval(id);
   }, [i, phase]);
-  useEffect(() => { if (phase === 'offers' && left > 0 && left <= 3) sfx.tick(); if (phase === 'offers' && left <= 0) decide(false, true); }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the clock: a tick every second that gets louder and higher, double-time with a heartbeat in the last four
+  useEffect(() => {
+    if (phase !== 'offers') return;
+    if (left <= 0) { decide(false, true); return; }
+    if (left === SECONDS) return;          // the order's own buzz covers the first second
+    const k = 1 - left / SECONDS;
+    sfx.clock(k);
+    if (left <= 4) { const t = setTimeout(() => sfx.clock(Math.min(1, k + 0.04)), 500); return () => clearTimeout(t); }
+  }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
+  const urgency = left <= 4 ? 'urgent' : left <= 7 ? 'hurry' : '';
 
   function decide(accept: boolean, timeout = false) {
     if (accept) { setDone((d) => d + 1); setEarned((e) => e + offer.pay); sfx.cash(); }
@@ -87,14 +97,14 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
           )}
           {phase === 'offers' && offer && (
             <div className="zp-body">
-              <div className="zp-offer" key={i}>
-                <div className="zp-timer"><i style={{ width: `${(left / SECONDS) * 100}%` }} /></div>
+              <div className={`zp-offer ${urgency}`} key={i}>
+                <div className={`zp-timer ${urgency}`}><i style={{ width: `${(left / SECONDS) * 100}%` }} /></div>
                 <p className="zp-pay">₹{offer.pay}</p>
                 <p className="tiny">{offer.km} km · ₹{(offer.pay / offer.km).toFixed(1)}/km</p>
                 <p className="zp-route">{offer.from} → {offer.to}</p>
                 <div className="zp-actions">
                   <button className="zp-rej" onClick={() => decide(false)}>Reject</button>
-                  <button className="zp-acc" autoFocus onClick={() => decide(true)}>Accept · {left}s</button>
+                  <button className={`zp-acc ${urgency}`} autoFocus onClick={() => decide(true)}>Accept · {left}s</button>
                 </div>
                 <p className="tiny">Rejections today: {rejects} of {REJECTS_ALLOWED} allowed</p>
               </div>
@@ -111,7 +121,7 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
               <p className="zp-title">Order delivered ✓</p>
               <div className="odo"><div><small>App distance</small><b>10.3 km</b></div><div><small>Your scooter</small><b>13.0 km</b></div></div>
               <p className="tiny">Paid for 10.3 km. The pin was on the wrong side of the flyover.</p>
-              <button className="zp-go small" onClick={() => setPhase('nextday')}>Next morning →</button>
+              <button className="zp-go small" disabled={!odoDone} onClick={() => setPhase('nextday')}>Next morning →</button>
             </div>
           )}
           {(phase === 'nextday' || phase === 'reveal') && (
@@ -130,7 +140,11 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
 
         {phase === 'offers' && offer && (
           <div className="side-card offer-x">
-            <p className="kicker">09:31 · {Math.max(0, target - done)} more to the bonus</p>
+            <div className="ox-top">
+              <p className="kicker">09:31 · {Math.max(0, target - done)} more to the bonus</p>
+              <span className={`ox-clock ${urgency}`} aria-live="off">⏱ {left}s</span>
+            </div>
+            <p className="ox-q">Order {i + 1} of {OFFERS.length}. Decide before it&rsquo;s gone.</p>
             <div className="ox-status">
               <div><small>Daily bonus</small><b>{lost ? 'Lost' : `₹${bonus}`}</b><span>{done}/{target} orders</span></div>
               <div><small>Rejections left</small><b className={rejects >= REJECTS_ALLOWED ? 'bad' : ''}>{Math.max(0, REJECTS_ALLOWED - rejects)}</b><span>of {REJECTS_ALLOWED} allowed today</span></div>
@@ -150,10 +164,27 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
         )}
         {phase === 'recap' && <OfferRecap took={took} lost={lost} done={done} target={target} bonus={bonus} onNext={() => setPhase('odometer')} />}
         {phase === 'odometer' && (
-          <div className="side-card">
-            <p className="kicker">You rode 2.7 km the app doesn&rsquo;t count</p>
-            <Guess id="odometer" feel="The 2.7 km nobody paid for" q="Do you report it?" options={['Report it', 'Let it go']}
+          <div className="side-card odo-card">
+            <p className="kicker">09:58 · you rode 2.7 km the app doesn&rsquo;t count</p>
+            <Guess id="odometer" feel="The 2.7 km nobody paid for" big={false} q="Do you report it?" options={['Report it', 'Let it go']}
+              onAnswer={() => setOdoDone(true)}
               reveal={(i) => i === 0 ? 'Twenty minutes later: “Distance is calculated by the system.” Three orders went to someone else.' : 'Not worth the fight. The next order is already ringing.'} />
+            {odoDone && (
+              <div className="odo-x">
+                <p className="ox-h">What happened on this trip</p>
+                <dl className="ox-sheet">
+                  <dt>The app paid for</dt><dd>10.3 km</dd>
+                  <dt>You actually rode</dt><dd>13.0 km</dd>
+                  <dt>Ridden for nothing</dt><dd className="bad">2.7 km</dd>
+                  <dt>Petrol for it (≈ ₹{PETROL}/km)</dt><dd className="bad">−₹{Math.round(2.7 * PETROL)}</dd>
+                  <dt>Time for it</dt><dd className="bad">≈ {Math.round(2.7 * 3.2)} min</dd>
+                </dl>
+                <p className="small">The drop-off pin sat on the wrong side of the flyover, so you rode round to reach the real door. The app pays for the distance its map planned, not the distance you rode.</p>
+                <p className="small">You can&rsquo;t prove it: your scooter&rsquo;s odometer isn&rsquo;t connected to the app, and there&rsquo;s no button to dispute one trip, only a support chat.</p>
+                <p className="lab-verdict bad">If one order a day goes like this: about {Math.round(2.7 * 26)} km a month, ₹{Math.round(2.7 * 26 * PETROL)} of petrol and {(2.7 * 3.2 * 26 / 60).toFixed(1)} hours of riding that nobody pays for.</p>
+                <p className="tiny">Use the phone: “Next morning →”.</p>
+              </div>
+            )}
           </div>
         )}
         {phase === 'nextday' && (
@@ -167,7 +198,7 @@ export default function OfferAct({ onDone }: { onDone: () => void }) {
           </div>
         )}
         {phase === 'lab' && <DayLab scheme={scheme} setScheme={setScheme} onNext={() => setPhase('reveal')} />}
-        {phase === 'reveal' && <Unfold items={UNFOLD.offer} onDone={onDone} />}
+        {phase === 'reveal' && <Unfold impact="offer" items={UNFOLD.offer} onDone={onDone} />}
       </div>
     </div>
   );

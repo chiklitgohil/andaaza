@@ -160,7 +160,7 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
               <p className="tiny" style={{ textAlign: 'center' }}>Fare {fmt(arunPrice)} · pay by UPI at the end</p>
             </div>
           </Phone>
-          <Unfold kicker="21:44 · Mahesh pulls up" items={UNFOLD.ride} onDone={onDone} doneLabel="Get in →" />
+          <Unfold kicker="21:44 · Mahesh pulls up" impact="ride" items={UNFOLD.ride} onDone={onDone} doneLabel="Get in →" />
         </div>
       )}
     </div>

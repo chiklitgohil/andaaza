@@ -131,7 +131,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
             {!slots.b && <p className="bad">Without the 12–4 pm slot, today&rsquo;s bonus is gone.</p>}
           </div>
         )}
-        {step === 'reveal' && <Unfold items={UNFOLD.verify} onDone={onDone} />}
+        {step === 'reveal' && <Unfold impact="verify" items={UNFOLD.verify} onDone={onDone} />}
       </div>
     </div>
   );

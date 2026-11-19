@@ -530,3 +530,55 @@ a { color: var(--amber); }
 .pl-controls { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
 .pl-controls label { display: block; font-size: 0.8rem; margin: 6px 0; }
 .pl-controls select { display: block; width: 100%; font: 0.8rem var(--sans); background: #0a0b0d; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; margin-top: 3px; }
+
+/* urgency on the offer screen: the clock gets louder (sound.ts) and the screen gets tighter */
+.ox-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ox-top .kicker { margin: 0; }
+.ox-clock { font: 700 1.5rem var(--mono); color: var(--ink); padding: 2px 10px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.04); }
+.ox-clock.hurry { color: var(--amber); border-color: var(--amber); }
+.ox-clock.urgent { color: #fff; background: var(--red); border-color: var(--red); animation: oxpulse 0.5s ease-in-out infinite; }
+.ox-q { font: 1.05rem/1.3 var(--serif); margin: 6px 0 0; }
+@keyframes oxpulse { 50% { transform: scale(1.08); } }
+.zp-timer.hurry i { background: #f0a23c; }
+.zp-timer.urgent i { background: #e0453a; }
+.zp-timer.urgent { animation: oxblink 0.5s steps(2) infinite; }
+@keyframes oxblink { 50% { opacity: 0.55; } }
+.zp-acc.urgent { animation: oxpulse 0.5s ease-in-out infinite; }
+.zp-offer.urgent { animation: oxshake 0.25s linear infinite; }
+@keyframes oxshake { 25% { transform: translateX(-1.5px) rotate(-0.4deg); } 75% { transform: translateX(1.5px) rotate(0.4deg); } }
+@media (prefers-reduced-motion: reduce) { .ox-clock.urgent, .zp-acc.urgent, .zp-offer.urgent, .zp-timer.urgent { animation: none; } }
+
+/* the face check, explained */
+.chart-key { margin: 2px 0 10px; }
+.k-red { color: #f08a7a; font-weight: 700; }
+.k-amber { color: var(--amber); font-weight: 700; }
+.face-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.face-stats .fs { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.face-stats .fs b { display: block; font: 700 1.5rem var(--mono); }
+.face-stats .fs.bad b { color: var(--red); }
+.face-stats .fs.warn b { color: var(--amber); }
+.face-stats .fs span { display: block; font-size: 0.8rem; line-height: 1.3; }
+.face-stats .fs small { display: block; font-size: 0.7rem; color: var(--mute); margin-top: 4px; }
+.face-why { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 6px; font-size: 0.85rem; }
+.face-why dt { color: var(--mute); }
+.face-why dd { margin: 0; }
+
+/* the unfold opens with what the stop cost Arun */
+.uf-lead-k { display: block; font: 700 0.66rem var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
+.uf-line > p.lead { font: italic 1.32rem/1.4 var(--serif); color: #f6e6c8; padding-left: 12px; border-left: 3px solid var(--amber); }
+
+/* the unpaid kilometres, explained */
+.odo-card { max-height: 84vh; overflow-y: auto; }
+.odo-x { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); animation: fadein 0.4s ease-out; }
+.odo-x .ox-sheet { margin: 6px 0 10px; }
+
+/* the strike: two pressures at once */
+.press { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); animation: fadein 0.4s ease-out; }
+.press-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.press-two div { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.press-two small { display: block; font: 600 0.66rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }
+.press-two b { display: block; font: 700 1.05rem var(--mono); margin: 3px 0; }
+.press-two div:first-child b { color: #7fd1a0; }
+.press-two div:last-child b { color: #ff8a4c; }
+.press-two span { display: block; font-size: 0.78rem; line-height: 1.35; }
+.strike-card { max-height: 84vh; overflow-y: auto; }
