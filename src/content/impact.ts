@@ -10,7 +10,7 @@ export function impactOf(id: string, j: J): string[] {
       const t = j.verify?.tries ?? 2;
       const bonusSlot = (j.verify?.slots as string[] | undefined)?.includes('b') ?? true;
       return [
-        `It took you ${plural(t, 'try', 'tries')} and ${t * 4} minutes to prove you are you. That’s about ${t * 2} morning orders gone, and nobody to complain to.`,
+        `It took you ${plural(t, 'try', 'tries')} and ${t * 4} minutes to prove you are you. Meanwhile the first orders of the morning went to riders who were already online, and there was nobody to complain to.`,
         bonusSlot ? 'To keep today’s bonus, you’ve signed up to ride through 12 to 4 pm, the hottest hours of the day.'
           : 'You skipped the 12 to 4 pm slot, so today’s bonus is gone before the day has started.',
       ];

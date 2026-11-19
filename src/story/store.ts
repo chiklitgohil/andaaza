@@ -15,6 +15,7 @@ interface State {
   sound: boolean;            // on by default; it starts at the visitor's first click (a browser rule)
   journal: Record<string, unknown>;   // choices, guesses and results for the "Your day" recap
   phoneClock: string | null; // the time on Arun's phone while a stop is open; the top bar shows it too
+  intro: boolean;            // the welcome card is open (every page load; restarting the day does not bring it back)
   setProgress: (p: number) => void;
   buzz: (id: string) => void;
   dive: () => void;
@@ -36,6 +37,7 @@ export const useStory = create<State>((set, get) => ({
   sound: true,
   journal: {},
   phoneClock: null,
+  intro: true,
   setProgress: (p) => set({ progress: p }),
   buzz: (id) => set({ phase: 'buzz', actId: id, phoneClock: null }),
   dive: () => set({ phase: 'dive' }),

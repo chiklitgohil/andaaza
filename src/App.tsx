@@ -4,6 +4,7 @@ import { useScrollEngine, SCREENS } from './story/useScrollEngine';
 import { hasWebGL } from './ui/webgl';
 import { ErrorBoundary } from './ui/ErrorBoundary';
 import { useStory } from './story/store';
+import { IntroModal } from './ui/IntroModal';
 
 const World = lazy(() => import('./world/World'));
 
@@ -22,6 +23,7 @@ export default function App() {
         )}
       </div>
       <Overlay />
+      <IntroModal />
       {/* the scroll track: its height is the length of Arun's day */}
       <div className="track" style={{ height: `${SCREENS * 100}vh` }} aria-hidden="true" />
     </>

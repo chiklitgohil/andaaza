@@ -4,7 +4,6 @@ import { ACTS, BEATS, clock, type Feel } from '../story/acts';
 import { sfx } from '../audio/sound';
 import { useStory } from '../story/store';
 import { jumpTo } from '../story/useScrollEngine';
-import { getRequests, subscribe } from './requestWatch';
 import { Epilogue } from './Epilogue';
 import { setSound } from '../audio/sound';
 
@@ -42,9 +41,6 @@ function Hud() {
   const done = useStory((s) => s.done);
   const phase = useStory((s) => s.phase);
   const phoneClock = useStory((s) => s.phoneClock);
-  const [, force] = useState(0);
-  useEffect(() => subscribe(() => force((n) => n + 1)), []);
-  const third = getRequests().thirdParty.length;
   return (
     <header className="hud">
       <div className="hud-clock" aria-live="off"><span className="hud-time">{phase === 'phone' && phoneClock ? phoneClock : clock(progress)}</span><span className="hud-place">Ahmedabad</span></div>
@@ -60,9 +56,6 @@ function Hud() {
         ))}
       </nav>
       <SoundButton />
-      <div className={`privacy ${third ? 'warn' : ''}`} title="This page sends nothing. Every network request is counted here, locally.">
-        <span className="pdot" />{third} requests to other sites
-      </div>
     </header>
   );
 }
@@ -70,6 +63,7 @@ function Hud() {
 function Narration() {
   const progress = useStory((s) => s.progress);
   const phase = useStory((s) => s.phase);
+  const intro = useStory((s) => s.intro);
   if (phase !== 'ride' || progress >= END_AT) return null;
   const beat = BEATS.reduce((best, b) => (Math.abs(b.at - progress) < Math.abs(best.at - progress) ? b : best), BEATS[0]);
   const dist = Math.abs(beat.at - progress);
@@ -89,7 +83,7 @@ function Narration() {
           <span className="muted"> · this chapter is being built. Keep scrolling.</span>
         </div>
       )}
-      {progress < 0.01 && <div className="scroll-hint" aria-hidden="true">scroll ↓</div>}
+      {progress < 0.01 && !intro && <div className="scroll-hint" aria-hidden="true">scroll ↓</div>}
     </>
   );
 }

@@ -154,7 +154,7 @@ export function Epilogue() {
                 <h3>What is real and what is invented</h3>
                 <p className="small">Arun, his city, the apps (Flopcart, Gaadi, Stack), every person and every price in the story are invented. Flopcart is a joke name: it is not Flipkart or any other real company, and nothing in the story describes what Flipkart does. The mechanisms they show are drawn from real cases. During the story the wording says how sure we are (&ldquo;riders say&rdquo;, &ldquo;the company denies it&rdquo;); the evidence list on this page gives every claim its label, the company&rsquo;s response and its source. Where we use a mechanism from another country, we say so.</p>
                 <h3>Privacy</h3>
-                <p className="small">This site collects nothing: no analytics, no cookies, no trackers, no accounts. It never uses your camera, microphone or location. The published version blocks every request to other websites, and the counter at the top right shows the count. Your choices stay in this tab and vanish when you close it.</p>
+                <p className="small">This site collects nothing: no analytics, no cookies, no trackers, no accounts. It never uses your camera, microphone or location. The published version blocks every request to other websites. Your choices stay in this tab and vanish when you close it.</p>
                 <h3>Credits</h3>
                 <ul className="small">
                   <li>3D models: Kenney (kenney.nl), released under CC0.</li>

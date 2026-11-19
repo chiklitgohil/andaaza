@@ -120,7 +120,7 @@ export default function VerifyAct({ onDone }: { onDone: () => void }) {
                 </button>
               ))}
             </div>
-            {tries > 0 && <p className="tiny">Morning orders missed while verifying: {tries * 2}</p>}
+            {tries > 0 && <p className="tiny">Minutes lost to the face check so far: {tries * 4}. The morning rush has started without you.</p>}
           </div>
         )}
         {step === 'lab' && <FaceLab mark={mark} setMark={setMark} onNext={() => setStep('slots')} />}

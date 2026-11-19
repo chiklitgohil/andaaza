@@ -39,9 +39,6 @@ a { color: var(--amber); }
 .dot { font: 600 0.72rem var(--mono); width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.5); color: var(--ink); cursor: pointer; }
 .dot.done { background: var(--amber); color: #000; border-color: var(--amber); }
 .dot.soon { opacity: 0.45; border-style: dashed; }
-.privacy { font: 0.72rem var(--mono); display: flex; align-items: center; gap: 6px; background: rgba(0, 0, 0, 0.55); border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; }
-.pdot { width: 7px; height: 7px; border-radius: 50%; background: var(--grn); box-shadow: 0 0 8px var(--grn); }
-.privacy.warn .pdot { background: var(--red); box-shadow: 0 0 8px var(--red); }
 
 /* ---------- narration ---------- */
 .narration { position: fixed; left: 6vw; bottom: 14vh; z-index: 10; max-width: 560px; pointer-events: none; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85); }
@@ -606,3 +603,41 @@ a { color: var(--amber); }
 .tr-h { font: 700 0.68rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: #ff8a7f; margin: 0 0 4px; }
 .tr-group ul { margin: 0; padding-left: 1em; font-size: 0.8rem; line-height: 1.35; }
 @media (prefers-reduced-motion: reduce) { .tr-group { animation: none; } }
+
+/* ---------- the welcome card: the doorway into the story ---------- */
+.intro-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px; overflow-y: auto; background: radial-gradient(120% 90% at 50% 0%, rgba(10, 12, 18, 0.7), rgba(5, 6, 10, 0.92)); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); animation: introFade 0.35s ease-out backwards; }
+.intro-card { width: 100%; max-width: 640px; max-height: calc(100vh - 32px); overflow-y: auto; box-sizing: border-box; background: rgba(9, 11, 15, 0.96); border: 1px solid rgba(241, 236, 226, 0.16); border-top: 3px solid #f0a23c; border-radius: 14px; padding: 28px 32px; box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7); color: #f1ece2; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; animation: introCard 0.55s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+.intro-card p { line-height: 1.6; margin: 0 0 14px; }
+.intro-k { font: 600 0.72rem/1.4 Consolas, Menlo, monospace !important; text-transform: uppercase; letter-spacing: 0.16em; color: #f0a23c; margin: 0 0 10px !important; }
+.intro-card h1 { font: 400 clamp(2.1rem, 6vw, 3.2rem)/1.1 Georgia, "Times New Roman", serif; margin: 0 0 18px; }
+.intro-card mark { color: #f0a23c; background: rgba(240, 162, 60, 0.14); text-decoration: underline 2px #f0a23c; text-underline-offset: 4px; padding: 0 2px; border-radius: 3px; }
+.intro-cases { list-style: none; counter-reset: case; padding: 0; margin: 0 0 16px; display: flex; flex-direction: column; gap: 8px; }
+.intro-cases li { counter-increment: case; position: relative; padding: 10px 12px 10px 40px; border: 1px solid rgba(241, 236, 226, 0.16); border-radius: 10px; background: rgba(255, 255, 255, 0.03); animation: introUp 0.45s ease-out backwards; }
+.intro-cases li::before { content: counter(case); position: absolute; left: 13px; top: 9px; font: 700 0.95rem Consolas, Menlo, monospace; color: #f0a23c; }
+.intro-cases b { display: block; font-size: 0.92rem; }
+.intro-cases span { display: block; font-size: 0.82rem; color: #a9a49a; line-height: 1.45; }
+.intro-how { margin: 0 0 14px; padding-left: 1.2em; line-height: 1.6; font-size: 0.95rem; }
+.intro-note { font-size: 0.85rem !important; color: #a9a49a; border-top: 1px solid rgba(241, 236, 226, 0.16); padding-top: 12px; }
+.intro-btn { font: 700 1rem system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #120c02; background: #f0a23c; border: 0; border-radius: 8px; padding: 11px 20px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+.intro-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(240, 162, 60, 0.35); }
+.intro-btn:active { transform: scale(0.96); }
+.intro-btn:focus-visible { outline: 2px solid #f1ece2; outline-offset: 3px; }
+.intro-card .i1, .intro-card .i2, .intro-card .i3, .intro-card .i4, .intro-card .i5, .intro-card .i6, .intro-card .i7, .intro-card .i8 { animation: introUp 0.45s ease-out backwards; }
+.intro-card .i1 { animation-delay: 0.08s; } .intro-card .i2 { animation-delay: 0.12s; } .intro-card .i3 { animation-delay: 0.16s; }
+.intro-card .i4 { animation-delay: 0.2s; } .intro-card .i5 { animation-delay: 0.24s; } .intro-card .i6 { animation-delay: 0.28s; }
+.intro-card .i7 { animation-delay: 0.3s; } .intro-card .i8 { animation-delay: 0.32s; }
+@keyframes introFade { from { opacity: 0; } }
+@keyframes introCard { from { opacity: 0; transform: translateY(18px) scale(0.97); } }
+@keyframes introUp { from { opacity: 0; transform: translateY(10px); } }
+/* leaving: the card drops away and the city clears */
+.intro-backdrop.closing { animation: introOut 0.4s ease-in forwards; pointer-events: none; }
+.intro-backdrop.closing .intro-card { animation: introCardOut 0.4s ease-in forwards; }
+@keyframes introOut { to { opacity: 0; -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); } }
+@keyframes introCardOut { to { opacity: 0; transform: translateY(12px) scale(0.98); } }
+@media (max-width: 520px) { .intro-card { padding: 22px 20px; } }
+@media (prefers-reduced-motion: reduce) {
+  .intro-backdrop, .intro-card, .intro-card *, .intro-cases li { animation: none !important; transition: none !important; }
+}
+/* the button stays in reach while the card scrolls */
+.intro-foot { position: sticky; bottom: -28px; margin: 0 -32px -28px; padding: 30px 32px 20px; background: linear-gradient(rgba(9, 11, 15, 0), rgb(9, 11, 15) 42%); }
+@media (max-width: 520px) { .intro-foot { bottom: -22px; margin: 0 -20px -22px; padding: 14px 20px 16px; } }

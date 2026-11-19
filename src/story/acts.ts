@@ -43,7 +43,7 @@ export const ACTS: Act[] = [
 ];
 
 export const BEATS: Beat[] = [
-  { at: atTime('06:15'), time: '06:15', lines: ['Andaaza', 'andaaza (n.) · a guess, an estimate. What your apps make of you.','For the next few minutes, you are Arun, a food delivery rider in Ahmedabad.', 'Scroll to live one day of his life, from 06:15 to midnight. When his phone buzzes, pick it up.'] },
+  { at: atTime('06:15'), time: '06:15', lines: ['Andaaza', 'andaaza (n.) · a guess, an estimate. What your apps make of you.','You are Arun. Ahmedabad. 06:15.', 'Scroll to start your day.'] },
   { at: atTime('06:32'), time: '06:32', lines: ['The bag is on your back. The scooter coughs, then starts.', 'Your phone is the only boss you will see today.'],
     ask: { id: 'mother', k: 'Home for dinner?', q: 'Your mother asks if you’ll be home for dinner.', options: ['“Yes, by nine”', '“I’ll try”'], replies: ['You both know the bonus decides that, not you.', 'She sets a plate aside anyway. She always does.'] } },
   { at: atTime('08:00'), time: '08:00', lines: ['The city wakes up hungry.'] },
