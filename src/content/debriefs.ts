@@ -216,6 +216,12 @@ export const DEBRIEFS: Record<string, Debrief> = {
         sources: [{ title: 'Uber riders complain they were charged more for paying with Amex cards', publisher: 'Fortune', url: 'https://fortune.com/2026/04/23/amex-uber-fares-charge-more-higher-gift-cards-battery-low/', opened: false }],
       },
       {
+        text: 'Uber’s privacy notice for riders (last updated 22 October 2026) lists: precise location from request to drop-off and while the app is open on screen; device data including motion data, hardware model, IP address, advertising identifiers and mobile network; selfies and facial verification information; call recordings, transcripts and chat logs; search history; gender inferred from first name; inferred interests for ad audiences; a predicted risk of conflict between users; and, outside the EEA, UK and Switzerland, “enrichment data” from data providers such as household income range, lifestyle, purchasing behaviour and viewing habits. Battery level is not listed.',
+        label: 'DOCUMENTED',
+        response: 'The notice is Uber’s own description of its practices; some items depend on permissions and country.',
+        sources: [{ title: 'Uber Privacy Notice', publisher: 'Uber', url: 'https://www.uber.com/legal/en/document/?name=privacy-notice&country=united-states&lang=en', opened: true }],
+      },
+      {
         text: 'Consumer Reports had 174 volunteers compare Uber and Lyft fares for matching trips (March–April 2026): a 42.4% median gap between the lowest and highest quote, and 12.4% of displayed discounts were illusory.',
         label: 'CONTESTED',
         response: 'Uber: the findings are "based on a flawed methodology"; it "does not personalize prices, period." Lyft: "We do not engage in surveillance pricing."',

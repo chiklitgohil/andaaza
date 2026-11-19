@@ -11,7 +11,7 @@ import { Unfold } from '../unfold';
 import { UNFOLD } from '../../content/unfold';
 import { ARUN, STRANGER, AREAS, PhoneControls, claims, label, priceFor, type Mode, type PhoneSet } from './PriceLab';
 
-type Step = 'quote' | 'guess' | 'compare' | 'discount' | 'booked';
+type Step = 'quote' | 'guess' | 'compare' | 'discount' | 'booked' | 'tracked';
 const BASE = 168;           // ₹, meter-style fare for this 6.2 km trip (invented)
 const RAIN_SURGE = 1.4;     // disclosed "high demand" multiplier, same for everyone (invented, under India's 2× cap)
 
@@ -22,6 +22,17 @@ function noise(seed: number) {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
   return 1 + ((x - Math.floor(x)) - 0.5) * 0.16;
 }
+
+// What a real ride app says it collects about riders: Uber's own privacy notice (see debriefs.ts). Gaadi is invented.
+const TRACKED: [string, string[]][] = [
+  ['Where you are', ['Your precise location, from booking to drop-off', 'Your location whenever the app is open on screen', 'Every pickup, drop-off, date and time']],
+  ['Your phone', ['Phone model and operating system', 'How your phone moves (motion sensors)', 'IP address and device IDs', 'Advertising ID', 'Mobile network']],
+  ['Your face and ID', ['Selfies for facial verification', 'Government ID documents']],
+  ['What you say', ['Recordings of calls with drivers and support', 'Chat logs and transcripts', 'In-app audio recordings']],
+  ['Your habits', ['Your search history in the app', 'Pages and features you look at', 'How often you cancel, and your ratings']],
+  ['Guessed about you', ['Your gender, guessed from your first name', 'Your interests, to sell ads', 'Your “risk of conflict” with other users']],
+  ['Bought from others', ['Your age range and household income range', 'Interests, lifestyle and shopping habits', 'What you watch and stream', 'Card activity, from business partners']],
+];
 
 const GUESSES = [
   { id: 'same', label: 'Same price' },
@@ -160,7 +171,34 @@ export default function RideAct({ onDone }: { onDone: () => void }) {
               <p className="tiny" style={{ textAlign: 'center' }}>Fare {fmt(arunPrice)} · pay by UPI at the end</p>
             </div>
           </Phone>
-          <Unfold kicker="21:44 · Mahesh pulls up" impact="ride" items={UNFOLD.ride} onDone={onDone} doneLabel="Get in →" />
+          <Unfold kicker="21:44 · Mahesh pulls up" impact="ride" items={UNFOLD.ride} onDone={() => setStep('tracked')} doneLabel="One last thing →" />
+        </div>
+      )}
+
+      {step === 'tracked' && (
+        <div className="ride-row lab-row">
+          <Phone owner="Arun" battery={5} model="android" time="21:44">
+            <div className="ride-app">
+              <div className="ra-brand">gaadi</div>
+              <p className="r-title">Your ride is here</p>
+              <div className="ra-driver"><b>Mahesh</b> · yellow taxi · GJ 01 ●●●● · ★ 4.9</div>
+              <p className="tiny" style={{ textAlign: 'center' }}>Fare {fmt(arunPrice)} · pay by UPI at the end</p>
+            </div>
+          </Phone>
+          <div className="side-card tracked">
+            <p className="kicker">21:44 · before you get in</p>
+            <p className="big-q">You only wanted a ride home. This is what a ride app says it collects about you.</p>
+            <div className="tr-grid">
+              {TRACKED.map(([group, items], g) => (
+                <div key={group} className="tr-group" style={{ animationDelay: `${g * 0.35}s` }}>
+                  <p className="tr-h">{group}</p>
+                  <ul>{items.map((t) => <li key={t}>{t}</li>)}</ul>
+                </div>
+              ))}
+            </div>
+            <p className="tiny">Gaadi is made up. This list is from Uber&rsquo;s own privacy notice for riders. Some items need your permission and some don&rsquo;t apply in every country. Battery level is not on it.</p>
+            <div className="lab-next"><button className="btn" autoFocus onClick={onDone}>Get in →</button></div>
+          </div>
         </div>
       )}
     </div>

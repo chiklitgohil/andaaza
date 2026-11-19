@@ -582,3 +582,27 @@ a { color: var(--amber); }
 .press-two div:last-child b { color: #ff8a4c; }
 .press-two span { display: block; font-size: 0.78rem; line-height: 1.35; }
 .strike-card { max-height: 84vh; overflow-y: auto; }
+
+/* the junction: a real traffic light beside the phone */
+.junction { width: min(520px, 40vw); }
+.jx { display: flex; gap: 18px; align-items: flex-start; margin-top: 6px; }
+.jx-text { flex: 1; }
+.jx-text .big-q { margin-bottom: 6px; }
+.tlight { position: relative; display: flex; flex-direction: column; gap: 8px; align-items: center; padding: 12px 10px 30px; background: #15171c; border: 2px solid #2b2e36; border-radius: 16px; box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6); }
+.tlight .lamp { width: 44px; height: 44px; border-radius: 50%; background: #2a2a2e; box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.5); }
+.tlight .lamp.red.on { background: #ff3b30; box-shadow: 0 0 22px 6px rgba(255, 59, 48, 0.7); animation: tlglow 1s ease-in-out infinite; }
+.tlight .lamp.green.on { background: #2fe07a; box-shadow: 0 0 22px 6px rgba(47, 224, 122, 0.7); }
+.tlight b { position: absolute; bottom: 6px; font: 700 0.85rem var(--mono); color: #ffb0aa; }
+.tlight.ran .lamp.red.on { animation: none; }
+@keyframes tlglow { 50% { box-shadow: 0 0 14px 3px rgba(255, 59, 48, 0.45); } }
+.jx-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.btn.danger { background: #e0453a; color: #fff; }
+@media (prefers-reduced-motion: reduce) { .tlight .lamp.red.on { animation: none; } }
+
+/* what a ride app collects: a summary that keeps arriving */
+.tracked { width: min(640px, 48vw); max-height: 86vh; overflow-y: auto; }
+.tr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin: 10px 0; }
+.tr-group { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); border-left: 3px solid #e0453a; border-radius: 8px; padding: 8px 10px; animation: rise2 0.45s ease-out backwards; }
+.tr-h { font: 700 0.68rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: #ff8a7f; margin: 0 0 4px; }
+.tr-group ul { margin: 0; padding-left: 1em; font-size: 0.8rem; line-height: 1.35; }
+@media (prefers-reduced-motion: reduce) { .tr-group { animation: none; } }

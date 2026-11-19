@@ -19,6 +19,8 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
   const [deadline, setDeadline] = useState(150); // seconds left on the customer's clock (story time)
   const [light, setLight] = useState(90);
   const [choice, setChoice] = useState<'fast' | 'safe' | null>(null);
+  const [waiting, setWaiting] = useState(false);   // chose to wait: the red runs out faster on screen
+  const RED = 90, PROMISE = 150, RIDE_LEFT = 180;  // story seconds: the red, the customer's timer, the ride still to go (FICTIONAL)
   const [cooler, setCooler] = useState(false);
   const READY_AT = 18;
   const [promise, setPromise] = useState(10);
@@ -40,14 +42,18 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
   }, [holding, step, mins]);
 
   useEffect(() => { if (mins > 0) sfx.tick(); if (mins === READY_AT) sfx.ping(); }, [mins]);
-  useEffect(() => { if (step === 'deliver' && light === 0) sfx.ping(); }, [light, step]);
-
-  // the red light and the customer's countdown run together
+  // the red light and the customer's countdown run together, six story seconds per real second (faster once you choose to wait)
   useEffect(() => {
     if (step !== 'deliver' || choice) return;
-    const id = setInterval(() => { setLight((l) => Math.max(0, l - 3)); setDeadline((d) => Math.max(0, d - 3)); }, 100);
+    const id = setInterval(() => { setLight((l) => Math.max(0, l - 6)); setDeadline((d) => Math.max(0, d - 6)); }, waiting ? 140 : 1000);
     return () => clearInterval(id);
-  }, [step, choice]);
+  }, [step, choice, waiting]);
+  useEffect(() => {
+    if (step !== 'deliver' || choice) return;
+    if (light <= 0) { setChoice('safe'); sfx.ping(); return; }   // green: you waited it out
+    if (!waiting && light < RED) sfx.clock(1 - deadline / PROMISE);
+  }, [light]); // eslint-disable-line react-hooks/exhaustive-deps
+  const lateBy = Math.max(0, Math.round((RIDE_LEFT - deadline) / 60));
 
   const mm = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   const time = step === 'wait' ? `13:${String(5 + mins).padStart(2, '0')}` : step === 'deliver' || step === 'lab' ? '13:26' : '14:40';
@@ -79,20 +85,11 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
           )}
           {step === 'deliver' && (
             <div className="zp-body center">
+              <p className="zp-title">Delivering to Shanti Heights</p>
+              <p className="tiny">1.2 km left</p>
               <p className="tiny">Customer sees</p>
-              <div className={`deadline ${deadline < 90 ? 'late' : ''}`}>Arriving in {mm(deadline)}</div>
-              <div className="signal"><span className={light > 0 ? 'red' : 'green'} /> {light > 0 ? `Red light · ${light}s` : 'Green'}</div>
-              {!choice ? (
-                <div className="zp-actions col">
-                  <button className="zp-rej" onClick={() => { setChoice('fast'); sfx.whoosh(); }}>Squeeze through on amber, take the wrong side</button>
-                  <button className="zp-acc" onClick={() => setChoice('safe')}>Wait for green</button>
-                </div>
-              ) : (
-                <Toast tone={choice === 'fast' ? 'warn' : 'info'}>
-                  {choice === 'fast' ? 'You make it with a minute to spare. A truck horn is still ringing in your ears.' : 'Delivered 4 minutes after the customer’s timer. The app shows "Delayed". You wonder if it counts against you.'}
-                </Toast>
-              )}
-              {choice && <button className="zp-go small" onClick={() => { note('wait-choice', choice); setStep('lab'); }}>Next order →</button>}
+              <div className={`deadline ${deadline < RIDE_LEFT ? 'late' : ''}`}>Arriving in {mm(deadline)}</div>
+              {choice && <Toast tone={choice === 'fast' ? 'warn' : 'info'}>{choice === 'fast' ? 'Delivered ✓ · on time' : 'Delivered ✓ · Delayed'}</Toast>}
             </div>
           )}
           {step === 'lab' && <DeadlinePhone v={trip(promise)} />}
@@ -119,8 +116,40 @@ export default function WaitAct({ onDone }: { onDone: () => void }) {
           </div>
         )}
         {step === 'deliver' && (
-          <div className="side-card">
-            <p className="big-q">Their countdown keeps running. Your light is red. What do you do?</p>
+          <div className="side-card junction">
+            <p className="kicker">13:26 · the junction on Naroda Road</p>
+            <div className="jx">
+              <div className={`tlight ${choice === 'fast' ? 'ran' : ''}`} role="img" aria-label={light > 0 ? `Traffic light: red, ${light} seconds left` : 'Traffic light: green'}>
+                <i className={`lamp red ${light > 0 ? 'on' : ''}`} />
+                <i className="lamp amber" />
+                <i className={`lamp green ${light <= 0 ? 'on' : ''}`} />
+                <b>{light > 0 ? `${light}s` : 'GO'}</b>
+              </div>
+              <div className="jx-text">
+                <p className="big-q">{choice === 'fast' ? 'You went through on red.' : light > 0 ? 'The light just turned red.' : 'Green.'}</p>
+                <dl className="ox-sheet">
+                  <dt>Customer&rsquo;s timer</dt><dd className={deadline < RIDE_LEFT ? 'bad' : ''}>{mm(deadline)}</dd>
+                  <dt>Ride still to go</dt><dd>1.2 km · about {mm(RIDE_LEFT)}</dd>
+                  <dt>Red light left</dt><dd>{light > 0 ? `${light}s` : '—'}</dd>
+                </dl>
+              </div>
+            </div>
+            {!choice ? (
+              <>
+                <p className="small">Wait for green and you&rsquo;ll be late. Go now and you might make it.</p>
+                <div className="jx-actions">
+                  <button className="btn danger" onClick={() => { setChoice('fast'); sfx.whoosh(); }}>Go now, through the red</button>
+                  <button className="btn ghost" disabled={waiting} onClick={() => setWaiting(true)}>{waiting ? `Waiting… ${light}s` : 'Wait for green'}</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="lab-verdict bad">{choice === 'fast'
+                  ? 'A truck horn blares beside you. You make it with a minute to spare, hands shaking.'
+                  : `You waited. You arrive about ${lateBy} minute${lateBy === 1 ? '' : 's'} after the customer’s timer ran out, and the app marks the order “Delayed”.`}</p>
+                <div className="lab-next"><button className="btn" onClick={() => { note('wait-choice', choice); setStep('lab'); }}>Next order →</button></div>
+              </>
+            )}
           </div>
         )}
         {step === 'lab' && <DeadlineLab promise={promise} setPromise={setPromise} onNext={() => setStep('heat')} />}
